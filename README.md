@@ -8,8 +8,11 @@ We require location access to effectively provide suggestions for events.
 
 # Team
 Anvisha Singh
+
 Jatin Shivaprakash
+
 Lakksh Tyagi
+
 Rohit Bogulla
 
 
