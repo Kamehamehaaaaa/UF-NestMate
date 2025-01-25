@@ -20,7 +20,7 @@ A single-page web application for international students to find their ideal off
 - (Can add more here)
 
 # Team
--> Anvisha Singh (front-end)
--> Jatin Shivaprakash (back-end)
--> Lakksh Tyagi (front-end)
--> Rohit Bogulla (back-end)
+- Anvisha Singh (front-end)
+- Jatin Shivaprakash (back-end)
+- Lakksh Tyagi (front-end)
+- Rohit Bogulla (back-end)
