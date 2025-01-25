@@ -14,8 +14,13 @@ A single-page web application for international students to find their ideal off
 
 - Can add a feature to find a study buddy once the apartment has been selected, can allow them to create user profiles with academic interests, courses, and availability and matching them based on shared courses and study habits, and maybe a messaging system for coordination.
 
+# User Stories
+
+- As an international student, I want to search for off-campus housing with specific filters so that I can find an apartment that meets my preferences without visiting in person.
+- (Can add more here)
+
 # Team
-Anvisha Singh
-Jatin Shivaprakash 
-Lakksh Tyagi 
-Rohit Bogulla
+-> Anvisha Singh (front-end)
+-> Jatin Shivaprakash (back-end)
+-> Lakksh Tyagi (front-end)
+-> Rohit Bogulla (back-end)
