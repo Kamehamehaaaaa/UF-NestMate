@@ -1,14 +1,15 @@
+import React from 'react';
+import Header from './components/Header/header';
 import './App.css';
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <h1>UF NestMates</h1>
-      </header>
-      <section>
-        Let's help you find a place you can call home!
-      </section>
+      <Header />
+      <main>
+        <h1>Welcome to NestMate</h1>
+        <p>Find your perfect home away from home.</p>
+      </main>
     </div>
   );
 }
