@@ -17,7 +17,6 @@ A single-page web application for international students to find their ideal off
 # User Stories
 
 - As an international student, I want to search for off-campus housing with specific filters so that I can find an apartment that meets my preferences without visiting in person.
-- (Can add more here)
 
 # Team
 - Anvisha Singh (front-end)
