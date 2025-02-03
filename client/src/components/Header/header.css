@@ -1,7 +1,17 @@
 .app-header {
-  background-color: #282c34;
-  padding: 20px 0;
+  position: relative;
+  background-color: #000000;
+  padding: 0px 0;
+  overflow: hidden;
 }
+
+
+nav {
+  position: relative;
+  z-index: 3;
+}
+
+
 
 nav {
   display: flex;
@@ -13,10 +23,17 @@ nav {
 }
 
 .logo {
-  color: white;
-  font-size: 24px;
-  font-weight: bold;
+
+
+  font-family: 'Brush Script MT', cursive;
+  font-size: 2.5rem;
+  color: #fff;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  letter-spacing: 2px;
+  transition: transform 0.3s ease;
+
 }
+
 
 .nav-links {
   list-style: none;
@@ -32,9 +49,22 @@ nav {
 .nav-links a {
   color: white;
   text-decoration: none;
-  font-size: 16px;
+  font-size: 20px;
 }
 
 .nav-links a:hover {
   text-decoration: underline;
+}
+
+
+.nav-links a.active {
+  font-weight: bold;
+  color: whitesmoke;
+  text-decoration: underline;
+  background-color: #c9beaf;
+  /* dark background for contrast */
+  padding: 5px 10px;
+  /* some padding for better visibility */
+  border-radius: 10px;
+  /* rounded corners */
 }

@@ -6,6 +6,98 @@ main {
   padding: 20px;
 }
 
+.home-background-row {
+  background-image: url(./images/HomePageBack.png);
+  background-size: cover;
+  background-position: center;
+  min-height: 400px;
+  background-repeat: no-repeat;
+  opacity: 0.9;
+  display: flex;
+  align-items: flex-start;
+  padding-top: 10px;
+}
+
 h1 {
-  color: #282c34;
+  font-family: 'Special Elite', cursive;
+}
+
+.contact-section {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-result {
+  min-height: 400px;
+}
+
+.roommate-finder-text {
+  font-family: 'Special Elite', cursive;
+  font-size: 4rem;
+  line-height: 1.2;
+  color: #2c1810;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+  text-align: left;
+  padding-left: 3rem;
+}
+
+.roommate-finder-text .roommate,
+.roommate-finder-text .finder {
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.roommate-finder-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding-top: 1rem;
+}
+
+.search-form {
+  position: relative;
+  width: 500px;
+  max-width: 100%;
+  margin: 20px auto;
+}
+
+.rounded-search-bar {
+  position: relative;
+}
+
+.search-input {
+  border-radius: 25px !important;
+  padding-right: 50px !important;
+  height: 50px;
+}
+
+.search-button-wrapper {
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+}
+
+.search-button {
+  background-color: skyblue !important;
+  border: none !important;
+  border-radius: 50% !important;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-icon {
+  color: white;
+}
+
+.search-input:focus+.search-button-wrapper .search-button {
+  opacity: 1;
+  visibility: visible;
 }
