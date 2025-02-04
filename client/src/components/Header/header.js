@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Navbar, Nav, Container } from 'react-bootstrap';
 import './header.css';
 
 function Header({ scrollToContact }) {
@@ -61,6 +62,7 @@ function Header({ scrollToContact }) {
                         <a
                             href="contact"
                             className={activeLink === 'contact' ? 'active' : ''}
+                            
                             onClick={handleContactClick}
                         >
                             Contact
