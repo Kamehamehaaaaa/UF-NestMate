@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar, Nav, Container } from 'react-bootstrap';
 import './header.css';
+import Login from './Login/Login'
 
 function Header({ scrollToContact }) {
     const [activeLink, setActiveLink] = useState('home');

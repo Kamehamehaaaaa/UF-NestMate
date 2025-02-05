@@ -1,3 +1,5 @@
+/* Header.css */
+
 .app-header {
   position: relative;
   background-color: #000000;
@@ -47,13 +49,15 @@ nav {
 }
 
 .nav-links a {
+  background: #28a745;
   color: white;
   text-decoration: none;
   font-size: 20px;
 }
 
 .nav-links a:hover {
-  text-decoration: underline;
+  background: #218838;
+  text-decoration: none;
 }
 
 
