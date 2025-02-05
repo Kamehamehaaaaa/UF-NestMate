@@ -8,6 +8,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 9999;
   }
   
   span {
@@ -94,7 +95,7 @@
   
   .toggle-link {
     margin-top: 10px;
-    color: #007bff;
+    color: #3e7a2e;
     cursor: pointer;
     font-size: 14px;
   }
@@ -102,3 +103,8 @@
   .toggle-link:hover {
     text-decoration: underline;
   }  
+
+  .error-message {
+    font-weight: bold;
+    color: red;
+  }
