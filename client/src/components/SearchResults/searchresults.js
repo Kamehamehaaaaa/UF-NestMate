@@ -12,9 +12,8 @@ const SearchResults = ({ results }) => {
             <Card.Body>
               <Card.Title>{result.name}</Card.Title>
               <Card.Text>
-                University: {result.university}<br />
-                Year: {result.year}<br />
-                Major: {result.major}
+                Address: {result.address}<br />
+                Pincode: {result.pincode}<br />
               </Card.Text>
             </Card.Body>
           </Card>

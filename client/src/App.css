@@ -76,7 +76,7 @@ h1 {
 
 .search-button-wrapper {
   position: absolute;
-  right: 5px;
+  right: 15px;
   top: 50%;
   transform: translateY(-50%);
   z-index: 10;

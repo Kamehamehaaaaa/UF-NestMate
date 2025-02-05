@@ -18,6 +18,13 @@ function Login({ onClose }) {
     setError('');
   };
 
+  const handleToggle = () => {
+    setIsSignup(!isSignup);
+    setPassword(''); 
+    setConfirmPassword(''); 
+    setError(''); 
+  };
+
   return (
     <div className="login-overlay">
       <div className="login-popup">
@@ -40,7 +47,7 @@ function Login({ onClose }) {
           {error && <p className="error-message">{error}</p>}
           <button type="submit">{isSignup ? 'Sign Up' : 'Login'}</button>
         </form>
-        <p onClick={() => setIsSignup(!isSignup)} className="toggle-link">
+        <p onClick={handleToggle} className="toggle-link">
             <span>
                 {isSignup ? 'Already have an account? Login' : 'Don’t have an account? Sign Up'}
             </span>

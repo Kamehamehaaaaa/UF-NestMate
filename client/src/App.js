@@ -14,9 +14,9 @@ function App() {
 
   // Default dummy results  for the cards
   const defaultResults = [
-    { name: 'John Doe', university: 'University of Florida', year: '2nd', major: 'Computer Science', image: 'https://via.placeholder.com/150' },
-    { name: 'Jane Smith', university: 'Florida State University', year: '3rd', major: 'Biology', image: 'https://via.placeholder.com/150' },
-    { name: 'Alice Johnson', university: 'University of Miami', year: '1st', major: 'Psychology', image: 'https://via.placeholder.com/150' },
+    { name: 'Stoneridge Apartments', address: '3800 SW 34th St', pincode: '32608', image: 'https://via.placeholder.com/150' },
+    { name: 'BLVD', address: '3800 SW 34th St', pincode: '32608', image: 'https://via.placeholder.com/150' },
+    { name: 'Centric', address: '3800 SW 34th St', pincode: '32608', image: 'https://via.placeholder.com/150' },
    
   ];
 
@@ -33,7 +33,7 @@ function App() {
     
     // Filter results based on search term
     const filteredResults = defaultResults.filter(result => 
-      result.university.toLowerCase().includes(searchTerm.toLowerCase())
+      result.address.toLowerCase().includes(searchTerm.toLowerCase())
     );
     
     setSearchResults(filteredResults);
@@ -48,15 +48,15 @@ function App() {
       <Row className='home-background-row'>
         <Col className="roommate-finder-col">
           <div className="roommate-finder-text">
-            <div className="roommate">Roommate</div>
+            <div className="roommate">Apartment</div>
             <div className="finder">Finder</div>
           </div>
 
           <Form className="search-form" onSubmit={handleSearch}>
             <InputGroup className="rounded-search-bar">
               <Form.Control
-                placeholder="University Name"
-                aria-label="University Name"
+                placeholder="Apartment Name"
+                aria-label="Apartment Name"
                 className="search-input"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
