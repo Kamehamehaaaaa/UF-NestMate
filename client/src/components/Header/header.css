@@ -1,3 +1,5 @@
+/* Header.css */
+
 .app-header {
   background-color: #282c34;
   padding: 20px 0;
@@ -30,11 +32,22 @@ nav {
 }
 
 .nav-links a {
+  background: #28a745;
   color: white;
-  text-decoration: none;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
   font-size: 16px;
+  text-decoration: none;
+  display: inline-block;
+  transition: background 0.3s ease;
 }
 
 .nav-links a:hover {
-  text-decoration: underline;
+  background: #218838;
+  text-decoration: none;
+}
+
+.login-btn {
+  font-family: 'Times New Roman', Times, serif;
 }
