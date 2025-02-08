@@ -55,6 +55,7 @@ nav {
   text-decoration: none;
   display: inline-block;
   transition: background 0.3s ease;
+  border-radius: 50%;
 }
 
 .nav-links a:hover {
@@ -89,6 +90,7 @@ nav {
 
 .login-btn {
   background: #c79a63;
+  border-radius: 50%;
 }
 
 .login-btn:hover {

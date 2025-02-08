@@ -10,6 +10,7 @@
     max-width: 300px; 
     margin: 0 auto; 
     top: 15px;
+    margin-bottom: 20px;
 }
 
 .card:hover {
@@ -23,7 +24,7 @@
 
 .card-body {
     flex: 1;
-   
+    
     background-color: #f8f9fa;
 }
 
@@ -47,3 +48,23 @@
         height: 150px; 
     }
 }
+
+.no-results {
+  text-align: left;  
+  font-weight: bold; 
+  font-size: 2rem;  
+  padding-left: 20px; 
+  background: radial-gradient(
+      circle at 100%,
+      #b2a8fd,
+      #8678f9 50%,
+      #c7d2fe 75%,
+      #9a8dfd 75%
+    );
+    font-weight: 600;
+    background-size: 200% auto;
+    color: #000;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: animatedTextGradient 1.5s linear infinite;
+} 

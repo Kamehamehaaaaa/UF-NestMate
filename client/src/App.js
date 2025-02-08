@@ -6,6 +6,12 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Container, Row, Col, Form, InputGroup, Button } from 'react-bootstrap';
 import { FaSearch } from 'react-icons/fa';
+import Centric from './images/centric.png';
+import Stone from './images/stoneridge.png';
+import BL from './images/blvd.png';
+import Gains from './images/gainesvilleplace.png';
+import Hide from './images/hideaway.png';
+import Sweet from './images/sweetwater.png';
 
 function App() {
   const contactRef = useRef(null);
@@ -14,10 +20,12 @@ function App() {
 
   // Default dummy results  for the cards
   const defaultResults = [
-    { name: 'Stoneridge Apartments', address: '3800 SW 34th St', pincode: '32608', image: 'https://via.placeholder.com/150' },
-    { name: 'BLVD', address: '3800 SW 34th St', pincode: '32608', image: 'https://via.placeholder.com/150' },
-    { name: 'Centric', address: '3800 SW 34th St', pincode: '32608', image: 'https://via.placeholder.com/150' },
-   
+    { name: 'Stoneridge Apartments', address: '3800 SW 34th St', pincode: '32608', image: Stone },
+    { name: 'BLVD', address: '3800 SW 34th St', pincode: '32608', image: BL },
+    { name: 'Centric', address: '3800 SW 34th St', pincode: '32608', image: Centric },
+    { name: 'Gainesville Place', address: '3800 SW 34th St', pincode: '32607', image: Gains },
+    { name: 'Hideaway', address: '3800 SW 34th St', pincode: '32609', image: Hide },
+    { name: 'Sweetwater', address: '2800 SW Williston Rd', pincode: '32610', image: Sweet }
   ];
 
   useEffect(() => {
@@ -29,13 +37,14 @@ function App() {
   };
 
   const handleSearch = (e) => {
-    e.preventDefault();
-    
-    // Filter results based on search term
-    const filteredResults = defaultResults.filter(result => 
-      result.address.toLowerCase().includes(searchTerm.toLowerCase())
+    const value = e.target.value.toLowerCase();
+    setSearchTerm(value);
+
+    // Filtering based on the name (case insensitive, starts with search term)
+    const filteredResults = defaultResults.filter(result =>
+      result.name.toLowerCase().startsWith(value)
     );
-    
+
     setSearchResults(filteredResults);
   };
 
@@ -59,7 +68,7 @@ function App() {
                 aria-label="Apartment Name"
                 className="search-input"
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={handleSearch}
               />
               <div className="search-button-wrapper">
                 <Button type="submit" className="search-button">

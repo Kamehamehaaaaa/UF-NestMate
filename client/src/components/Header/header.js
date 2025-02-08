@@ -33,7 +33,7 @@ function Header({ scrollToContact }) {
             <nav>
                 <div className="logo">NestMate</div>
                 <ul className="nav-links">
-                    <li>
+                    {/* <li>
                         <a
                             href="home"
                             className={activeLink === 'home' ? 'active' : ''}
@@ -50,7 +50,7 @@ function Header({ scrollToContact }) {
                         >
                             About
                         </a>
-                    </li>
+                    </li> */}
                     <li>
                       <button onClick={() => setShowLogin(true)} className="login-btn">Login</button>
                     </li>
