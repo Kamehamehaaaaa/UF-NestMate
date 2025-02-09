@@ -20,12 +20,12 @@ function App() {
 
   // Default dummy results  for the cards
   const defaultResults = [
-    { name: 'Stoneridge Apartments', address: '3800 SW 34th St', pincode: '32608', image: Stone },
-    { name: 'BLVD', address: '3800 SW 34th St', pincode: '32608', image: BL },
-    { name: 'Centric', address: '3800 SW 34th St', pincode: '32608', image: Centric },
-    { name: 'Gainesville Place', address: '3800 SW 34th St', pincode: '32607', image: Gains },
-    { name: 'Hideaway', address: '3800 SW 34th St', pincode: '32609', image: Hide },
-    { name: 'Sweetwater', address: '2800 SW Williston Rd', pincode: '32610', image: Sweet }
+    { name: 'Stoneridge Apartments', address: '3800 SW 34th St', pincode: '32608', image: Stone, rating: '4.6/5' },
+    { name: 'BLVD', address: '3800 SW 34th St', pincode: '32608', image: BL, rating: '4.4/5' },
+    { name: 'Centric', address: '3800 SW 34th St', pincode: '32608', image: Centric, rating: '4.3/5' },
+    { name: 'Gainesville Place', address: '3800 SW 34th St', pincode: '32607', image: Gains, rating: '4.7/5' },
+    { name: 'Hideaway', address: '3800 SW 34th St', pincode: '32609', image: Hide, rating: '4.5/5' },
+    { name: 'Sweetwater', address: '2800 SW Williston Rd', pincode: '32610', image: Sweet, rating: '4.8/5' }
   ];
 
   useEffect(() => {

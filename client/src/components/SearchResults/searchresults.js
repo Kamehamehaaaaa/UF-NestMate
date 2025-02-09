@@ -15,6 +15,7 @@ const SearchResults = ({ results }) => {
                 <Card.Text>
                   Address: {result.address}<br />
                   Pincode: {result.pincode}<br />
+                  Rating: {result.rating}<br />
                 </Card.Text>
               </Card.Body>
             </Card>

@@ -23,6 +23,6 @@ A single-page web application for international students to find their ideal off
 # Team
 
 -   Anvisha Singh (front-end)
--   Jatin Shivaprakash (back-end)[UFID:26090643]
+-   Jatin Shivaprakash (back-end)
 -   Lakksh Tyagi (front-end)
--   Rohit Bogulla (back-end)[UFID:41773798]
+-   Rohit Bogulla (back-end)
