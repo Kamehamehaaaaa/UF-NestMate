@@ -6,6 +6,12 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Container, Row, Col, Form, InputGroup, Button } from 'react-bootstrap';
 import { FaSearch } from 'react-icons/fa';
+import Centric from './images/centric.png';
+import Stone from './images/stoneridge.png';
+import BL from './images/blvd.png';
+import Gains from './images/gainesvilleplace.png';
+import Hide from './images/hideaway.png';
+import Sweet from './images/sweetwater.png';
 
 function App() {
   const contactRef = useRef(null);
@@ -14,10 +20,12 @@ function App() {
 
   // Default dummy results  for the cards
   const defaultResults = [
-    { name: 'John Doe', university: 'University of Florida', year: '2nd', major: 'Computer Science', image: 'https://via.placeholder.com/150' },
-    { name: 'Jane Smith', university: 'Florida State University', year: '3rd', major: 'Biology', image: 'https://via.placeholder.com/150' },
-    { name: 'Alice Johnson', university: 'University of Miami', year: '1st', major: 'Psychology', image: 'https://via.placeholder.com/150' },
-   
+    { name: 'Stoneridge Apartments', address: '3800 SW 34th St', pincode: '32608', image: Stone, rating: '4.6/5' },
+    { name: 'BLVD', address: '3800 SW 34th St', pincode: '32608', image: BL, rating: '4.4/5' },
+    { name: 'Centric', address: '3800 SW 34th St', pincode: '32608', image: Centric, rating: '4.3/5' },
+    { name: 'Gainesville Place', address: '3800 SW 34th St', pincode: '32607', image: Gains, rating: '4.7/5' },
+    { name: 'Hideaway', address: '3800 SW 34th St', pincode: '32609', image: Hide, rating: '4.5/5' },
+    { name: 'Sweetwater', address: '2800 SW Williston Rd', pincode: '32610', image: Sweet, rating: '4.8/5' }
   ];
 
   useEffect(() => {
@@ -29,13 +37,14 @@ function App() {
   };
 
   const handleSearch = (e) => {
-    e.preventDefault();
-    
-    // Filter results based on search term
-    const filteredResults = defaultResults.filter(result => 
-      result.university.toLowerCase().includes(searchTerm.toLowerCase())
+    const value = e.target.value.toLowerCase();
+    setSearchTerm(value);
+
+    // Filtering based on the name (case insensitive, starts with search term)
+    const filteredResults = defaultResults.filter(result =>
+      result.name.toLowerCase().startsWith(value)
     );
-    
+
     setSearchResults(filteredResults);
   };
 
@@ -48,18 +57,18 @@ function App() {
       <Row className='home-background-row'>
         <Col className="roommate-finder-col">
           <div className="roommate-finder-text">
-            <div className="roommate">Roommate</div>
+            <div className="roommate">Apartment</div>
             <div className="finder">Finder</div>
           </div>
 
           <Form className="search-form" onSubmit={handleSearch}>
             <InputGroup className="rounded-search-bar">
               <Form.Control
-                placeholder="University Name"
-                aria-label="University Name"
+                placeholder="Apartment Name"
+                aria-label="Apartment Name"
                 className="search-input"
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={handleSearch}
               />
               <div className="search-button-wrapper">
                 <Button type="submit" className="search-button">
