@@ -22,6 +22,7 @@ A single-page web application for international students to find their ideal off
 
 # Team
 
+Backend: Go | Frontend: React
 -   Anvisha Singh (front-end)
 -   Jatin Shivaprakash (back-end)
 -   Lakksh Tyagi (front-end)
