@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func getHousingHandler(w http.ResponseWriter, r *http.Request) {
+func GetHousingHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -20,21 +20,21 @@ func getHousingHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func addHousingHandler(w http.ResponseWriter, r *http.Request) {
+func AddHousingHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 }
 
-func updateHousingHandler(w http.ResponseWriter, r *http.Request) {
+func UpdateHousingHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPut {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 }
 
-func deleteHousingHandler(w http.ResponseWriter, r *http.Request) {
+func DeleteHousingHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodDelete {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
