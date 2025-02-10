@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import Header from './components/Header/Header';
+import Header from './components/Header/header';
 import Contactform from './components/ContactForm/contactform';
 import SearchResults from './components/SearchResults/searchresults';
 import './App.css';

@@ -5,6 +5,7 @@ import Login from './Login/Login'
 
 function Header({ scrollToContact }) {
     const [activeLink, setActiveLink] = useState('home');
+    const [showLogin, setShowLogin] = useState(false);
 
     useEffect(() => {
         const path = window.location.pathname;
@@ -12,8 +13,8 @@ function Header({ scrollToContact }) {
 
         if (path.includes('/about')) {
             activePage = 'about';
-        } else if (path.includes('/services')) {
-            activePage = 'services';
+        } else if (path.includes('/login')) {
+            activePage = 'login';
         } else if (path.includes('/contact')) {
             activePage = 'contact';
         }
@@ -32,7 +33,7 @@ function Header({ scrollToContact }) {
             <nav>
                 <div className="logo">NestMate</div>
                 <ul className="nav-links">
-                    <li>
+                    {/* <li>
                         <a
                             href="home"
                             className={activeLink === 'home' ? 'active' : ''}
@@ -49,15 +50,9 @@ function Header({ scrollToContact }) {
                         >
                             About
                         </a>
-                    </li>
+                    </li> */}
                     <li>
-                        <a
-                            href="services"
-                            className={activeLink === 'services' ? 'active' : ''}
-                            onClick={() => setActiveLink('services')}
-                        >
-                            Services
-                        </a>
+                      <button onClick={() => setShowLogin(true)} className="login-btn">Login</button>
                     </li>
                     <li>
                         <a
@@ -71,6 +66,7 @@ function Header({ scrollToContact }) {
                     </li>
                 </ul>
             </nav>
+            {showLogin && <Login onClose={() => setShowLogin(false)} />}
         </header>
     );
 }
