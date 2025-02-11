@@ -4,7 +4,6 @@ import (
 	"apis/data"
 	"apis/user"
 	"encoding/json"
-	"fmt"
 	"net/http"
 )
 
@@ -21,11 +20,11 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 	if !userExists(username) {
 		data.Users[username] = user.User{FName: firstname, LName: lastname, UserName: username, Password: password}
-		fmt.Fprintf(w, "Registration successful")
-		w.WriteHeader(http.StatusOK)
+		response := "Registration successful"
+		http.Error(w, response, http.StatusOK)
 	} else {
-		fmt.Fprintf(w, "User already exists")
-		w.WriteHeader(http.StatusConflict)
+		response := "User with username " + username + " already exists"
+		http.Error(w, response, http.StatusOK)
 	}
 }
 
@@ -37,7 +36,7 @@ func GetUsersHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(data.Users)
-
+	w.WriteHeader(http.StatusOK)
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -47,8 +46,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if verifyLogin(r.FormValue("username"), r.FormValue("password")) {
-		fmt.Fprintf(w, "Login successful")
-		w.WriteHeader(http.StatusOK)
+		http.Error(w, "Login successful", http.StatusOK)
 	} else {
 		http.Error(w, "Invalid username or password", http.StatusUnauthorized)
 		return
