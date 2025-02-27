@@ -1,15 +1,27 @@
 import React, { useState } from 'react';
-import { Card, Col, Row, Modal, Button } from 'react-bootstrap';
+import { Card, Col, Row, Modal, Button, Form } from 'react-bootstrap';
 import './searchresults.css';
 
 const SearchResults = ({ results }) => {
   const [show, setShow] = useState(false);
   const [selectedApartment, setSelectedApartment] = useState(null);
+  const [comment, setComment] = useState('');
+  const [comments, setComments] = useState([]);
 
   const handleClose = () => setShow(false);
   const handleShow = (apartment) => {
     setSelectedApartment(apartment);
+    setComments(apartment.comments || []);
     setShow(true);
+  };
+
+  const handleCommentSubmit = (e) => {
+    e.preventDefault();
+    if (comment.trim()) {
+      const newComments = [...comments, comment];
+      setComments(newComments);
+      setComment('');
+    }
   };
 
   return (
@@ -47,6 +59,7 @@ const SearchResults = ({ results }) => {
         keyboard={false}
         className="apartment-modal"
       >
+        {/* Modal Header without the close button */}
         <Modal.Header>
           <Modal.Title>{selectedApartment?.name}</Modal.Title>
         </Modal.Header>
@@ -59,7 +72,34 @@ const SearchResults = ({ results }) => {
           <p><strong>Address:</strong> {selectedApartment?.address}</p>
           <p><strong>Pincode:</strong> {selectedApartment?.pincode}</p>
           <p><strong>Rating:</strong> {selectedApartment?.rating}</p>
-          <p><strong>Description:</strong> Using NLP, description made from user reviews can be added here.</p>
+          <p><strong>Description:</strong> <i>The NLP generated user review summary can go here.</i></p>
+
+          <p><strong>Comments:</strong></p>
+          {comments.length > 0 ? (
+            comments.map((comment, idx) => (
+              <div key={idx} className="comment">
+                <p>{comment}</p>
+              </div>
+            ))
+          ) : (
+            <p>No comments yet. Be the first to leave one!</p>
+          )}
+
+          {/* Comment Form */}
+          <Form onSubmit={handleCommentSubmit}>
+            <Form.Group controlId="commentForm">
+              <Form.Control
+                as="textarea"
+                rows={3}
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                placeholder="Add a comment"
+              />
+            </Form.Group>
+            <Button variant="primary" className="add-comment-button" type="submit">
+              Add Comment
+            </Button>
+          </Form>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
