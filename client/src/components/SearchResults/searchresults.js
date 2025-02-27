@@ -18,7 +18,8 @@ const SearchResults = ({ results }) => {
   const handleCommentSubmit = (e) => {
     e.preventDefault();
     if (comment.trim()) {
-      const newComments = [...comments, comment];
+      const newComment = `Lakksh: ${comment}`;
+      const newComments = [...comments, newComment];
       setComments(newComments);
       setComment('');
     }
@@ -74,11 +75,18 @@ const SearchResults = ({ results }) => {
           <p><strong>Rating:</strong> {selectedApartment?.rating}</p>
           <p><strong>Description:</strong> <i>The NLP generated user review summary can go here.</i></p>
 
-          <p><strong>Comments:</strong></p>
+          <p style={{ color: 'green' }}><strong>Comments:</strong></p>
           {comments.length > 0 ? (
             comments.map((comment, idx) => (
               <div key={idx} className="comment">
-                <p>{comment}</p>
+                <p>
+                  {comment.includes('Lakksh') ? (
+                    <span>Lakksh: </span>
+                  ) : (
+                    ''
+                  )}
+                  {comment.replace('Lakksh: ', '')}
+                </p>
               </div>
             ))
           ) : (
