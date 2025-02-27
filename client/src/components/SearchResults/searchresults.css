@@ -76,3 +76,31 @@
       background-position: 200% center;
     }
   }
+
+  .clickable-card {
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  
+  .clickable-card:hover {
+    transform: scale(1.05);
+  }
+  
+  /* Translucent overlay */
+  .apartment-modal .modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  
+  /* Solid modal content */
+  .apartment-modal .modal-content {
+    background: #fff; /* Solid white background */
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .apartment-modal .modal-img {
+    width: 100%;
+    border-radius: 10px;
+    margin-bottom: 15px;
+  }
+  
