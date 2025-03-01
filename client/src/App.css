@@ -102,3 +102,23 @@ h1 {
   opacity: 1;
   visibility: visible;
 }
+
+.image-col {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-self: center;
+  position: relative;
+  overflow: hidden;
+}
+
+
+.home-pic {
+  width: 75%;
+  height: fit-content;
+  max-width: 100%;
+  object-fit: cover;
+  mask-image: radial-gradient(ellipse 50% 50% at center, black 30%, transparent 100%);
+-webkit-mask-image: radial-gradient(ellipse 50% 50% at center, black 30%, transparent 100%);
+
+}
