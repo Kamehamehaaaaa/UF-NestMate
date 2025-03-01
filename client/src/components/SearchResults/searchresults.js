@@ -27,29 +27,30 @@ const SearchResults = ({ results }) => {
 
   return (
     <>
-      <Row xs={1} md={2} lg={3}>
-        {results.length > 0 ? (
-          results.map((result, idx) => (
-            <Col key={idx}>
-              <Card className="clickable-card" onClick={() => handleShow(result)}>
-                <Card.Img variant="top" src={result.image} alt={result.name} />
-                <Card.Body>
-                  <Card.Title>{result.name}</Card.Title>
-                  <Card.Text>
-                    Address: {result.address}<br />
-                    Pincode: {result.pincode}<br />
-                    Rating: {result.rating}<br />
-                  </Card.Text>
-                </Card.Body>
-              </Card>
-            </Col>
-          ))
-        ) : (
-          <Col>
-            <h4 className='no-results'>No results found</h4>
-          </Col>
-        )}
-      </Row>
+      <Row >
+  {results.length > 0 ? (
+    results.map((result, idx) => (
+      <Col key={idx} xs={12} sm={6} md={4} lg={3} className="d-flex">
+        <Card className="clickable-card flex-grow-1" onClick={() => handleShow(result)}>
+          <Card.Img variant="top" src={result.image} alt={result.name} />
+          <Card.Body>
+            <Card.Title>{result.name}</Card.Title>
+            <Card.Text>
+              Address: {result.address}<br />
+              Pincode: {result.pincode}<br />
+              Rating: {result.rating}<br />
+            </Card.Text>
+          </Card.Body>
+        </Card>
+      </Col>
+    ))
+  ) : (
+    <Col>
+      <h4 className="no-results">No results found</h4>
+    </Col>
+  )}
+</Row>
+
 
       {/* Modal for displaying more information */}
       <Modal

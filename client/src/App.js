@@ -12,6 +12,7 @@ import BL from './images/blvd.png';
 import Gains from './images/gainesvilleplace.png';
 import Hide from './images/hideaway.png';
 import Sweet from './images/sweetwater.png';
+import Home_pic from './images/home_pic.jpg';
 
 function App() {
   const contactRef = useRef(null);
@@ -78,8 +79,7 @@ function App() {
             </InputGroup>
           </Form>
         </Col>
-        <Col>
-        </Col>
+        
       </Row>
       <Row>
         <SearchResults results={searchResults} />
