@@ -19,6 +19,12 @@
 5. Create a search bar that enables users to search for apartments easily.
 6. Develop apartment filters to refine search results based on user preferences.
 7. Implement clickable apartment cards that generate a pop-up displaying user reviews, ratings, and apartment details.
+8. Store apartment details in a MySQL database.
+9. Allow users to submit reviews and rate apartments.
+10. Provide a secure API for chat funcionality.
+11. Optimize database for better query performance.
+12. Implement review summarizer for apartment which summarizes the reviews an apartment has.
+13. Implement Backend testcases with good code coverage.
 
 ## Successfully Completed Tasks
 
@@ -27,15 +33,15 @@
 3. Created a functional login page with a basic authentication system.
 4. Designed and implemented a contact form for user inquiries.
 5. Added a working search bar that allows users to search for apartments.
-
+6. Implemented CRUD apis for user management.
+7. Implemneted CRUD apis for housing management.
+8. Currently using SQL database for data management.
+9. Basic backend support for user authentication.
+10. Introduced configuration files for setup. 
+    
 ## Issues Not Completed and Reasons
 
 1. Apartment filters not implemented: We were focused on familiarizing ourselves with React and frontend development, delaying the implementation of apartment filters for sorting based on user preferences. This will be prioritized in the next sprint.
 2. Apartment cards not fully functional: While apartment cards were developed with essential details like name, pincode, and rating, they are not yet clickable. The goal for the next sprint is to enable a pop-up displaying detailed information, including user reviews and ratings.
-
-## Backlog for Next Sprint
-
-1. Implement apartment filters to help users refine their search based on priorities such as proximity to campus, food stores, and other amenities.
-2. Enable clickable apartment cards that display a pop-up with comprehensive details, user reviews, and ratings.
-3. Begin integrating NLP techniques to generate apartment descriptions from user reviews.
-4. Enhance the apartment details pop-up with maps, photo galleries, and additional relevant information.
+3. Apartment Review summarizer: An automatic summarizer which summarizes reviews which will help the user to get an overview of the apartment.
+4. Frontend- Backend Integration: Currently frontend-backend are two separate entites and need to be integrated and thorough integration testing is required
