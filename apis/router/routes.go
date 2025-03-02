@@ -5,9 +5,9 @@ import (
 )
 
 func SetupHandlers() {
-	http.HandleFunc("/api/register", RegisterHandler)
+	http.HandleFunc("/api/user/register", RegisterHandler)
 	http.HandleFunc("/api/users", GetUsersHandler)
-	http.HandleFunc("/api/login", LoginHandler)
+	http.HandleFunc("/api/user/login", LoginHandler)
 	http.HandleFunc("/api/housing/add", AddHousingHandler)
 	http.HandleFunc("/api/housing/get", GetHousingHandler)
 	http.HandleFunc("/api/housing/delete", DeleteHousingHandler)

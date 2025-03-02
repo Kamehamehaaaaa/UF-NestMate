@@ -4,6 +4,8 @@ import (
 	"apis/data"
 	"apis/user"
 	"encoding/json"
+	"fmt"
+	"io"
 	"net/http"
 )
 
@@ -13,17 +15,28 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	firstname := r.FormValue("firstname")
-	lastname := r.FormValue("lastname")
-	username := r.FormValue("username")
-	password := r.FormValue("password")
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "Error reading request body", http.StatusBadRequest)
+		return
+	}
+	defer r.Body.Close()
 
-	if !userExists(username) {
-		data.Users[username] = user.User{FName: firstname, LName: lastname, UserName: username, Password: password}
+	var userPayload user.UserPayload
+	err = json.Unmarshal(body, &userPayload)
+	fmt.Println(userPayload)
+	if err != nil {
+		http.Error(w, "Error unmarshalling JSON", http.StatusBadRequest)
+		return
+	}
+
+	if !userExists(userPayload.UserName) {
+		data.Users[userPayload.UserName] = user.User{FirstName: userPayload.FirstName,
+			LastName: userPayload.LastName, UserName: userPayload.UserName, Password: userPayload.Password}
 		response := "Registration successful"
 		http.Error(w, response, http.StatusOK)
 	} else {
-		response := "User with username " + username + " already exists"
+		response := "User with username " + userPayload.UserName + " already exists"
 		http.Error(w, response, http.StatusOK)
 	}
 }
@@ -40,12 +53,26 @@ func GetUsersHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
+	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	if verifyLogin(r.FormValue("username"), r.FormValue("password")) {
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "Error reading request body", http.StatusBadRequest)
+		return
+	}
+	defer r.Body.Close()
+
+	var loginPayload user.LoginPayload
+	err = json.Unmarshal(body, &loginPayload)
+	if err != nil {
+		http.Error(w, "Error unmarshalling JSON", http.StatusBadRequest)
+		return
+	}
+
+	if verifyLogin(loginPayload.UserName, loginPayload.Password) {
 		http.Error(w, "Login successful", http.StatusOK)
 	} else {
 		http.Error(w, "Invalid username or password", http.StatusUnauthorized)
