@@ -40,11 +40,6 @@ func AddHousingHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err != nil {
-		response := "Invalid entry for vacancy"
-		http.Error(w, response, http.StatusBadRequest)
-	}
-
 	data.Housings[housingPayload.ID] = housing.Housing{ID: housingPayload.ID,
 		Name:        housingPayload.Name,
 		Address:     housingPayload.Address,
