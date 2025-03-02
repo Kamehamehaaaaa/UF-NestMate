@@ -40,6 +40,11 @@ func AddHousingHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if housingPayload.Vacancy < 0 {
+		http.Error(w, "Invalid vacancy count", http.StatusBadRequest)
+		return
+	}
+
 	data.Housings[housingPayload.ID] = housing.Housing{ID: housingPayload.ID,
 		Name:        housingPayload.Name,
 		Address:     housingPayload.Address,
