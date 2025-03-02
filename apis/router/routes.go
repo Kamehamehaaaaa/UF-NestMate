@@ -12,4 +12,7 @@ func SetupHandlers() {
 	http.HandleFunc("/api/housing/get", GetHousingHandler)
 	http.HandleFunc("/api/housing/delete", DeleteHousingHandler)
 	http.HandleFunc("/api/housing/update", UpdateHousingHandler)
+	http.HandleFunc("/api/comments/add", addCommentHandler)
+	http.HandleFunc("/api/comments/delete", deleteCommentHandler)
+	http.HandleFunc("/api/comments/get", getCommentHandler)
 }
