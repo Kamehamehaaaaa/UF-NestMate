@@ -85,7 +85,7 @@ input {
 }
 
 button {
-  background: #c79a63;
+  background: none;
   color: white;
   padding: 10px;
   border: none;
