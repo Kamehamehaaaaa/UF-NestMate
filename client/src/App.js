@@ -19,7 +19,7 @@ function App() {
   const [searchResults, setSearchResults] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Default dummy results  for the cards
+
   const defaultResults = [
     { name: 'Stoneridge Apartments', address: '3800 SW 34th St', pincode: '32608', image: Stone, rating: '4.6/5' },
     { name: 'BLVD', address: '3800 SW 34th St', pincode: '32608', image: BL, rating: '4.4/5' },
@@ -41,7 +41,6 @@ function App() {
     const value = e.target.value.toLowerCase();
     setSearchTerm(value);
 
-    // Filtering based on the name (case insensitive, starts with search term)
     const filteredResults = defaultResults.filter(result =>
       result.name.toLowerCase().startsWith(value)
     );
@@ -78,11 +77,9 @@ function App() {
               </div>
             </InputGroup>
           </Form>
-          
         </Col>
         <Col  xs={8} className="image-col">
         <img src={Home_pic} alt="Home" className="home-pic" />
-
         </Col>
         
       </Row>

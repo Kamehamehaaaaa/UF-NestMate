@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Col, Row, Modal, Button, Form } from 'react-bootstrap';
 import './searchresults.css';
+import Centric from '../../images/centric.png';
+import Stone from '../../images/stoneridge.png';
+import BL from '../../images/blvd.png';
+import Gains from '../../images/gainesvilleplace.png';
+import Hide from '../../images/hideaway.png';
+import Sweet from '../../images/sweetwater.png';
+
 
 const SearchResults = () => {
   const [show, setShow] = useState(false);
@@ -11,7 +18,18 @@ const SearchResults = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch housing data from API
+  const housingImages = {
+    'Stoneridge Apartments': Stone,
+    'BLVD': BL,
+    'Centric': Centric,
+    'Gainesville Place': Gains,
+    'Hideaway': Hide,
+    'Sweetwater': Sweet,
+  };
+  const imageArray = Object.values(housingImages);
+
+  
+
   useEffect(() => {
     const fetchHousingData = async () => {
       try {
@@ -20,7 +38,10 @@ const SearchResults = () => {
           throw new Error('Failed to fetch housing data');
         }
         const data = await response.json();
-        setHousingData(data);
+        console.log('API response:', data);
+        const housingArray = Object.values(data);
+        console.log('Housing array:', housingArray);
+        setHousingData(housingArray);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -55,16 +76,15 @@ const SearchResults = () => {
     <>
       <Row>
         {housingData.length > 0 ? (
-          housingData.map((housing) => (
+          housingData.map((housing,index) => (
             <Col key={housing.ID} xs={12} sm={6} md={4} lg={3} className="d-flex">
               <Card className="clickable-card flex-grow-1" onClick={() => handleShow(housing)}>
+              <Card.Img variant="top" src={imageArray[index % imageArray.length]} />
                 <Card.Body>
                   <Card.Title>{housing.Name}</Card.Title>
                   <Card.Text>
-                    <strong>Address:</strong> {housing.Address}<br />
-                    <strong>Vacancy:</strong> {housing.Vacancy}<br />
-                    <strong>Rating:</strong> {housing.Rating}/5<br />
-                    <strong>Description:</strong> {housing.Description.substring(0, 100)}...
+                    <strong>Location:</strong> {housing.Location}<br />
+                    <strong>Vacancy:</strong> {housing.Vacancy}
                   </Card.Text>
                 </Card.Body>
               </Card>
@@ -72,8 +92,8 @@ const SearchResults = () => {
           ))
         ) : (
           <Col className="no-results-container">
-      <h4 className="no-results">No housing options found</h4>
-    </Col>
+            <h4 className="no-results">No housing options found</h4>
+          </Col>
         )}
       </Row>
 
@@ -90,10 +110,9 @@ const SearchResults = () => {
         </Modal.Header>
         <Modal.Body>
           <p><strong>ID:</strong> {selectedHousing?.ID}</p>
-          <p><strong>Address:</strong> {selectedHousing?.Address}</p>
+          <p><strong>Name:</strong> {selectedHousing?.Name}</p>
+          <p><strong>Location:</strong> {selectedHousing?.Location}</p>
           <p><strong>Vacancy:</strong> {selectedHousing?.Vacancy}</p>
-          <p><strong>Rating:</strong> {selectedHousing?.Rating}/5</p>
-          <p><strong>Description:</strong> {selectedHousing?.Description}</p>
 
           <div className="comments-section">
             <h5>Comments:</h5>
