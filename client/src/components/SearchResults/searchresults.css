@@ -1,59 +1,85 @@
+/* ================== CARD STYLING ================== */
 .card {
-    border-radius: 15px; 
-    overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    transition: transform 0.3s ease-in-out;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    max-width: 300px; 
-    margin: 0 auto; 
-    top: 15px;
-    margin-bottom: 20px;
+  border-radius: 15px; 
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out;
+  height: 100%; /* Ensures all cards stretch equally */
+  display: flex;
+  flex-direction: column;
+  max-width: 100%; /* Allows flexibility in layout */
+  margin-bottom: 10px;
+  margin-top: 20px;
+ 
 }
 
 .card:hover {
-    transform: translateY(-5px);
+  transform: translateY(-5px);
 }
 
 .card-img-top {
-    height: 200px; 
-    object-fit: cover;
+  height: 200px; 
+  object-fit: cover;
 }
 
 .card-body {
-    flex: 1;
-    
-    background-color: #f8f9fa;
+  flex: 1; /* Ensures equal height distribution */
+  background-color: #f8f9fa;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .card-title {
-    font-size: 1.1rem;
-    font-weight: bold;
-    margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
 }
 
 .card-text {
-    font-size: 0.8rem;
-    color: #6c757d;
+  font-size: 0.9rem;
+  color: #6c757d;
 }
 
+/* ================== GRID LAYOUT FIXES ================== */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  padding-bottom: 0px;
+  /* Negative margin to counteract the padding on cols */
+}
+
+
+.col {
+  display: flex;
+  justify-content: flex-start;
+  flex: 0 0 25%;
+  max-width: 25%;
+  padding: 10px; /* This creates the gap between cards */
+}
+
+
+@media (max-width: 992px) {
+  .col {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+}
 
 @media (max-width: 768px) {
-    .card {
-        max-width: 250px; 
-    }
-    .card-img-top {
-        height: 150px; 
-    }
+  .col {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
 }
 
+
+/* ================== NO RESULTS MESSAGE ================== */
 .no-results {
-  text-align: left;  
+  text-align: center;  
   font-weight: bold; 
   font-size: 2rem;  
-  padding-left: 10px;
-  padding-top: 10px;
+  padding: 10px;
   background: radial-gradient(
       circle,
       #a8d0f9 10%,
@@ -61,79 +87,80 @@
       #1e3a8a 60%,  
       #155e75 85%,  
       #a8d0f9 100%  
-    );
-    font-weight: 600;
-    background-size: 200% auto;
-    color: #000;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: animatedTextGradient 3s linear infinite;
-} 
+  );
+  font-weight: 600;
+  background-size: 200% auto;
+  color: #000;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: animatedTextGradient 3s linear infinite;
+}
 
 @keyframes animatedTextGradient {
-    to {
+  to {
       background-position: 200% center;
-    }
   }
+}
 
-  .clickable-card {
-    cursor: pointer;
-    transition: transform 0.2s;
-  }
-  
-  .clickable-card:hover {
-    transform: scale(1.05);
-  }
-  
-  .apartment-modal .modal-backdrop {
-    background-color: rgba(0, 0, 0, 0.5);
-  }
+/* ================== MODAL STYLES ================== */
+.apartment-modal .modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+}
 
+.apartment-modal .modal-dialog {
+  max-width: 600px; 
+  width: 100%;
+  height: 70%; 
+  margin: 30px auto; 
+}
+
+.apartment-modal .modal-content {
+  background: #fff; 
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  height: 100%; 
+  display: flex;
+  flex-direction: column;
+}
+
+.apartment-modal .modal-body {
+  overflow-y: auto;
+  flex: 1;
+  padding-right: 10px;
+}
+
+.apartment-modal .modal-img {
+  width: 100%;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+.apartment-modal .modal-header, .apartment-modal .modal-footer {
+  padding: 10px 15px;
+}
+
+/* ================== COMMENT STYLES ================== */
+.add-comment-button {
+  background: #c79a63 !important;
+  border-color: #c79a63 !important;
+}
+
+.add-comment-button:hover {
+  background: #edc24e !important;
+  border-color: #edc24e !important;
+}
+
+.comment {
+  background: #f4f4f4;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 5px;
+}
+
+/* ================== RESPONSIVENESS FIX ================== */
+@media (max-height: 600px) {
   .apartment-modal .modal-dialog {
-    max-width: 600px; 
-    width: 100%;
-    height: 70%; 
-    margin: 30px auto; 
-  }
-  
-  .apartment-modal .modal-content {
-    background: #fff; 
-    border-radius: 15px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    height: 100%; 
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .apartment-modal .modal-body {
-    overflow-y: auto;
-    flex: 1;
-    padding-right: 10px;
-  }
-
-  .apartment-modal .modal-img {
-    width: 100%;
-    border-radius: 10px;
-    margin-bottom: 15px;
-  }
-
-  .apartment-modal .modal-header, .apartment-modal .modal-footer {
-    padding: 10px 15px;
-  }
-
-  .add-comment-button {
-    background: #c79a63 !important;
-    border-color: #c79a63 !important;
-  }
-  
-  .add-comment-button:hover {
-    background: #edc24e !important;
-    border-color: #edc24e !important;
-  }
-
-  @media (max-height: 600px) {
-    .apartment-modal .modal-dialog {
       max-height: 90%; 
       overflow-y: auto;
-    }
   }
+}

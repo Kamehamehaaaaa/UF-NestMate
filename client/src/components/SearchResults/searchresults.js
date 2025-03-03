@@ -18,7 +18,8 @@ const SearchResults = ({ results }) => {
   const handleCommentSubmit = (e) => {
     e.preventDefault();
     if (comment.trim()) {
-      const newComments = [...comments, comment];
+      const newComment = `Lakksh: ${comment}`;
+      const newComments = [...comments, newComment];
       setComments(newComments);
       setComment('');
     }
@@ -26,29 +27,30 @@ const SearchResults = ({ results }) => {
 
   return (
     <>
-      <Row xs={1} md={2} lg={3}>
-        {results.length > 0 ? (
-          results.map((result, idx) => (
-            <Col key={idx}>
-              <Card className="clickable-card" onClick={() => handleShow(result)}>
-                <Card.Img variant="top" src={result.image} alt={result.name} />
-                <Card.Body>
-                  <Card.Title>{result.name}</Card.Title>
-                  <Card.Text>
-                    Address: {result.address}<br />
-                    Pincode: {result.pincode}<br />
-                    Rating: {result.rating}<br />
-                  </Card.Text>
-                </Card.Body>
-              </Card>
-            </Col>
-          ))
-        ) : (
-          <Col>
-            <h4 className='no-results'>No results found</h4>
-          </Col>
-        )}
-      </Row>
+      <Row >
+  {results.length > 0 ? (
+    results.map((result, idx) => (
+      <Col key={idx} xs={12} sm={6} md={4} lg={3} className="d-flex">
+        <Card className="clickable-card flex-grow-1" onClick={() => handleShow(result)}>
+          <Card.Img variant="top" src={result.image} alt={result.name} />
+          <Card.Body>
+            <Card.Title>{result.name}</Card.Title>
+            <Card.Text>
+              Address: {result.address}<br />
+              Pincode: {result.pincode}<br />
+              Rating: {result.rating}<br />
+            </Card.Text>
+          </Card.Body>
+        </Card>
+      </Col>
+    ))
+  ) : (
+    <Col>
+      <h4 className="no-results">No results found</h4>
+    </Col>
+  )}
+</Row>
+
 
       {/* Modal for displaying more information */}
       <Modal
@@ -74,11 +76,18 @@ const SearchResults = ({ results }) => {
           <p><strong>Rating:</strong> {selectedApartment?.rating}</p>
           <p><strong>Description:</strong> <i>The NLP generated user review summary can go here.</i></p>
 
-          <p><strong>Comments:</strong></p>
+          <p style={{ color: 'green' }}><strong>Comments:</strong></p>
           {comments.length > 0 ? (
             comments.map((comment, idx) => (
               <div key={idx} className="comment">
-                <p>{comment}</p>
+                <p>
+                  {comment.includes('Lakksh') ? (
+                    <span>Lakksh: </span>
+                  ) : (
+                    ''
+                  )}
+                  {comment.replace('Lakksh: ', '')}
+                </p>
               </div>
             ))
           ) : (

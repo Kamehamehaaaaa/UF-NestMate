@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Form, Button, Col } from 'react-bootstrap';
+import emailjs from '@emailjs/browser';
+import './contactform.css';
 
 function Contactform() {
   const [formData, setFormData] = useState({
@@ -7,6 +9,7 @@ function Contactform() {
     email: '',
     message: ''
   });
+  const [status, setStatus] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -18,13 +21,29 @@ function Contactform() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Add form submission logic here
-    console.log('Form submitted:', formData);
+
+    emailjs.send(
+      'service_qwsu089',   
+      'template_5h0xcmw',    
+      formData,
+      'T8Lgc6_NYZ_YOSfKh'   
+    )
+    
+    .then((response) => {
+      console.log('SUCCESS!', response.status, response.text);
+      setStatus('Your message has been sent successfully!');
+      setFormData({ name: '', email: '', message: '' });
+    })
+    .catch((err) => {
+      console.error('FAILED...', err);
+      setStatus('Failed to send message. Please try again.');
+    });
   };
 
   return (
     <Col md={6} className="mx-auto contact-form-container">
       <h2>Contact Us</h2>
+      {status && <p className="status-message">{status}</p>}
       <Form onSubmit={handleSubmit}>
         <Form.Group className="mb-3" controlId="formName">
           <Form.Label>Name</Form.Label>
@@ -64,7 +83,7 @@ function Contactform() {
         </Form.Group>
         
         <Button variant="primary" type="submit">
-          Submit
+          Send Message
         </Button>
       </Form>
     </Col>

@@ -12,6 +12,7 @@ import BL from './images/blvd.png';
 import Gains from './images/gainesvilleplace.png';
 import Hide from './images/hideaway.png';
 import Sweet from './images/sweetwater.png';
+import Home_pic from './images/home_pic.jpg';
 
 function App() {
   const contactRef = useRef(null);
@@ -55,7 +56,7 @@ function App() {
       </Row>
 
       <Row className='home-background-row'>
-        <Col className="roommate-finder-col">
+        <Col xs={4} className="roommate-finder-col">
           <div className="roommate-finder-text">
             <div className="roommate">Apartment</div>
             <div className="finder">Finder</div>
@@ -77,9 +78,13 @@ function App() {
               </div>
             </InputGroup>
           </Form>
+          
         </Col>
-        <Col>
+        <Col  xs={8} className="image-col">
+        <img src={Home_pic} alt="Home" className="home-pic" />
+
         </Col>
+        
       </Row>
       <Row>
         <SearchResults results={searchResults} />
