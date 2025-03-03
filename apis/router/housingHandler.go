@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
-	"strconv"
 )
 
 func GetHousingHandler(w http.ResponseWriter, r *http.Request) {
@@ -59,20 +58,30 @@ func UpdateHousingHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, exists := data.Housings[r.FormValue("HousingID")]
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "Error reading request body", http.StatusBadRequest)
+		return
+	}
+	defer r.Body.Close()
+
+	var housingPayload housing.HousingPayload
+	err = json.Unmarshal(body, &housingPayload)
+	if err != nil {
+		http.Error(w, "Error unmarshalling JSON", http.StatusBadRequest)
+		return
+	}
+
+	_, exists := data.Housings[housingPayload.ID]
 
 	if exists {
-		id := r.FormValue("HousingID")
-		name := r.FormValue("HousingName")
-		location := r.FormValue("Location")
-		vacancy, err := strconv.Atoi(r.FormValue("vacancy"))
+		id := housingPayload.ID
+		name := housingPayload.Name
+		location := housingPayload.Address
+		vacancy := housingPayload.Vacancy
+		rating := housingPayload.Rating
 
-		if err != nil {
-			response := "Invalid entry for vacancy"
-			http.Error(w, response, http.StatusBadRequest)
-		}
-
-		data.Housings[id] = housing.Housing{ID: id, Name: name, Address: location, Vacancy: vacancy}
+		data.Housings[id] = housing.Housing{ID: id, Name: name, Address: location, Vacancy: vacancy, Rating: rating}
 	} else {
 		http.Error(w, "Housing property not registered", http.StatusBadRequest)
 	}
@@ -83,12 +92,27 @@ func DeleteHousingHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
-	_, exists := data.Housings[r.FormValue("HousingID")]
+
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "Error reading request body", http.StatusBadRequest)
+		return
+	}
+	defer r.Body.Close()
+
+	var housingPayload housing.HousingPayload
+	err = json.Unmarshal(body, &housingPayload)
+	if err != nil {
+		http.Error(w, "Error unmarshalling JSON", http.StatusBadRequest)
+		return
+	}
+
+	_, exists := data.Housings[housingPayload.ID]
 
 	if !exists {
 		http.Error(w, "Housing property not registered", http.StatusBadRequest)
 	} else {
-		delete(data.Housings, r.FormValue("HousingID"))
+		delete(data.Housings, housingPayload.ID)
 		w.WriteHeader(http.StatusOK)
 	}
 }
