@@ -89,8 +89,7 @@ function App() {
       <Row>
         <SearchResults results={searchResults} />
       </Row>
-
-      <Row ref={contactRef} className="contact-section">
+1      <Row ref={contactRef} className="contact-section">
         <Contactform />
       </Row>
     </Container>
