@@ -38,16 +38,16 @@ function App() {
   };
 
   const handleSearch = (e) => {
-    const value = e.target.value.toLowerCase();
+    const value = e.target.value ? e.target.value.toLowerCase() : '';
     setSearchTerm(value);
-
+  
     // Filtering based on the name (case insensitive, starts with search term)
     const filteredResults = defaultResults.filter(result =>
-      result.name.toLowerCase().startsWith(value)
+      result.name && result.name.toLowerCase().startsWith(value)  // Ensure result.name exists
     );
-
+  
     setSearchResults(filteredResults);
-  };
+  };  
 
   return (
     <Container fluid className="App">
