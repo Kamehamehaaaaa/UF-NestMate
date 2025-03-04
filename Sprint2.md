@@ -15,3 +15,20 @@
 
 1. Apartment filters not implemented: The backend support for apartment filters is still being worked on. This will be completed by first half of next sprint.
 2. Apartment Review summarizer: An automatic summarizer which summarizes reviews which will help the user to get an overview of the apartment. This is the next task on priority.
+
+## Backend Unit Tests
+1. TestRegisterUserHandler
+2. TestRegisterUserHandler
+3. TestGetUserHandler
+4. TestLoginHandler
+5. TestAddCommentHandler
+6. TestGetCommentHandler
+7. TestGetCommentHandler2
+8. TestDeleteCommentHandler
+9. TestAddHousingHandler
+10. TestGetHousingHandler
+11. TestUpdateHousingHandler
+12. TestDeleteHousingHandler
+
+## Frontend Unit tests
+
