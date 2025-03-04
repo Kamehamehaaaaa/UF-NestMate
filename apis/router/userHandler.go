@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 )
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
@@ -31,14 +32,14 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !userExists(userPayload.UserName) {
-		data.Users[userPayload.UserName] = user.User{FirstName: userPayload.FirstName,
+		data.Users[userPayload.UserName] = user.User{UserId: time.Now().UnixNano(), FirstName: userPayload.FirstName,
 			LastName: userPayload.LastName, UserName: userPayload.UserName, Password: userPayload.Password,
 			Email: userPayload.Email}
 		response := "Registration successful"
 		http.Error(w, response, http.StatusOK)
 	} else {
 		response := "User with username " + userPayload.UserName + " already exists"
-		http.Error(w, response, http.StatusOK)
+		http.Error(w, response, http.StatusBadRequest)
 	}
 }
 

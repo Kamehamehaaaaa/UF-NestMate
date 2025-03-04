@@ -6,6 +6,7 @@ import (
 	"apis/housing"
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -105,12 +106,12 @@ func TestGetCommentHandler(t *testing.T) {
 
 	resp := recorder.Result()
 	body, _ := io.ReadAll(resp.Body)
-	var bodyJson map[string]housing.Housing
+	var bodyJson map[string]comments.Comments
 
 	err = json.Unmarshal(body, &bodyJson)
 
 	if err != nil {
-		t.Errorf("housing data retrived correctly")
+		t.Errorf("comment data not retrived correctly")
 	}
 
 	_, exists := bodyJson["1001"]
@@ -123,6 +124,67 @@ func TestGetCommentHandler(t *testing.T) {
 		t.Errorf("comment %d doesnt exist", 1001)
 	}
 
+}
+
+func TestGetCommentHandler2(t *testing.T) {
+	data.Housings = make(map[string]housing.Housing)
+
+	h1 := housing.Housing{
+		ID:          "1",
+		Name:        "Apartment1",
+		Address:     "Address1",
+		Vacancy:     100,
+		Rating:      4.3,
+		Description: "A nice place to stay.",
+	}
+
+	data.Housings["1"] = h1
+
+	data.Comments = make(map[string]comments.Comments)
+
+	c1 := comments.Comments{
+		ID:        "1001",
+		HousingID: "1",
+		Comment:   "Great place to live",
+		Rating:    5.0,
+	}
+
+	data.Comments["1001"] = c1
+
+	commentPayload := comments.CommentsPayload{
+		ID: "1001",
+	}
+	payloadBytes, _ := json.Marshal(commentPayload)
+
+	req, err := http.NewRequest("GET", "/api/comments/get", bytes.NewBuffer(payloadBytes))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	recorder := httptest.NewRecorder()
+	handler := http.HandlerFunc(getCommentHandler)
+	handler.ServeHTTP(recorder, req)
+
+	if status := recorder.Code; status != http.StatusOK {
+		t.Errorf("expected status %d, got %d", http.StatusOK, status)
+	}
+
+	resp := recorder.Result()
+	body, _ := io.ReadAll(resp.Body)
+	var bodyJson comments.Comments
+
+	err = json.Unmarshal(body, &bodyJson)
+
+	fmt.Println(bodyJson)
+	fmt.Println(err)
+
+	if err != nil {
+		t.Errorf("comment data not retrived correctly")
+	}
+
+	if bodyJson.ID != "1001" {
+		t.Errorf("comment %d doesnt exist", 1001)
+	}
 }
 
 func TestDeleteCommentHandler(t *testing.T) {
