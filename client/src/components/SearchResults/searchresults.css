@@ -73,8 +73,6 @@
   }
 }
 
-
-/* ================== NO RESULTS MESSAGE ================== */
 .no-results {
   text-align: center;  
   font-weight: bold; 
@@ -82,10 +80,8 @@
   padding: 10px;
   background: radial-gradient(
       circle,
-      #a8d0f9 10%,
-      #4a90e2 35%,  
-      #1e3a8a 60%,  
-      #155e75 85%,  
+      skyblue 10%,
+      rgb(80, 148, 174) 35%,  
       #a8d0f9 100%  
   );
   font-weight: 600;
@@ -102,7 +98,6 @@
   }
 }
 
-/* ================== MODAL STYLES ================== */
 .apartment-modal .modal-backdrop {
   background-color: rgba(0, 0, 0, 0.5);
 }
@@ -139,7 +134,7 @@
   padding: 10px 15px;
 }
 
-/* ================== COMMENT STYLES ================== */
+
 .add-comment-button {
   background: #c79a63 !important;
   border-color: #c79a63 !important;
@@ -157,10 +152,27 @@
   margin-bottom: 5px;
 }
 
-/* ================== RESPONSIVENESS FIX ================== */
+
 @media (max-height: 600px) {
   .apartment-modal .modal-dialog {
       max-height: 90%; 
       overflow-y: auto;
   }
+}
+
+
+.no-results-container {
+  min-height: 50vh; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.no-results {
+  text-align: center;
+  font-weight: bold; 
+  font-size: 2rem;
+  padding: 20px;
+  
 }

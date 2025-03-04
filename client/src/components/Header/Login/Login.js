@@ -20,10 +20,10 @@ function Login({ onClose }) {
       }
   
       try {
-        const response = await fetch('http://192.168.0.190:8080/api/register', { // Fixed endpoint
+        const response = await fetch('http://192.168.0.190:8080/api/register', { 
           method: 'POST',
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded', // Added header
+            'Content-Type': 'application/x-www-form-urlencoded', 
           },
           body: new URLSearchParams({
             firstname: firstName,
@@ -117,7 +117,7 @@ function Login({ onClose }) {
           )}
           
           {error && <p className="error-message">{error}</p>}
-          <button type="submit">{isSignup ? 'Sign Up' : 'Login'}</button>
+          <button className='button-signup ' type="submit">{isSignup ? 'Sign Up' : 'Login'}</button>
         </form>
         <p onClick={handleToggle} className="toggle-link">
           <span>
