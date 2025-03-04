@@ -12,13 +12,14 @@ import BL from './images/blvd.png';
 import Gains from './images/gainesvilleplace.png';
 import Hide from './images/hideaway.png';
 import Sweet from './images/sweetwater.png';
+import Home_pic from './images/home_pic.jpg';
 
 function App() {
   const contactRef = useRef(null);
   const [searchResults, setSearchResults] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Default dummy results  for the cards
+
   const defaultResults = [
     { name: 'Stoneridge Apartments', address: '3800 SW 34th St', pincode: '32608', image: Stone, rating: '4.6/5' },
     { name: 'BLVD', address: '3800 SW 34th St', pincode: '32608', image: BL, rating: '4.4/5' },
@@ -40,7 +41,6 @@ function App() {
     const value = e.target.value.toLowerCase();
     setSearchTerm(value);
 
-    // Filtering based on the name (case insensitive, starts with search term)
     const filteredResults = defaultResults.filter(result =>
       result.name.toLowerCase().startsWith(value)
     );
@@ -55,7 +55,7 @@ function App() {
       </Row>
 
       <Row className='home-background-row'>
-        <Col className="roommate-finder-col">
+        <Col xs={4} className="roommate-finder-col">
           <div className="roommate-finder-text">
             <div className="roommate">Apartment</div>
             <div className="finder">Finder</div>
@@ -78,14 +78,15 @@ function App() {
             </InputGroup>
           </Form>
         </Col>
-        <Col>
+        <Col  xs={8} className="image-col">
+        <img src={Home_pic} alt="Home" className="home-pic" />
         </Col>
+        
       </Row>
       <Row>
         <SearchResults results={searchResults} />
       </Row>
-
-      <Row ref={contactRef} className="contact-section">
+1      <Row ref={contactRef} className="contact-section">
         <Contactform />
       </Row>
     </Container>

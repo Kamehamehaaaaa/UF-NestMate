@@ -29,11 +29,18 @@ func addCommentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data.Comments[commentPayload.ID] = comments.Comments{ID: commentPayload.ID,
-		HousingID: commentPayload.HousingID,
-		Comment:   commentPayload.Comment,
-		Rating:    commentPayload.Rating,
-		Timestamp: time.Now()}
+	_, exists := data.Housings[commentPayload.HousingID]
+
+	if exists {
+		data.Comments[commentPayload.ID] = comments.Comments{ID: commentPayload.ID,
+			HousingID: commentPayload.HousingID,
+			Comment:   commentPayload.Comment,
+			Rating:    commentPayload.Rating,
+			Timestamp: time.Now()}
+	} else {
+		http.Error(w, "The apartment doesnt exist", http.StatusBadRequest)
+		return
+	}
 }
 
 func deleteCommentHandler(w http.ResponseWriter, r *http.Request) {

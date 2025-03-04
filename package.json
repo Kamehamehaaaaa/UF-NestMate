@@ -20,10 +20,12 @@
   },
   "homepage": "https://github.com/Kamehamehaaaaa/UF-NestMate#readme",
   "dependencies": {
+    "@emailjs/browser": "^4.4.1",
     "bootstrap": "^5.3.3",
     "react": "^19.0.0",
     "react-bootstrap": "^2.10.9",
     "react-dom": "^19.0.0",
     "react-scripts": "^5.0.1"
-  }
+  },
+  "proxy": "http://localhost:8080"
 }
