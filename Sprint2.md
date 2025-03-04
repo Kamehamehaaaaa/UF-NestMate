@@ -31,4 +31,36 @@
 12. TestDeleteHousingHandler
 
 ## Frontend Unit tests
+We use Jest and React Testing Library for unit testing. The test suite covers the main components of the application:
 
+### App Component Tests
+- Renders "Apartment Finder" text
+- Renders search input
+- Tests search functionality
+- Verifies rendering of Header, SearchResults, and ContactForm components
+
+### ContactForm Component Tests
+- Renders "Contact Us" heading
+- Renders form fields (Name, Email, Message)
+- Updates form fields on input
+- Submits form and shows success message
+- Shows error message on submission failure
+
+### ProfilePage Component Tests
+- Renders profile information
+- Switches to edit mode when "Edit Profile" is clicked
+- Updates profile information when edited
+- Saves edited profile when "Save" is clicked
+- Closes profile page when close button is clicked
+
+### Header Component Tests
+- Renders logo
+- Renders navigation links
+- Renders login button
+- Tests contact link functionality
+- Tests login modal display
+- Tests profile modal display
+- Verifies active link changes on click
+
+## API Documentation
+API documentation can be found in the file named "API Specification.docx".
