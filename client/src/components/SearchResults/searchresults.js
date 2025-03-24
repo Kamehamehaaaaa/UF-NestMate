@@ -33,7 +33,7 @@ const SearchResults = () => {
   useEffect(() => {
     const fetchHousingData = async () => {
       try {
-        const response = await fetch('http://192.168.0.190:8080/api/housing/get');
+        const response = await fetch('http://localhost:8080/api/housing/get');
         if (!response.ok) {
           throw new Error('Failed to fetch housing data');
         }
