@@ -8,6 +8,43 @@ import (
 	"net/http"
 )
 
+
+// Dummy data for housing
+var dummyHousingData = []housing.Housing{
+	{
+		ID:          "1",
+		Name:        "Stoneridge Apartments",
+		Address:     "123 Main St",
+		Vacancy:     10,
+		Rating:      4.5,
+		Description: "Great place to live!",
+	},
+	{
+		ID:          "2",
+		Name:        "BLVD",
+		Address:     "456 Elm St",
+		Vacancy:     5,
+		Rating:      4.2,
+		Description: "Modern and spacious.",
+	},
+	{
+		ID:          "3",
+		Name:        "Centric",
+		Address:     "789 Oak St",
+		Vacancy:     3,
+		Rating:      4.8,
+		Description: "Luxurious living space.",
+	},
+	{
+		ID:          "4",
+		Name:        "Sweetwater",
+		Address:     "101 Pine St",
+		Vacancy:     7,
+		Rating:      4.3,
+		Description: "Cozy and affordable.",
+	},
+}
+
 func GetHousingHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -15,7 +52,7 @@ func GetHousingHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(data.Housings)
+	json.NewEncoder(w).Encode(dummyHousingData)
 	w.WriteHeader(http.StatusOK)
 }
 
