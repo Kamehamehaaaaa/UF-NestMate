@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './login.css';
+import SHA256 from 'crypto-js/sha256'; 
 
 function Login({ onClose }) {
   const [isSignup, setIsSignup] = useState(false);
@@ -10,48 +11,72 @@ function Login({ onClose }) {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
 
+  // Handle form submission for both login and signup
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+    const hashedPassword = SHA256(password).toString(); // Hashing the password
+
     if (isSignup) {
       if (password !== confirmPassword) {
         setError("Passwords don't match!");
         return;
       }
-  
+      // Handle sign-up request with hashed password
       try {
-        const response = await fetch('http://192.168.0.190:8080/api/register', { 
+        const response = await fetch('http://localhost:8080/api/user/register', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded', 
+            'Content-Type': 'application/json',
           },
-          body: new URLSearchParams({
+          body: JSON.stringify({
             firstname: firstName,
             lastname: lastName,
             username: username,
-            password: password,
+            password: hashedPassword, 
+            email: 'example@example.com',
           }),
         });
-  
-        const responseText = await response.text();
-        console.log('Response status:', response.status);
-        console.log('Response body:', responseText);
-  
+
+        const responseData = await response.json();
         if (response.ok) {
-          alert('Registration successful!');
-          onClose();
+          alert('Registration successful! Please log in.');
+          setIsSignup(false);
         } else {
-          setError(responseText || 'Registration failed');
+          setError(responseData.message || 'Registration failed');
         }
       } catch (error) {
         console.error('Fetch error:', error);
         setError('An error occurred during registration');
       }
+    } else {
+      
+      try {
+        const response = await fetch('http://localhost:8080/api/user/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            username: username,
+            password: hashedPassword, // Send hashed password
+          }),
+        });
+
+        const responseData = await response.json();
+        if (response.ok) {
+          alert('Login successful!');
+          onClose(); // Close login modal
+        } else {
+          setError(responseData.error || 'Invalid credentials');
+        }
+      } catch (error) {
+        console.error('Fetch error:', error);
+        setError('An error occurred during login');
+      }
     }
   };
-  
-  
 
+  // Toggle between login and signup forms
   const handleToggle = () => {
     setIsSignup(!isSignup);
     setFirstName('');
@@ -121,7 +146,7 @@ function Login({ onClose }) {
         </form>
         <p onClick={handleToggle} className="toggle-link">
           <span>
-            {isSignup ? 'Already have an account? Login' : 'Dont have an account? Sign Up'}
+            {isSignup ? 'Already have an account? Login' : 'Don\'t have an account? Sign Up'}
           </span>
         </p>
       </div>
