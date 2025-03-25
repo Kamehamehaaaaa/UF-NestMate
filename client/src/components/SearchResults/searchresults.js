@@ -7,6 +7,8 @@ import BL from '../../images/blvd.png';
 import Gains from '../../images/gainesvilleplace.png';
 import Hide from '../../images/hideaway.png';
 import Sweet from '../../images/sweetwater.png';
+import 'bootstrap-icons/font/bootstrap-icons.css';
+
 
 
 const SearchResults = () => {
@@ -33,7 +35,7 @@ const SearchResults = () => {
   useEffect(() => {
     const fetchHousingData = async () => {
       try {
-        const response = await fetch('http://192.168.0.190:8080/api/housing/get');
+        const response = await fetch('http://localhost:8080/api/housing/get');
         if (!response.ok) {
           throw new Error('Failed to fetch housing data');
         }
@@ -74,28 +76,50 @@ const SearchResults = () => {
 
   return (
     <>
-      <Row>
-        {housingData.length > 0 ? (
-          housingData.map((housing,index) => (
-            <Col key={housing.ID} xs={12} sm={6} md={4} lg={3} className="d-flex">
-              <Card className="clickable-card flex-grow-1" onClick={() => handleShow(housing)}>
-              <Card.Img variant="top" src={imageArray[index % imageArray.length]} />
-                <Card.Body>
-                  <Card.Title>{housing.Name}</Card.Title>
-                  <Card.Text>
-                    <strong>Location:</strong> {housing.Location}<br />
-                    <strong>Vacancy:</strong> {housing.Vacancy}
-                  </Card.Text>
-                </Card.Body>
-              </Card>
-            </Col>
-          ))
-        ) : (
-          <Col className="no-results-container">
-            <h4 className="no-results">No housing options found</h4>
-          </Col>
-        )}
-      </Row>
+ 
+
+ <Row>
+  {housingData.length > 0 ? (
+    housingData.map((housing, index) => (
+      <Col key={housing.ID} xs={12} sm={6} md={4} lg={3} className="d-flex">
+        <Card className="clickable-card flex-grow-1" onClick={() => handleShow(housing)}>
+          <Card.Img variant="top" src={imageArray[index % imageArray.length]} />
+          <Card.Body>
+            <Card.Title>{housing.Name}</Card.Title>
+            <Card.Text>
+              <strong>Location:</strong> {housing.Address}<br />
+              <strong>Vacancy:</strong> {housing.Vacancy}<br />
+              <strong>Rating:</strong>
+              {Array(5).fill(0).map((_, i) => (
+                <i
+                  key={i}
+                  className={`bi bi-star${i < Math.floor(housing.Rating) ? '-fill' : ''}`}
+                />
+              ))}
+              {housing.Rating % 1 !== 0 && (
+                <i
+                  key={5}
+                  className="bi bi-star-half"
+                  style={{
+                    color: 'orange', // Color for half star
+                  }}
+                />
+              )}
+              <span className="ms-1">({housing.NumberOfReviews} reviews)</span>
+            </Card.Text>
+          </Card.Body>
+        </Card>
+      </Col>
+    ))
+  ) : (
+    <Col className="no-results-container">
+      <h4 className="no-results">No housing options found</h4>
+    </Col>
+  )}
+</Row>
+
+
+
 
       <Modal
         show={show}
