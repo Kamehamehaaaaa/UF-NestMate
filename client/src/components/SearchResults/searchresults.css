@@ -176,3 +176,8 @@
   padding: 20px;
   
 }
+
+.bi-star, .bi-star-fill {
+  color:  #c79a63; /* Gold color for stars */
+  font-size: 1em; /* Adjust size as needed */
+}
