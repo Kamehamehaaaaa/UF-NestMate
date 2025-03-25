@@ -1,6 +1,7 @@
 package main
 
 import (
+	"apis/database"
 	"apis/data"
 	"apis/router"
 	"fmt"
@@ -8,6 +9,9 @@ import (
 )
 
 func main() {
+
+	database.ConnectToMongoDB()
+	defer database.CloseMongoDBConnection()
 	fmt.Println("Running")
 	router.SetupHandlers()
 	http.ListenAndServe("0.0.0.0:8080", nil)

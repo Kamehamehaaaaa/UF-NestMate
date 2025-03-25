@@ -12,7 +12,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var jwtSecretKey = []byte("secret-key") // Use an environment variable for production
+var jwtSecretKey = []byte("secret-key") 
 
 // RegisterHandler handles user registration
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {

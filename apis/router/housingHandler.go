@@ -2,48 +2,21 @@ package router
 
 import (
 	"apis/data"
+	"apis/database"
 	"apis/housing"
 	"encoding/json"
 	"io"
 	"net/http"
+	"context"
+	"log"
+	"go.mongodb.org/mongo-driver/bson"
+	
+	
+	
+	
 )
 
 
-// Dummy data for housing
-var dummyHousingData = []housing.Housing{
-	{
-		ID:          "1",
-		Name:        "Stoneridge Apartments",
-		Address:     "123 Main St",
-		Vacancy:     10,
-		Rating:      4.0,
-		Description: "Great place to live!",
-	},
-	{
-		ID:          "2",
-		Name:        "BLVD",
-		Address:     "456 Elm St",
-		Vacancy:     5,
-		Rating:      2.0,
-		Description: "Modern and spacious.",
-	},
-	{
-		ID:          "3",
-		Name:        "Centric",
-		Address:     "789 Oak St",
-		Vacancy:     3,
-		Rating:      4.0,
-		Description: "Luxurious living space.",
-	},
-	{
-		ID:          "4",
-		Name:        "Sweetwater",
-		Address:     "101 Pine St",
-		Vacancy:     7,
-		Rating:      4.0,
-		Description: "Cozy and affordable.",
-	},
-}
 
 func GetHousingHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
@@ -51,10 +24,46 @@ func GetHousingHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Ensure MongoDB connection is established
+	database.ConnectToMongoDB()
+	defer database.CloseMongoDBConnection()
+
+	log.Println("Connected to MongoDB!")
+
+	// Fetch data from MongoDB
+	var housings []housing.Housing
+	cursor, err := database.GetHousingCollection().Find(context.TODO(), bson.M{})
+	if err != nil {
+		http.Error(w, "Error fetching data", http.StatusInternalServerError)
+		return
+	}
+	defer cursor.Close(context.TODO())
+
+	for cursor.Next(context.TODO()) {
+		var housing housing.Housing
+		err := cursor.Decode(&housing)
+		if err != nil {
+			log.Printf("Error decoding document: %v\n", err)
+			continue
+		}
+		housings = append(housings, housing)
+	}
+
+	if len(housings) == 0 {
+		http.Error(w, "No data found", http.StatusNotFound)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(dummyHousingData)
-	w.WriteHeader(http.StatusOK)
+	err = json.NewEncoder(w).Encode(housings)
+	if err != nil {
+		http.Error(w, "Error encoding data to JSON", http.StatusInternalServerError)
+		return
+	}
 }
+
+
+
 
 func AddHousingHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
