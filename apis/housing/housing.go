@@ -5,8 +5,9 @@ type Housing struct {
 	Name        string
 	Address     string
 	Vacancy     int
-	Rating      float64
 	Description string
+	Rating      float64
+	NumberOfReviews int
 }
 
 type HousingPayload struct {
@@ -15,5 +16,6 @@ type HousingPayload struct {
 	Address     string  `json:"address" validate:"required,max=50"`
 	Vacancy     int     `json:"vacancy"`
 	Rating      float64 `json:"rating" validate:"omitempty,max=5"`
+	NumberOfReviews int     `json:"numberOfReviews"`
 	Description string  `json:"description"`
 }

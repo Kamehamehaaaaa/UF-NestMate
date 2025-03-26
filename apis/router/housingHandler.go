@@ -16,7 +16,7 @@ var dummyHousingData = []housing.Housing{
 		Name:        "Stoneridge Apartments",
 		Address:     "123 Main St",
 		Vacancy:     10,
-		Rating:      4.5,
+		Rating:      4.0,
 		Description: "Great place to live!",
 	},
 	{
@@ -24,7 +24,7 @@ var dummyHousingData = []housing.Housing{
 		Name:        "BLVD",
 		Address:     "456 Elm St",
 		Vacancy:     5,
-		Rating:      4.2,
+		Rating:      2.0,
 		Description: "Modern and spacious.",
 	},
 	{
@@ -32,7 +32,7 @@ var dummyHousingData = []housing.Housing{
 		Name:        "Centric",
 		Address:     "789 Oak St",
 		Vacancy:     3,
-		Rating:      4.8,
+		Rating:      4.0,
 		Description: "Luxurious living space.",
 	},
 	{
@@ -40,7 +40,7 @@ var dummyHousingData = []housing.Housing{
 		Name:        "Sweetwater",
 		Address:     "101 Pine St",
 		Vacancy:     7,
-		Rating:      4.3,
+		Rating:      4.0,
 		Description: "Cozy and affordable.",
 	},
 }
