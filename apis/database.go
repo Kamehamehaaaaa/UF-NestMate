@@ -9,6 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"time"
 )
 
 type MongoDBService struct {
@@ -28,7 +29,7 @@ type Property struct {
 }
 
 func NewMongoDBService() *MongoDBService {
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+	clientOptions := options.Client().ApplyURI("mongodb://192.168.0.74:27017")
 	client, err := mongo.Connect(context.Background(), clientOptions)
 	if err != nil {
 		log.Fatalf("Failed to connect to MongoDB: %v", err)
@@ -88,6 +89,37 @@ func (m *MongoDBService) GetProperty(query string) (*Property, error) {
 
 	return &property, nil
 }
+
+
+
+
+
+
+func (m *MongoDBService) GetAllProperties() ([]Property, error) {
+    ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+    defer cancel()
+
+    cursor, err := m.db.Collection("apartment_card").Find(ctx, bson.D{})
+    if err != nil {
+        log.Printf("MongoDB find error: %v", err)
+        return nil, err
+    }
+    defer cursor.Close(ctx)
+
+    var properties []Property
+    if err = cursor.All(ctx, &properties); err != nil {
+        log.Printf("Cursor decode error: %v", err)
+        return nil, err
+    }
+
+    if len(properties) == 0 {
+        log.Println("No properties found in collection")
+        return []Property{}, nil
+    }
+
+    return properties, nil
+}
+
 
 func (m *MongoDBService) StoreUser(user *User) error {
     _, err := m.db.Collection("users").InsertOne(context.Background(), user)

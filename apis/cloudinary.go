@@ -5,7 +5,7 @@ import (
 	"log"
 	"mime/multipart"
 	"strings"
-	"os"
+	//"os"
 
 	"github.com/cloudinary/cloudinary-go/v2"
 	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
@@ -16,7 +16,9 @@ type CloudinaryService struct {
 }
 
 func NewCloudinaryService() *CloudinaryService {
-	cld, err := cloudinary.NewFromURL(os.Getenv("CLOUDINARY_URL"))
+	//cld, err := cloudinary.NewFromURL(os.Getenv("CLOUDINARY_URL"))
+	const cloudinaryURL = "cloudinary://666717275591569:9QtJBJGBjpofNYLkIJNHP_I-NEg@dbldemxes"
+	cld, err := cloudinary.NewFromURL(cloudinaryURL)
 	if err != nil {
 		log.Fatalf("Failed to initialize Cloudinary: %v", err)
 	}

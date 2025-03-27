@@ -1,15 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Col, Row, Modal, Button, Form } from 'react-bootstrap';
 import './searchresults.css';
-import Centric from '../../images/centric.png';
-import Stone from '../../images/stoneridge.png';
-import BL from '../../images/blvd.png';
-import Gains from '../../images/gainesvilleplace.png';
-import Hide from '../../images/hideaway.png';
-import Sweet from '../../images/sweetwater.png';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-
-
 
 const SearchResults = () => {
   const [show, setShow] = useState(false);
@@ -20,30 +12,16 @@ const SearchResults = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const housingImages = {
-    'Stoneridge Apartments': Stone,
-    'BLVD': BL,
-    'Centric': Centric,
-    'Gainesville Place': Gains,
-    'Hideaway': Hide,
-    'Sweetwater': Sweet,
-  };
-  const imageArray = Object.values(housingImages);
-
-  
-
   useEffect(() => {
     const fetchHousingData = async () => {
       try {
-        const response = await fetch('http://localhost:8080/api/housing/get');
+        const response = await fetch('http://localhost:8080/pull');
         if (!response.ok) {
           throw new Error('Failed to fetch housing data');
         }
         const data = await response.json();
         console.log('API response:', data);
-        const housingArray = Object.values(data);
-        console.log('Housing array:', housingArray);
-        setHousingData(housingArray);
+        setHousingData(data.properties);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -76,50 +54,49 @@ const SearchResults = () => {
 
   return (
     <>
- 
-
- <Row>
-  {housingData.length > 0 ? (
-    housingData.map((housing, index) => (
-      <Col key={housing.ID} xs={12} sm={6} md={4} lg={3} className="d-flex">
-        <Card className="clickable-card flex-grow-1" onClick={() => handleShow(housing)}>
-          <Card.Img variant="top" src={imageArray[index % imageArray.length]} />
-          <Card.Body>
-            <Card.Title>{housing.Name}</Card.Title>
-            <Card.Text>
-              <strong>Location:</strong> {housing.Address}<br />
-              <strong>Vacancy:</strong> {housing.Vacancy}<br />
-              <strong>Rating:</strong>
-              {Array(5).fill(0).map((_, i) => (
-                <i
-                  key={i}
-                  className={`bi bi-star${i < Math.floor(housing.Rating) ? '-fill' : ''}`}
-                />
-              ))}
-              {housing.Rating % 1 !== 0 && (
-                <i
-                  key={5}
-                  className="bi bi-star-half"
-                  style={{
-                    color: 'orange', // Color for half star
+      <Row>
+        {housingData.length > 0 ? (
+          housingData.map((housing) => (
+            <Col key={housing.id} xs={12} sm={6} md={4} lg={3} className="d-flex">
+              <Card className="clickable-card flex-grow-1" onClick={() => handleShow(housing)}>
+                <Card.Img 
+                  variant="top" 
+                  src={housing.image} 
+                  onError={(e) => {
+                    e.target.onerror = null; // Prevent infinite loop
+                    e.target.src = '/fallback-image.jpg';
                   }}
                 />
-              )}
-              <span className="ms-1">({housing.NumberOfReviews} reviews)</span>
-            </Card.Text>
-          </Card.Body>
-        </Card>
-      </Col>
-    ))
-  ) : (
-    <Col className="no-results-container">
-      <h4 className="no-results">No housing options found</h4>
-    </Col>
-  )}
-</Row>
-
-
-
+                <Card.Body>
+                  <Card.Title>{housing.name}</Card.Title>
+                  <Card.Text>
+                    <strong>Location:</strong> {housing.address}<br />
+                    <strong>Vacancy:</strong> {housing.vacancy}<br />
+                    <strong>Rating:</strong>
+                    {Array(5).fill(0).map((_, i) => (
+                      <i
+                        key={i}
+                        className={`bi bi-star${i < Math.floor(housing.rating) ? '-fill' : ''}`}
+                      />
+                    ))}
+                    {housing.rating % 1 !== 0 && (
+                      <i
+                        key={5}
+                        className="bi bi-star-half"
+                      />
+                    )}
+                    <span className="ms-1">({housing.comments?.length || 0} reviews)</span>
+                  </Card.Text>
+                </Card.Body>
+              </Card>
+            </Col>
+          ))
+        ) : (
+          <Col className="no-results-container">
+            <h4 className="no-results">No housing options found</h4>
+          </Col>
+        )}
+      </Row>
 
       <Modal
         show={show}
@@ -130,13 +107,13 @@ const SearchResults = () => {
         className="housing-modal"
       >
         <Modal.Header closeButton>
-          <Modal.Title>{selectedHousing?.Name}</Modal.Title>
+          <Modal.Title>{selectedHousing?.name}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p><strong>ID:</strong> {selectedHousing?.ID}</p>
-          <p><strong>Name:</strong> {selectedHousing?.Name}</p>
-          <p><strong>Location:</strong> {selectedHousing?.Location}</p>
-          <p><strong>Vacancy:</strong> {selectedHousing?.Vacancy}</p>
+          <p><strong>ID:</strong> {selectedHousing?.id}</p>
+          <p><strong>Name:</strong> {selectedHousing?.name}</p>
+          <p><strong>Location:</strong> {selectedHousing?.address}</p>
+          <p><strong>Vacancy:</strong> {selectedHousing?.vacancy}</p>
 
           <div className="comments-section">
             <h5>Comments:</h5>
