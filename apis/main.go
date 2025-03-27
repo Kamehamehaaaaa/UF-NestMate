@@ -26,6 +26,9 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-contrib/cors" 
+	"log"
+	"time"
 )
 
 var mongoDBService *MongoDBService
@@ -72,6 +75,24 @@ func pullHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"property": property})
 }
 
+func pullAllHandler(c *gin.Context) {
+    properties, err := mongoDBService.GetAllProperties()
+    if err != nil {
+        log.Printf("Database error: %v", err)
+        c.JSON(http.StatusInternalServerError, gin.H{
+            "error": "Failed to retrieve properties",
+            "details": "Database operation failed",
+        })
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{
+        "count": len(properties),
+        "properties": properties,
+    })
+}
+
+
 // uploads image to cloudinary 
 func imgHandler(c *gin.Context) {
 	
@@ -116,8 +137,19 @@ func userHandler(c *gin.Context) {
 
 func main() {
 	r := gin.Default()
+
+	 // Add CORS configuration
+	 r.Use(cors.New(cors.Config{
+        AllowOrigins:     []string{"http://localhost:3000"},
+        AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+        AllowHeaders:     []string{"Origin", "Content-Type"},
+        ExposeHeaders:    []string{"Content-Length"},
+        AllowCredentials: true,
+        MaxAge:           12 * time.Hour,
+    }))
 	r.POST("/apt", aptHandler)      
 	r.GET("/pull/:query", pullHandler) 
+	r.GET("/pull", pullAllHandler) 
 	r.POST("/img", imgHandler)
 	r.POST("/user", userHandler)
 
