@@ -1,34 +1,18 @@
-// package main
 
-// import (
-// 	"apis/data"
-// 	"apis/router"
-// 	"fmt"
-// 	"net/http"
-// )
-
-// func main() {
-// 	fmt.Println("Running")
-// 	router.SetupHandlers()
-// 	http.ListenAndServe("0.0.0.0:8080", nil)
-// 	fmt.Println("Server up")
-// }
-
-// func displayUsers() {
-// 	for _, user := range data.Users {
-// 		fmt.Println(user.FirstName)
-// 	}
-// }
 
 package main
 
 import (
+	"fmt"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
-	"github.com/gin-contrib/cors" 
 	"log"
 	"time"
+
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
+	
 )
 
 var mongoDBService *MongoDBService
@@ -40,9 +24,43 @@ func init() {
 }
 
 type User struct {
-    Username string `json:"username" bson:"username"`
-    Password string `json:"password" bson:"password"`
+    Username  string `json:"username" bson:"username"`
+    Password  string `json:"password" bson:"password"`
+    FirstName string `json:"firstName" bson:"firstName"`
+    LastName  string `json:"lastName" bson:"lastName"`
 }
+
+
+
+type CommentRequest struct {
+    ApartmentID int    `json:"apartmentId"`
+    Comment     string `json:"comment"`
+}
+
+
+func registerUserHandler(c *gin.Context) {
+    var user User
+    if err := c.ShouldBindJSON(&user); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
+
+    err := mongoDBService.RegisterUser(&user)
+    if err != nil {
+        log.Printf("Database error: %v", err)
+        c.JSON(http.StatusInternalServerError, gin.H{
+            "error": "Failed to register user",
+            "details": "Database operation failed",
+        })
+        return
+    }
+
+    c.JSON(http.StatusCreated, gin.H{
+        "message": "User registered successfully",
+        "username": user.Username,
+    })
+}
+
 
 // will receive property details in JSON and store them in MongoDB
 func aptHandler(c *gin.Context) {
@@ -134,6 +152,66 @@ func userHandler(c *gin.Context) {
     c.JSON(http.StatusOK, gin.H{"message": "User created successfully!"})
 }
 
+func commentHandler(c *gin.Context) {
+    var req CommentRequest
+    if err := c.ShouldBindJSON(&req); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request format"})
+        return
+    }
+	fmt.Print(req.Comment+"cn");
+
+    err := mongoDBService.AddComment(req.ApartmentID, req.Comment)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save comment"})
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{"message": "Comment added successfully"})
+}
+
+func loginUserHandler(c *gin.Context) {
+    var loginUser struct {
+        Username string `json:"username"`
+        Password string `json:"password"`
+    }
+
+    if err := c.ShouldBindJSON(&loginUser); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request format"})
+        return
+    }
+
+   
+    storedUser, err := mongoDBService.GetUserByUsername(loginUser.Username)
+    if err != nil {
+        log.Printf("Login error: %v", err)
+        c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+        return
+    }
+
+    
+    err = bcrypt.CompareHashAndPassword(
+        []byte(storedUser.Password), 
+        []byte(loginUser.Password),
+    )
+    if err != nil {
+        log.Printf("Password mismatch for user: %s", loginUser.Username)
+        c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{
+        "message": "Login successful",
+        "user": gin.H{
+            "username":  storedUser.Username,
+            "firstName": storedUser.FirstName,
+            "lastName":  storedUser.LastName,
+        },
+    })
+}
+
+
+
+
 
 func main() {
 	r := gin.Default()
@@ -152,6 +230,9 @@ func main() {
 	r.GET("/pull", pullAllHandler) 
 	r.POST("/img", imgHandler)
 	r.POST("/user", userHandler)
+	r.POST("/comment", commentHandler) 
+	r.POST("/register", registerUserHandler)
+	r.POST("/login", loginUserHandler)
 
 	r.Run(":8080")
 }

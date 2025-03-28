@@ -2,23 +2,24 @@
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
+  width: 100%;
+  height: 100%;
   background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
-  backdrop-filter: blur(3px);
-  font-family: 'Special-Elite';
+  z-index: 9999;
+  font-family: 'Special Elite';
+  backdrop-filter: blur(5px);
+  font-family: 'Special Elite';
 }
 
 .profile-modal {
-  background: white;
-  border-radius: 12px;
+  background: #fff;
+  border-radius: 15px;
   width: 90%;
   max-width: 600px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   animation: modalSlideIn 0.3s ease-out;
 }
 
@@ -29,36 +30,38 @@
 
 .profile-modal-header {
   display: flex;
-  position: relative;
   justify-content: space-between;
   align-items: center;
-  padding: 20px;
-  border-bottom: 1px solid #eee;
+  padding: 15px 15px;
+  border-bottom: 1px solid #dee2e6;
 }
 
 .profile-modal-header h2 {
   margin: 0;
-  color: #333;
+  color: #2c1810;
   font-size: 1.5rem;
 }
 
 .close-btn {
-  position: absolute; 
-  top: 15px; 
+  position: absolute;
+  top: 15px;  
   right: 15px; 
   background: none;
   border: none;
-  font-size: 24px;
-  color: #666;
+  font-size: 24px; 
   cursor: pointer;
-  padding: 5px;
-  transition: color 0.2s;
   z-index: 1; 
+  padding: 5px; 
+  line-height:1 ; 
+  color: #b59875;
+
 }
 
+
 .close-btn:hover {
-  color: #333;
+  color: #d1cdb8;
 }
+
 
 .profile-content {
   padding: 20px;
@@ -85,22 +88,22 @@
 
 .form-group label {
   font-weight: 500;
-  color: #444;
+  color: #2c1810;
   font-size: 0.9rem;
 }
 
 .form-input {
   padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
+  border: 1px solid #dee2e6;
+  border-radius: 15px;
   font-size: 1rem;
   transition: border-color 0.2s;
 }
 
 .form-input:focus {
   outline: none;
-  border-color: skyblue;
-  box-shadow: 0 0 0 2px rgba(135, 206, 235, 0.2);
+  border-color: #c79a63;
+  box-shadow: 0 0 0 2px rgba(199, 154, 99, 0.2);
 }
 
 .form-actions {
@@ -110,31 +113,31 @@
   margin-top: 1.5rem;
 }
 
-.save-btn, .cancel-btn {
+.save-btn, .cancel-btn, .edit-profile-btn {
   padding: 10px 20px;
   border: none;
-  border-radius: 6px;
+  border-radius: 15px;
   cursor: pointer;
   font-weight: 500;
   transition: all 0.2s;
 }
 
-.save-btn {
-  background: skyblue;
+.save-btn, .edit-profile-btn {
+  background: #c8b297;
   color: white;
 }
 
-.save-btn:hover {
-  background: #5bc0de;
+.save-btn:hover, .edit-profile-btn:hover {
+  background: #c8b297;
 }
 
 .cancel-btn {
-  background: #f0f0f0;
-  color: #666;
+  background: #f8f9fa;
+  color: #6c757d;
 }
 
 .cancel-btn:hover {
-  background: #e0e0e0;
+  background: #e9ecef;
 }
 
 /* Profile Info Styles */
@@ -145,48 +148,59 @@
 }
 
 .profile-section {
-  background: #f9f9f9;
+  background: #f8f9fa;
   padding: 1.5rem;
-  border-radius: 8px;
-  border: 1px solid #eee;
+  border-radius: 15px;
+  border: 1px solid #dee2e6;
 }
 
 .profile-section h3 {
   margin: 0 0 1rem 0;
-  color: #333;
+  color: #2c1810;
   font-size: 1.2rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid #eee;
+  padding-bottom: 1.2rem;
+  border-bottom: 1px solid #dee2e6;
 }
 
 .info-item {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
+  align-items: center;
   padding: 0.5rem 0;
 }
 
 .info-label {
-  color: #666;
+  color: #6c757d;
   font-weight: 500;
+  margin-right: 0.5rem;
 }
 
 .info-value {
-  color: #333;
+  color: #2c1810;
   font-weight: 400;
 }
-
 .edit-profile-btn {
-  background: skyblue;
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 500;
   align-self: flex-end;
-  transition: background 0.2s;
 }
 
-.edit-profile-btn:hover {
-  background: #5bc0de;
+@media (max-width: 768px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.myprofile
+{
+  background: radial-gradient(
+      circle,
+      skyblue 10%,
+      rgb(80, 148, 174) 35%,  
+      #a8d0f9 100%  
+  );
+  font-weight: 600;
+  background-size: 200% auto;
+  color: #000;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: animatedTextGradient 3s linear infinite;
 }
