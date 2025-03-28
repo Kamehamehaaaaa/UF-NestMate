@@ -181,3 +181,16 @@
   color:  #c79a63; /* Gold color for stars */
   font-size: 1em; /* Adjust size as needed */
 }
+
+.modal-image-container {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.modal-image {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+

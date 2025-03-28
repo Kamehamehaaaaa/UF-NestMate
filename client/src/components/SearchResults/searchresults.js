@@ -63,7 +63,7 @@ const SearchResults = () => {
                   variant="top" 
                   src={housing.image} 
                   onError={(e) => {
-                    e.target.onerror = null; // Prevent infinite loop
+                    e.target.onerror = null;
                     e.target.src = '/fallback-image.jpg';
                   }}
                 />
@@ -79,12 +79,6 @@ const SearchResults = () => {
                         className={`bi bi-star${i < Math.floor(housing.rating) ? '-fill' : ''}`}
                       />
                     ))}
-                    {housing.rating % 1 !== 0 && (
-                      <i
-                        key={5}
-                        className="bi bi-star-half"
-                      />
-                    )}
                     <span className="ms-1">({housing.comments?.length || 0} reviews)</span>
                   </Card.Text>
                 </Card.Body>
@@ -110,11 +104,29 @@ const SearchResults = () => {
           <Modal.Title>{selectedHousing?.name}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p><strong>ID:</strong> {selectedHousing?.id}</p>
-          <p><strong>Name:</strong> {selectedHousing?.name}</p>
-          <p><strong>Location:</strong> {selectedHousing?.address}</p>
-          <p><strong>Vacancy:</strong> {selectedHousing?.vacancy}</p>
-
+          {selectedHousing?.image && (
+            <div className="modal-image-container">
+              <img 
+                src={selectedHousing.image}
+                alt={selectedHousing.name}
+                className="modal-image"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = '/fallback-image.jpg';
+                }}
+              />
+            </div>
+          )}
+          {selectedHousing?.description && (
+            //this is place holder for nlp generated descriptipn
+            <p className="property-description">{selectedHousing.description}</p>
+          )}
+          <div className="property-details">
+            <p><strong>ID:</strong> {selectedHousing?.id}</p>
+            <p><strong>Name:</strong> {selectedHousing?.name}</p>
+            <p><strong>Location:</strong> {selectedHousing?.address}</p>
+            <p><strong>Vacancy:</strong> {selectedHousing?.vacancy}</p>
+          </div>
           <div className="comments-section">
             <h5>Comments:</h5>
             {comments.length > 0 ? (
@@ -126,7 +138,6 @@ const SearchResults = () => {
             ) : (
               <p>No comments yet. Be the first to leave one!</p>
             )}
-
             <Form onSubmit={handleCommentSubmit}>
               <Form.Group controlId="commentForm">
                 <Form.Control
