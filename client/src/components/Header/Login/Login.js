@@ -91,7 +91,7 @@ function Login({ onClose }) {
     <div className="login-overlay">
       <div className="login-popup">
         <button className="close-btn" onClick={onClose}>&times;</button>
-        <h2><span>{isSignup ? 'Sign Up' : 'Login'}</span></h2>
+        <h2><span className="animation ">{isSignup ? 'Sign Up' : 'Login'}</span></h2>
         <form onSubmit={handleSubmit}>
           {isSignup && (
             <>
@@ -145,7 +145,7 @@ function Login({ onClose }) {
           <button className='button-signup ' type="submit">{isSignup ? 'Sign Up' : 'Login'}</button>
         </form>
         <p onClick={handleToggle} className="toggle-link">
-          <span>
+          <span className="animation ">
             {isSignup ? 'Already have an account? Login' : 'Don\'t have an account? Sign Up'}
           </span>
         </p>

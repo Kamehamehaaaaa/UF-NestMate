@@ -29,7 +29,8 @@ type Property struct {
 }
 
 func NewMongoDBService() *MongoDBService {
-	clientOptions := options.Client().ApplyURI("mongodb://192.168.0.74:27017")
+	//clientOptions := options.Client().ApplyURI("mongodb://192.168.0.74:27017")
+	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
 	client, err := mongo.Connect(context.Background(), clientOptions)
 	if err != nil {
 		log.Fatalf("Failed to connect to MongoDB: %v", err)

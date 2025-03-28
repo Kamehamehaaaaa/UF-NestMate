@@ -15,12 +15,13 @@ const ProfilePage = ({ profile, onClose, onSave }) => {
   };
 
   return (
-    <div className="profile-modal-overlay">
+    <div className="profile-modal-overlay profile-page">
       <div className="profile-modal">
-        <div className="profile-modal-header">
-          <h2>{editMode ? 'Edit Profile' : 'My Profile'}</h2>
-          <button className="close-btn" onClick={onClose}>&times;</button>
-        </div>
+      <div className="profile-modal-header">
+  <h2 className="myprofile" >{editMode ? 'Edit Profile' : 'My Profile'}</h2>
+  <button className="close-btn" onClick={onClose}>&times;</button>
+</div>
+
 
         <div className="profile-content">
           {editMode ? (
