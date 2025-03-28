@@ -10,6 +10,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"time"
+	 "golang.org/x/crypto/bcrypt"
+	 "fmt"
 )
 
 type MongoDBService struct {
@@ -43,6 +45,29 @@ func NewMongoDBService() *MongoDBService {
 
 	db := client.Database("UF_NestMate")
 	return &MongoDBService{client: client, db: db}
+}
+
+
+func (m *MongoDBService) RegisterUser(user *User) error {
+    ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+    defer cancel()
+
+    // Hash the password
+    hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+    if err != nil {
+        log.Printf("Password hashing error: %v", err)
+        return err
+    }
+    user.Password = string(hashedPassword)
+
+    // Insert user into database
+    _, err = m.db.Collection("users").InsertOne(ctx, user)
+    if err != nil {
+        log.Printf("MongoDB insert error: %v", err)
+        return err
+    }
+
+    return nil
 }
 
 func (m *MongoDBService) getNextID() (int, error) {
@@ -152,4 +177,19 @@ func (m *MongoDBService) AddComment(apartmentID int, comment string) error {
     }
 
     return nil
+}
+
+func (m *MongoDBService) GetUserByUsername(username string) (*User, error) {
+    ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+    defer cancel()
+
+    var user User
+    err := m.db.Collection("users").FindOne(ctx, bson.M{"username": username}).Decode(&user)
+    if err != nil {
+        if errors.Is(err, mongo.ErrNoDocuments) {
+            return nil, fmt.Errorf("user not found")
+        }
+        return nil, fmt.Errorf("database error: %v", err)
+    }
+    return &user, nil
 }

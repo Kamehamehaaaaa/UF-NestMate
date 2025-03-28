@@ -11,19 +11,18 @@ function Login({ onClose }) {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
 
-  // Handle form submission for both login and signup
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const hashedPassword = SHA256(password).toString(); // Hashing the password
 
     if (isSignup) {
       if (password !== confirmPassword) {
         setError("Passwords don't match!");
         return;
       }
-      // Handle sign-up request with hashed password
+     
       try {
-        const response = await fetch('http://localhost:8080/api/user/register', {
+        const response = await fetch('http://localhost:8080/register', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -32,8 +31,8 @@ function Login({ onClose }) {
             firstname: firstName,
             lastname: lastName,
             username: username,
-            password: hashedPassword, 
-            email: 'example@example.com',
+            password: password, 
+            
           }),
         });
 
@@ -51,21 +50,21 @@ function Login({ onClose }) {
     } else {
       
       try {
-        const response = await fetch('http://localhost:8080/api/user/login', {
+        const response = await fetch('http://localhost:8080/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             username: username,
-            password: hashedPassword, // Send hashed password
+            password: password, 
           }),
         });
 
         const responseData = await response.json();
         if (response.ok) {
           alert('Login successful!');
-          onClose(); // Close login modal
+          onClose(); 
         } else {
           setError(responseData.error || 'Invalid credentials');
         }
@@ -113,7 +112,7 @@ function Login({ onClose }) {
             </>
           )}
           
-          <label>Username:</label>
+          <label>Email:</label>
           <input 
             type="text" 
             value={username} 
