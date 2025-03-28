@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Card, Col, Row, Modal, Button, Form } from 'react-bootstrap';
 import './searchresults.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import { FaMapMarkerAlt } from 'react-icons/fa';
+
 
 const SearchResults = () => {
   const [show, setShow] = useState(false);
@@ -11,6 +13,7 @@ const SearchResults = () => {
   const [housingData, setHousingData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showCommentForm, setShowCommentForm] = useState(false);
 
   useEffect(() => {
     const fetchHousingData = async () => {
@@ -20,17 +23,20 @@ const SearchResults = () => {
           throw new Error('Failed to fetch housing data');
         }
         const data = await response.json();
-        console.log('API response:', data);
-        setHousingData(data.properties);
+        setHousingData(data.properties.map(property => ({
+          ...property,
+          comments: property.comments || []
+        })));
       } catch (err) {
         setError(err.message);
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchHousingData();
   }, []);
+  
 
   const handleClose = () => setShow(false);
   const handleShow = (housing) => {
@@ -43,11 +49,37 @@ const SearchResults = () => {
     e.preventDefault();
     if (comment.trim()) {
       const newComment = `User: ${comment}`;
-      const newComments = [...comments, newComment];
-      setComments(newComments);
-      setComment('');
+      
+      
+      fetch('http://localhost:8080/comment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          apartmentId: selectedHousing.id,
+          comment: newComment
+        }),
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to save comment');
+        }
+        return response.json();
+      })
+      .then(data => {
+        
+        setComments([...comments, newComment]);
+        setComment('');
+        setShowCommentForm(false);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+       
+      });
     }
   };
+  
 
   if (loading) return <div>Loading housing options...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -93,75 +125,133 @@ const SearchResults = () => {
       </Row>
 
       <Modal
-        show={show}
-        onHide={handleClose}
-        centered
-        backdrop="static"
-        keyboard={false}
-        className="housing-modal"
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>{selectedHousing?.name}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {selectedHousing?.image && (
-            <div className="modal-image-container">
-              <img 
-                src={selectedHousing.image}
-                alt={selectedHousing.name}
-                className="modal-image"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = '/fallback-image.jpg';
-                }}
-              />
-            </div>
-          )}
-          {selectedHousing?.description && (
-            //this is place holder for nlp generated descriptipn
-            <p className="property-description">{selectedHousing.description}</p>
-          )}
-          <div className="property-details">
-            <p><strong>ID:</strong> {selectedHousing?.id}</p>
-            <p><strong>Name:</strong> {selectedHousing?.name}</p>
-            <p><strong>Location:</strong> {selectedHousing?.address}</p>
-            <p><strong>Vacancy:</strong> {selectedHousing?.vacancy}</p>
-          </div>
-          <div className="comments-section">
-            <h5>Comments:</h5>
-            {comments.length > 0 ? (
-              comments.map((comment, idx) => (
-                <div key={idx} className="comment">
-                  <p>{comment}</p>
+  show={show}
+  onHide={handleClose}
+  centered
+  backdrop="static"
+  keyboard={false}
+  className="housing-modal"
+>
+  <Modal.Header closeButton>
+    <Modal.Title>{selectedHousing?.name}</Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+    {selectedHousing?.image && (
+      <div className="modal-image-container">
+        <img 
+          src={selectedHousing.image}
+          alt={selectedHousing.name}
+          className="modal-image"
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = '/fallback-image.jpg';
+          }}
+        />
+      </div>
+    )}
+    {selectedHousing?.description && (
+      <p className="property-description">{selectedHousing.description}</p>
+    )}
+    <div className="property-details">
+      
+      <p><strong>Name:</strong> {selectedHousing?.name}</p>
+      <p>
+  <strong>Location: </strong> {selectedHousing?.address +" " }
+  <FaMapMarkerAlt 
+    className=" cursor-pointer"
+    onClick={() => openGoogleMaps(selectedHousing?.address)}
+    
+  />
+</p>
+
+      <p><strong>Vacancy:</strong> {selectedHousing?.vacancy}</p>
+    </div>
+    <div className="comments-section">
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h5>Comments ({comments.length})</h5>
+        <Button  className="custom-btn"
+          variant="outline-primary" 
+          size="sm"
+          onClick={() => setShowCommentForm(!showCommentForm)}
+        >
+          {showCommentForm ? 'Cancel' : 'Add Comment'}
+        </Button>
+      </div>
+      
+      {comments.length > 0 ? (
+        <div className="comments-list mb-3">
+          {comments.map((comment, idx) => (
+            <div key={idx} className="comment-card mb-2 p-2">
+              <div className="d-flex align-items-center">
+                <div className="user-icon me-2">
+                  <i className="bi bi-person-circle"></i>
                 </div>
-              ))
-            ) : (
-              <p>No comments yet. Be the first to leave one!</p>
-            )}
-            <Form onSubmit={handleCommentSubmit}>
-              <Form.Group controlId="commentForm">
-                <Form.Control
-                  as="textarea"
-                  rows={3}
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                  placeholder="Add your comment..."
-                />
-              </Form.Group>
-              <Button variant="primary" type="submit" className="mt-2">
-                Submit Comment
+                <div>
+                  <div className="comment-meta text-muted small">
+                    <span className="me-2">Anonymous User</span>
+                    <span>{new Date().toLocaleDateString()}</span>
+                  </div>
+                  <p className="comment-text mb-0">{comment}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="no-comments text-center py-3">
+          <i className="bi bi-chat-dots fs-4 text-muted"></i>
+          <p className="text-muted mt-2">No comments yet. Be the first to share your thoughts!</p>
+        </div>
+      )}
+
+      {showCommentForm && (
+        <Form onSubmit={handleCommentSubmit} className="mt-3">
+          <Form.Group controlId="commentForm">
+            <Form.Control
+              as="textarea"
+              rows={3}
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="Write your comment..."
+              className="mb-2"
+            />
+            <div className="d-flex justify-content-end gap-2">
+              <Button  className="custom-btn"
+                variant="secondary" 
+                onClick={() => setShowCommentForm(false)}
+                size="sm"
+              >
+                Cancel
               </Button>
-            </Form>
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Close
-          </Button>
-        </Modal.Footer>
-      </Modal>
+              <Button  className="custom-btn"
+                variant="primary" 
+                type="submit" 
+                size="sm"
+                disabled={!comment.trim()}
+              >
+                Post Comment
+              </Button>
+            </div>
+          </Form.Group>
+        </Form>
+      )}
+    </div>
+  </Modal.Body>
+  <Modal.Footer>
+    <Button  className="custom-btn" variant="secondary" onClick={handleClose}>
+      Close
+    </Button>
+  </Modal.Footer>
+</Modal>
+
     </>
   );
+};
+
+
+const openGoogleMaps = (address) => {
+  const encodedAddress = encodeURIComponent(address);
+  window.open(`https://www.google.com/maps/search/?api=1&query=${encodedAddress}`, '_blank');
 };
 
 export default SearchResults;

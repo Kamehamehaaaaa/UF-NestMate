@@ -23,12 +23,14 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
-	"github.com/gin-contrib/cors" 
 	"log"
 	"time"
+
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 )
 
 var mongoDBService *MongoDBService
@@ -42,6 +44,12 @@ func init() {
 type User struct {
     Username string `json:"username" bson:"username"`
     Password string `json:"password" bson:"password"`
+}
+
+
+type CommentRequest struct {
+    ApartmentID int    `json:"apartmentId"`
+    Comment     string `json:"comment"`
 }
 
 // will receive property details in JSON and store them in MongoDB
@@ -134,6 +142,23 @@ func userHandler(c *gin.Context) {
     c.JSON(http.StatusOK, gin.H{"message": "User created successfully!"})
 }
 
+func commentHandler(c *gin.Context) {
+    var req CommentRequest
+    if err := c.ShouldBindJSON(&req); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request format"})
+        return
+    }
+	fmt.Print(req.Comment+"cn");
+
+    err := mongoDBService.AddComment(req.ApartmentID, req.Comment)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save comment"})
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{"message": "Comment added successfully"})
+}
+
 
 func main() {
 	r := gin.Default()
@@ -152,6 +177,7 @@ func main() {
 	r.GET("/pull", pullAllHandler) 
 	r.POST("/img", imgHandler)
 	r.POST("/user", userHandler)
+	r.POST("/comment", commentHandler) 
 
 	r.Run(":8080")
 }
