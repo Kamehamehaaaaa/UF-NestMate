@@ -10,7 +10,7 @@ function Header({ scrollToContact }) {
     const [showLogin, setShowLogin] = useState(false);
     const [showProfile, setShowProfile] = useState(false);
     const [userProfile, setUserProfile] = useState({
-      firstName: "John Doe",
+      firstName: "John Doee",
       lastName: "Example University",
       email: "john.doe@example.com"
     });
