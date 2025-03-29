@@ -134,8 +134,6 @@ nav {
   margin-left: 0;
 }
 
-
-
 .close-btn {
   position: absolute;
   top: 10px;
@@ -172,8 +170,8 @@ nav {
 
 .eye::after {
   content: "";
-  width: 10px;
-  height: 10px;
+  width: 11px;
+  height: 11px;
   background: black;
   border-radius: 50%;
   position: absolute;

@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar, Nav, Container } from 'react-bootstrap';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCat } from "@fortawesome/free-solid-svg-icons";
 import './header.css';
 import Login from './Login/Login'
 import ProfilePage from '../ProfilePage/ProfilePage';
