@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form, Button, Col } from 'react-bootstrap';
+import { Form, Button, Col, Spinner } from 'react-bootstrap';
 import emailjs from '@emailjs/browser';
 import './contactform.css';
 
@@ -10,6 +10,7 @@ function Contactform() {
     message: ''
   });
   const [status, setStatus] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -21,6 +22,7 @@ function Contactform() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setLoading(true);
 
     emailjs.send(
       'service_qwsu089',   
@@ -33,17 +35,26 @@ function Contactform() {
       console.log('SUCCESS!', response.status, response.text);
       setStatus('Your message has been sent successfully!');
       setFormData({ name: '', email: '', message: '' });
+      setLoading(false);
     })
     .catch((err) => {
-      console.error('FAILED...', err);
-      setStatus('Failed to send message. Please try again.');
+      setStatus('Failed to send message. Please try again later.');
+      console.error('Email send failed:', err);
+      setLoading(false);
     });
   };
 
   return (
     <Col md={6} className="mx-auto contact-form-container">
       <h2>Contact Us</h2>
-      {status && <p className="status-message">{status}</p>}
+      <p className="contact-subtext">
+        Got a question? We’d love to hear from you. Send us a message and we’ll respond as soon as possible.
+      </p>
+      {status && (
+        <p className={`status-message ${status.includes('successfully') ? 'success' : 'error'}`}>
+          {status}
+        </p>
+      )}
       <Form onSubmit={handleSubmit}>
         <Form.Group className="mb-3" controlId="formName">
           <Form.Label>Name</Form.Label>
@@ -82,8 +93,8 @@ function Contactform() {
           />
         </Form.Group>
         
-        <Button variant="primary" type="submit">
-          Send Message
+        <Button variant="primary" type="submit" disabled={loading}>
+          {loading ? <Spinner animation="border" size="sm" /> : 'Submit'}
         </Button>
       </Form>
     </Col>
