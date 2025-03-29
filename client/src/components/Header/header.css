@@ -134,8 +134,6 @@ nav {
   margin-left: 0;
 }
 
-
-
 .close-btn {
   position: absolute;
   top: 10px;
@@ -146,4 +144,37 @@ nav {
   cursor: pointer;
 }
 
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+}
 
+.eyes-container {
+  display: flex;
+  gap: 5px;
+}
+
+.eye {
+  width: 20px;
+  height: 22px;
+  background: white;
+  border-radius: 50%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid black;
+}
+
+.eye::after {
+  content: "";
+  width: 11px;
+  height: 11px;
+  background: black;
+  border-radius: 50%;
+  position: absolute;
+  transform: translate(var(--pupil-x, 0px), var(--pupil-y, 0px));
+  transition: transform 0.05s linear;
+}

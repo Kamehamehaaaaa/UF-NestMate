@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import './login.css';
 import SHA256 from 'crypto-js/sha256'; 
-
-function Login({ onClose }) {
+function Login({ onClose, onLoginSuccess }) {
   const [isSignup, setIsSignup] = useState(false);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -11,7 +10,6 @@ function Login({ onClose }) {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
 
-  
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -20,7 +18,7 @@ function Login({ onClose }) {
         setError("Passwords don't match!");
         return;
       }
-     
+
       try {
         const response = await fetch('http://localhost:8080/register', {
           method: 'POST',
@@ -31,8 +29,7 @@ function Login({ onClose }) {
             firstname: firstName,
             lastname: lastName,
             username: username,
-            password: password, 
-            
+            password: password,
           }),
         });
 
@@ -48,7 +45,6 @@ function Login({ onClose }) {
         setError('An error occurred during registration');
       }
     } else {
-      
       try {
         const response = await fetch('http://localhost:8080/login', {
           method: 'POST',
@@ -57,14 +53,29 @@ function Login({ onClose }) {
           },
           body: JSON.stringify({
             username: username,
-            password: password, 
+            password: password,
           }),
         });
 
         const responseData = await response.json();
         if (response.ok) {
-          alert('Login successful!');
-          onClose(); 
+          
+          
+          // Fetch user details from backend using username
+          const userResponse = await fetch(`http://localhost:8080/user?username=${username}`);
+          const userData = await userResponse.json();
+          
+          if (userResponse.ok) {
+            // Pass user data to parent component
+            onLoginSuccess({
+              email: userData.username || '',
+              firstName: userData.firstName || '',
+              lastName: userData.lastName || '',
+            });
+            onClose(); // Close login modal
+          } else {
+            setError('Failed to fetch user details');
+          }
         } else {
           setError(responseData.error || 'Invalid credentials');
         }
@@ -75,7 +86,6 @@ function Login({ onClose }) {
     }
   };
 
-  // Toggle between login and signup forms
   const handleToggle = () => {
     setIsSignup(!isSignup);
     setFirstName('');

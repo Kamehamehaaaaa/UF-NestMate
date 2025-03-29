@@ -6,31 +6,28 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Container, Row, Col, Form, InputGroup, Button } from 'react-bootstrap';
 import { FaSearch } from 'react-icons/fa';
-import Centric from './images/centric.png';
-import Stone from './images/stoneridge.png';
-import BL from './images/blvd.png';
-import Gains from './images/gainesvilleplace.png';
-import Hide from './images/hideaway.png';
-import Sweet from './images/sweetwater.png';
 import Home_pic from './images/home_pic.jpg';
 
 function App() {
   const contactRef = useRef(null);
-  const [searchResults, setSearchResults] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [housingData, setHousingData] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
 
-
-  const defaultResults = [
-    { name: 'Stoneridge Apartments', address: '3800 SW 34th St', pincode: '32608', image: Stone, rating: '4.6/5' },
-    { name: 'BLVD', address: '3800 SW 34th St', pincode: '32608', image: BL, rating: '4.4/5' },
-    { name: 'Centric', address: '3800 SW 34th St', pincode: '32608', image: Centric, rating: '4.3/5' },
-    { name: 'Gainesville Place', address: '3800 SW 34th St', pincode: '32607', image: Gains, rating: '4.7/5' },
-    { name: 'Hideaway', address: '3800 SW 34th St', pincode: '32609', image: Hide, rating: '4.5/5' },
-    { name: 'Sweetwater', address: '2800 SW Williston Rd', pincode: '32610', image: Sweet, rating: '4.8/5' }
-  ];
-
+ 
   useEffect(() => {
-    setSearchResults(defaultResults);
+    const fetchHousingData = async () => {
+      try {
+        const response = await fetch('http://localhost:8080/pull');
+        if (!response.ok) throw new Error('Failed to fetch housing data');
+        const data = await response.json();
+        setHousingData(data.properties);
+        setSearchResults(data.properties); 
+      } catch (err) {
+        console.error('Error fetching housing data:', err);
+      }
+    };
+    fetchHousingData();
   }, []);
 
   const scrollToContact = () => {
@@ -41,8 +38,8 @@ function App() {
     const value = e.target.value.toLowerCase();
     setSearchTerm(value);
 
-    const filteredResults = defaultResults.filter(result =>
-      result.name.toLowerCase().startsWith(value)
+    const filteredResults = housingData.filter(result =>
+      result.name.toLowerCase().includes(value)
     );
 
     setSearchResults(filteredResults);
@@ -61,7 +58,7 @@ function App() {
             <div className="finder">Finder</div>
           </div>
 
-          <Form className="search-form" onSubmit={handleSearch}>
+          <Form className="search-form">
             <InputGroup className="rounded-search-bar">
               <Form.Control
                 placeholder="Apartment Name"
@@ -71,22 +68,21 @@ function App() {
                 onChange={handleSearch}
               />
               <div className="search-button-wrapper">
-                <Button type="submit" className="search-button">
+                <Button className="search-button">
                   <FaSearch className="search-icon" />
                 </Button>
               </div>
             </InputGroup>
           </Form>
         </Col>
-        <Col  xs={8} className="image-col">
-        <img src={Home_pic} alt="Home" className="home-pic" />
+        <Col xs={8} className="image-col">
+          <img src={Home_pic} alt="Home" className="home-pic" />
         </Col>
-        
       </Row>
       <Row>
-        <SearchResults results={searchResults} />
+        <SearchResults housingData={searchResults} />
       </Row>
-1      <Row ref={contactRef} className="contact-section">
+      <Row ref={contactRef} className="contact-section">
         <Contactform />
       </Row>
     </Container>
