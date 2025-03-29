@@ -5,37 +5,16 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import { FaMapMarkerAlt } from 'react-icons/fa';
 
 
-const SearchResults = () => {
+const SearchResults = ({housingData}) => {
+  console.log(housingData)
   const [show, setShow] = useState(false);
   const [selectedHousing, setSelectedHousing] = useState(null);
   const [comment, setComment] = useState('');
   const [comments, setComments] = useState([]);
-  const [housingData, setHousingData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  
+ 
   const [showCommentForm, setShowCommentForm] = useState(false);
 
-  useEffect(() => {
-    const fetchHousingData = async () => {
-      try {
-        const response = await fetch('http://localhost:8080/pull');
-        if (!response.ok) {
-          throw new Error('Failed to fetch housing data');
-        }
-        const data = await response.json();
-        setHousingData(data.properties.map(property => ({
-          ...property,
-          comments: property.comments || []
-        })));
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-  
-    fetchHousingData();
-  }, []);
   
 
   const handleClose = () => setShow(false);
@@ -81,8 +60,6 @@ const SearchResults = () => {
   };
   
 
-  if (loading) return <div>Loading housing options...</div>;
-  if (error) return <div>Error: {error}</div>;
 
   return (
     <>

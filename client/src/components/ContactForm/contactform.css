@@ -1,66 +1,76 @@
+@import url('https://fonts.googleapis.com/css2?family=Rye&display=swap');
+
 .contact-form-container {
-  background: linear-gradient(135deg, #ffffff 10%, rgb(199, 225, 235) 90%); /* Blue and White gradient */
-  padding: 2rem;
-  border-radius: 15px;
-  box-shadow: 1px 1px 70px 30px  #ece6dd; /* Light shadow */
-  max-width: 500px;
-  width: 100%;
-  text-align: left;
+  background: url('https://res.cloudinary.com/dbldemxes/image/upload/v1742855289/WoodHomepageBackground.webp') no-repeat center center;
+  background-size: cover;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 1px 1px 70px 30px  #f5deb0;
+  color: #5C4033;
 }
 
-.contact-form-container h2 {
-  font-family: 'Special Elite', cursive;
-  color: black; /* Black text for title */
+h2 {
   text-align: center;
-  margin-bottom: 1.5rem;
-  font-size: 2rem;
+  font-family: 'Special Elite';
+  font-size: 32px;
+  color: #5C4033;
+  font-style: bold;
 }
 
-.contact-form-container .form-label {
+.contact-subtext {
+  text-align: center;
+  font-style: italic;
+  font-size: 16px;
+  margin-bottom: 20px;
+  color: #5C4033;
+}
+
+.form-label {
+  text-align: left;
+  display: block;
   font-weight: bold;
-  color: black; /* Black text for form labels */
+  font-size: 16px;
+  color: #5C4033;
 }
 
-.contact-form-container .form-control {
-  border-radius: 8px;
-  border: 1px solid #ccc; /* Light border */
-  padding: 12px;
-  font-size: 1rem;
-  background-color: white;
-  transition: all 0.3s ease-in-out;
+.form-control {
+  background-color: #FFFFFF !important;
+  border: 1px solid #5C4033;
+  color: #5C4033;
 }
 
-.contact-form-container .form-control:focus {
-  border-color: skyblue;
-  box-shadow: 0 0 10px rgba(135, 206, 250, 0.5);
+.form-control::placeholder {
+  color: #8B5E3C;
 }
 
-.contact-form-container textarea.form-control {
-  resize: none;
+.form-control:focus {
+  border-color: #8B5E3C;
+  box-shadow: 0 0 5px rgba(139, 94, 60, 0.5);
 }
 
-.contact-form-container .btn-primary {
-  width: 100%;
-  padding: 12px;
-  font-size: 1.1rem;
+.btn-primary {
+  background-color: #573a2d !important;
+  border-color: #573a2d !important;
+  color: #FFFFFF !important;
   font-weight: bold;
-  border-radius: 8px;
-  background-color: skyblue;
-  border: 1px solid skyblue;
-  color: white;
-  transition: background 0.3s ease-in-out;
-  
+  font-family:'Times New Roman';
+  font-size: 18px;
 }
 
-.contact-form-container .btn-primary:hover {
-  background-color: rgb(116, 192, 222); /* Hover effect */
-  color: white;
-  box-shadow: 0px 5px 15px rgba(147, 203, 238, 0.5); /* Slight glowing effect */
-  
+.btn-primary:hover {
+  background-color: #2d1f14 !important;
+  border-color: #2d1f14 !important;
 }
 
-@media (max-width: 576px) {
-  .contact-form-container {
-      padding: 1.5rem;
-  }
+.success {
+  color: green;
+}
+
+.error {
+  color: red;
+}
+
+.status-message {
+  margin-top: 15px;
+  font-weight: bold;
 }

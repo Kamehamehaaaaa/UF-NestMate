@@ -27,20 +27,20 @@ const ProfilePage = ({ profile, onClose, onSave }) => {
           {editMode ? (
             <div className="edit-form">
               <div className="form-group">
-                <label>Full Name</label>
+                <label>First Name</label>
                 <input 
-                  name="name" 
-                  value={editedProfile.name} 
+                  name="firstName" 
+                  value={editedProfile.firstName} 
                   onChange={handleChange}
                   className="form-input"
                 />
               </div>
               
               <div className="form-group">
-                <label>University</label>
+                <label>Last Name</label>
                 <input 
-                  name="university" 
-                  value={editedProfile.university} 
+                  name="lastName" 
+                  value={editedProfile.lastName} 
                   onChange={handleChange}
                   className="form-input"
                 />
@@ -82,12 +82,12 @@ const ProfilePage = ({ profile, onClose, onSave }) => {
               <div className="profile-section">
                 <h3>Personal Information</h3>
                 <div className="info-item">
-                  <span className="info-label">Name:</span>
-                  <span className="info-value">{profile.name}</span>
+                  <span className="info-label">First Name:</span>
+                  <span className="info-value">{profile.firstName}</span>
                 </div>
                 <div className="info-item">
-                  <span className="info-label">University:</span>
-                  <span className="info-value">{profile.university}</span>
+                  <span className="info-label">Last Name:</span>
+                  <span className="info-value">{profile.lastName}</span>
                 </div>
               </div>
 
