@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Col, Row, Modal, Button, Form } from 'react-bootstrap';
+import { Card, Col, Row, Modal, Button, Form,Dropdown} from 'react-bootstrap';
 import './searchresults.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { FaMapMarkerAlt } from 'react-icons/fa';
@@ -12,7 +12,7 @@ const SearchResults = ({housingData}) => {
   const [comment, setComment] = useState('');
   const [comments, setComments] = useState([]);
   
- 
+  const [sortType, setSortType] = useState('none'); 
   const [showCommentForm, setShowCommentForm] = useState(false);
 
   

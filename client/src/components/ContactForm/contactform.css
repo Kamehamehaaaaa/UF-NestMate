@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Rye&display=swap');
+
 
 .contact-form-container {
   background: url('https://res.cloudinary.com/dbldemxes/image/upload/v1742855289/WoodHomepageBackground.webp') no-repeat center center;
@@ -9,14 +9,13 @@
   color: #5C4033;
 }
 
-h2 {
+.contact-heading {
   text-align: center;
 
-  font-family: 'Special Elite';
+  font-family: 'Special Elite', cursive;
   font-size: 32px;
   color: #5C4033;
   font-style: bold;
-  font-family: 'Rye', cursive;
   font-size: 32px;
   color: #5C4033;
 
