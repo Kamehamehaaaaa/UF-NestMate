@@ -9,17 +9,13 @@
   color: #5C4033;
 }
 
-h2 {
+.contact-title {
   text-align: center;
-
-  font-family: 'Special Elite';
-  font-size: 32px;
+  font-weight: bolder;
+  font-family: 'Special Elite', cursive;
+  font-size: 40px;
   color: #5C4033;
   font-style: bold;
-  font-family: 'Rye', cursive;
-  font-size: 32px;
-  color: #5C4033;
-
 }
 
 .contact-subtext {
