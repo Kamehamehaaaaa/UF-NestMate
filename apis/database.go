@@ -193,3 +193,29 @@ func (m *MongoDBService) GetUserByUsername(username string) (*User, error) {
     }
     return &user, nil
 }
+
+func (m *MongoDBService) UpdateUser(username string, updatedUser User) error {
+    ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+    defer cancel()
+
+    filter := bson.M{"username": username} // Filter by username
+    update := bson.M{
+        "$set": bson.M{
+            "firstName": updatedUser.FirstName,
+            "lastName":  updatedUser.LastName,
+            "email":     updatedUser.Username,
+        },
+    }
+
+    result, err := m.db.Collection("users").UpdateOne(ctx, filter, update)
+    if err != nil {
+        return fmt.Errorf("database error: %v", err)
+    }
+
+    if result.MatchedCount == 0 {
+        return fmt.Errorf("user not found")
+    }
+
+    return nil
+}
+
