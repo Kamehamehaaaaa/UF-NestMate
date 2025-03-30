@@ -14,6 +14,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
+    "github.com/swaggo/http-swagger"
 )
 
 var mongoDBService *MongoDBService
@@ -396,6 +397,12 @@ func main() {
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
+
+    r.StaticFile("/docs/swagger.yaml", "./docs/swagger.yaml")
+
+    r.GET("/swagger/*any", gin.WrapH(httpSwagger.Handler(
+		httpSwagger.URL("/docs/swagger.yaml"),
+	)))
 	r.POST("/apt", aptHandler)
 	r.GET("/pull/:query", pullHandler)
 	r.GET("/pull", pullAllHandler)
