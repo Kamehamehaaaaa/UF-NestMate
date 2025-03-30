@@ -46,7 +46,7 @@ function Contactform() {
 
   return (
     <Col md={6} className="mx-auto contact-form-container">
-      <h2>Contact Us</h2>
+      <h2 className='contact-heading'>Contact Us</h2>
       <p className="contact-subtext">
         Got a question? We’d love to hear from you. Send us a message and we’ll respond as soon as possible.
       </p>

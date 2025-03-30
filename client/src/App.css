@@ -30,6 +30,12 @@ h1 {
   justify-content: center;
  
 }
+.card-class-row {
+  margin-left: 2px !important;
+  margin-right: -20px !important;
+}
+
+
 
 .search-result {
   min-height: 400px;
@@ -95,6 +101,24 @@ h1 {
   justify-content: center;
 }
 
+
+.search-button:hover {
+  background-color: rgb(175, 222, 240) !important;
+}
+
+.filter-button {
+  background-color: skyblue !important;
+  border: none !important;
+  border-radius: 50% !important;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 5px;
+}
+
+
 .search-icon {
   color: white;
 }
@@ -123,5 +147,63 @@ h1 {
 -webkit-mask-image: radial-gradient(ellipse 50% 50% at center, black 30%, transparent 100%);
 
 }
+
+
+.no-caret::after {
+  display: none !important;
+}
+
+
+.filter-button {
+  background-color: skyblue !important;
+  border: none !important;
+  border-radius: 50% !important;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.filter-button:hover {
+  background-color: #87ceeb; 
+}
+
+
+.dropdown-menu {
+  margin-top: 20px; 
+  min-width: 220px; 
+  border-radius: 8px; 
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1); 
+  
+  background-color: #ffffff; 
+}
+
+
+.dropdown-item {
+  padding: 10px 15px; 
+  font-size: 14px; 
+  color: #2c1810; 
+}
+
+
+.dropdown-item:active,
+.dropdown-item:focus {
+  background-color: skyblue !important; 
+  color: #2c1810 !important; 
+}
+
+
+.dropdown-item:hover {
+  background-color:rgb(195, 209, 214) !important; 
+}
+
+
+
+.filter-button svg {
+  color: white !important; 
+}
+
+
 
 

@@ -4,9 +4,11 @@ import Contactform from './components/ContactForm/contactform';
 import SearchResults from './components/SearchResults/searchresults';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Container, Row, Col, Form, InputGroup, Button } from 'react-bootstrap';
+import { Container, Row, Col, Form, InputGroup, Button ,Dropdown} from 'react-bootstrap';
 import { FaSearch } from 'react-icons/fa';
 import Home_pic from './images/home_pic.jpg';
+
+import { BsFillFilterCircleFill } from "react-icons/bs";
 
 function App() {
   const contactRef = useRef(null);
@@ -45,6 +47,13 @@ function App() {
     setSearchResults(filteredResults);
   };
 
+
+  const handleSort = (sortType) => {
+   
+    console.log(`Sorting by ${sortType}`);
+    
+  };
+
   return (
     <Container fluid className="App">
       <Row>
@@ -71,7 +80,29 @@ function App() {
                 <Button className="search-button">
                   <FaSearch className="search-icon" />
                 </Button>
+                <Dropdown align="end">
+                  {/* Remove caret by using as={Button} */}
+                  <Dropdown.Toggle
+                    as={Button} // Replace default toggle with Button
+                    variant="light"
+                    className="filter-button no-caret"
+                  >
+                    <BsFillFilterCircleFill />
+                  </Dropdown.Toggle>
+
+                  {/* Dropdown Menu */}
+                  <Dropdown.Menu>
+                    <Dropdown.Header>Sort By</Dropdown.Header>
+                    <Dropdown.Item onClick={() => handleSort('rating')}>
+                      Customer Ratings
+                    </Dropdown.Item>
+                    <Dropdown.Item onClick={() => handleSort('alphabetical')}>
+                      Alphabetical (A-Z)
+                    </Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
               </div>
+             
             </InputGroup>
           </Form>
         </Col>
@@ -79,7 +110,7 @@ function App() {
           <img src={Home_pic} alt="Home" className="home-pic" />
         </Col>
       </Row>
-      <Row>
+      <Row className=" card-class-row no-gutters" >
         <SearchResults housingData={searchResults} />
       </Row>
       <Row ref={contactRef} className="contact-section">
