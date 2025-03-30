@@ -212,3 +212,22 @@ func (m *MongoDBService) UpdateUser(username string, updatedUser User) error {
 
 	return nil
 }
+
+func (m *MongoDBService) GetPropertiesSortedByRating() ([]Property, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	opts := options.Find().SetSort(bson.D{{"rating", -1}})
+	cursor, err := m.db.Collection("apartment_card").Find(ctx, bson.D{}, opts)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	var properties []Property
+	if err = cursor.All(ctx, &properties); err != nil {
+		return nil, err
+	}
+
+	return properties, nil
+}

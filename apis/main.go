@@ -199,39 +199,24 @@ func loginUserHandler(c *gin.Context) {
 }
 
 func getUserByUsernameHandler(c *gin.Context) {
-	username := c.Query("username")
+	username := c.Query("username") // Get username from query params
 	user, err := mongoDBService.GetUserByUsername(username)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 		return
 	}
-	user.Password = ""
+	user.Password = "" // Remove sensitive data
 	c.JSON(http.StatusOK, user)
 }
 
-func updateUserHandler(c *gin.Context) {
-	var updatedUser User
-	if err := c.ShouldBindJSON(&updatedUser); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON data"})
-		return
-	}
-
-	if updatedUser.Username == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Username is required"})
-		return
-	}
-
-	err := mongoDBService.UpdateUser(updatedUser.Username, updatedUser)
+func filterRatingsHandler(c *gin.Context) {
+	properties, err := mongoDBService.GetPropertiesSortedByRating()
 	if err != nil {
-		if err.Error() == "user not found" {
-			c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
-			return
-		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching properties"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "User updated successfully"})
+	c.JSON(http.StatusOK, properties)
 }
 
 func main() {
@@ -254,6 +239,6 @@ func main() {
 	r.POST("/register", registerUserHandler)
 	r.POST("/login", loginUserHandler)
 	r.GET("/user", getUserByUsernameHandler)
-	r.PUT("/user", updateUserHandler)
+
 	r.Run(":8080")
 }
