@@ -43,7 +43,22 @@ function App() {
 
  
   const handleSearch = async () => {
-    if (filterType === 'apartment') {
+
+    if (filterType === 'rating') {
+      
+      try {
+        const response = await fetch(
+          `http://localhost:8080/filter/ratings`
+        );
+        if (!response.ok) throw new Error('Failed to fetch sorted data');
+        const data = await response.json();
+        setSearchResults(data || []); 
+      } catch (err) {
+        console.error('Error fetching sorted data:', err);
+      }
+    }
+
+    if (filterType === 'apartment' ) {
       
       const filteredResults = housingData.filter((result) =>
         result.name && result.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -88,7 +103,7 @@ function App() {
             <InputGroup className="rounded-search-bar">
               <Form.Control
                 placeholder={
-                  filterType === 'apartment'
+                   filterType === 'apartment' || filterType === 'rating'
                     ? 'Apartment Name'
                     : 'University Name'
                 }
@@ -110,8 +125,11 @@ function App() {
                     <Dropdown.Item onClick={() => handleFilterChange('location')}>
                       Location (University)
                     </Dropdown.Item>
+                    <Dropdown.Item onClick={() => handleFilterChange('rating')}>
+                      Rating
+                    </Dropdown.Item>
                     <Dropdown.Item onClick={() => handleFilterChange('apartment')}>
-                      Review
+                      Apartment
                     </Dropdown.Item>
                     
                   </Dropdown.Menu>
