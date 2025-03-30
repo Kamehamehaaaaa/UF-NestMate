@@ -383,6 +383,8 @@ func getDistances(origin string, destinations []string) ([]float64, error) {
 	return distances, nil
 }
 
+
+
 func main() {
 	r := gin.Default()
 
@@ -405,5 +407,6 @@ func main() {
 	r.GET("/user", getUserByUsernameHandler)
 	r.PUT("/user", updateUserHandler)
 	r.GET("/apt/sortByDistance", sortByDistanceHandler)
+    r.GET("/filter/ratings", filterRatingsHandler)
 	r.Run(":8080")
 }
