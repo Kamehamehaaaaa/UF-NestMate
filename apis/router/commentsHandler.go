@@ -2,123 +2,70 @@ package router
 
 import (
 	"apis/comments"
-	"apis/data"
-	"encoding/json"
-	"io"
+	"apis/database"
 	"net/http"
-	"time"
+	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
-func addCommentHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+func AddCommentHandler(c *gin.Context) {
+	var comment comments.Comments
+
+	if err := c.ShouldBindJSON(&comment); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON data"})
 		return
 	}
 
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		http.Error(w, "Error reading request body", http.StatusBadRequest)
-		return
-	}
-	defer r.Body.Close()
+	_, err := database.MongoDB.GetProperty(strconv.Itoa(comment.ApartmentID))
 
-	var commentPayload comments.CommentsPayload
-	err = json.Unmarshal(body, &commentPayload)
-	if err != nil {
-		http.Error(w, "Error unmarshalling JSON", http.StatusBadRequest)
-		return
-	}
-
-	_, exists := data.Housings[commentPayload.HousingID]
-
-	if exists {
-		data.Comments[commentPayload.ID] = comments.Comments{ID: commentPayload.ID,
-			HousingID: commentPayload.HousingID,
-			Comment:   commentPayload.Comment,
-			Rating:    commentPayload.Rating,
-			Timestamp: time.Now()}
-	} else {
-		http.Error(w, "The apartment doesnt exist", http.StatusBadRequest)
-		return
-	}
-}
-
-func deleteCommentHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodDelete {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		http.Error(w, "Error reading request body", http.StatusBadRequest)
-		return
-	}
-	defer r.Body.Close()
-
-	var commentPayload comments.CommentsPayload
-	err = json.Unmarshal(body, &commentPayload)
-	if err != nil {
-		http.Error(w, "Error unmarshalling JSON", http.StatusBadRequest)
-		return
-	}
-
-	_, exists := data.Comments[commentPayload.ID]
-
-	if !exists {
-		http.Error(w, "Comment doesnt exist", http.StatusBadRequest)
-	} else {
-		delete(data.Comments, commentPayload.ID)
-		w.WriteHeader(http.StatusOK)
-	}
-}
-
-func getCommentHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		http.Error(w, "Error reading request body", http.StatusBadRequest)
-		return
-	}
-	defer r.Body.Close()
-
-	var commentPayload comments.CommentsPayload
-	err = json.Unmarshal(body, &commentPayload)
-	if err != nil {
-		http.Error(w, "Error unmarshalling JSON", http.StatusBadRequest)
-		return
-	}
-
-	if commentPayload.HousingID != "" {
-		var commentsForHousing = getAllCommentsForHousing(commentPayload.HousingID)
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(commentsForHousing)
-		w.WriteHeader(http.StatusOK)
-	} else if commentPayload.ID != "" {
-		data, exists := data.Comments[commentPayload.ID]
-
-		if !exists {
-			http.Error(w, "Comment doesnt exist", http.StatusBadRequest)
-		} else {
-			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(data)
-			w.WriteHeader(http.StatusOK)
+	if err == nil {
+		err := database.MongoDB.AddComment(comment.ApartmentID, comment.Comment)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save comment"})
+			return
 		}
 	} else {
-		http.Error(w, "Invalid Request", http.StatusBadRequest)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "The apartment doesnt exist"})
+		return
 	}
 }
 
-func getAllCommentsForHousing(housingId string) map[string]comments.Comments {
-	var comments = make(map[string]comments.Comments)
-	for key, value := range data.Comments {
-		if value.HousingID == housingId {
-			comments[key] = value
+func DeleteCommentHandler(c *gin.Context) {
+	query := c.Param("query")
+
+	_, err := database.MongoDB.GetComment(query)
+
+	if err == nil {
+		err := database.MongoDB.DeleteComment(query)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"message": "invalid delete"})
+			return
 		}
+	} else {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "comment doesnt exist"})
+		return
 	}
-	return comments
 }
+
+func GetCommentHandler(c *gin.Context) {
+	query := c.Param("query")
+
+	comment, err := database.MongoDB.GetComment(query)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "comment doesnt exist"})
+	}
+
+	c.JSON(http.StatusOK, gin.H{"comment": comment})
+}
+
+// func getAllCommentsForHousing(housingId string) map[string]comments.Comments {
+// 	var comments = make(map[string]comments.Comments)
+// 	for key, value := range data.Comments {
+// 		if value.HousingID == housingId {
+// 			comments[key] = value
+// 		}
+// 	}
+// 	return comments
+// }

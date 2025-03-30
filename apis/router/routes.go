@@ -1,36 +1,35 @@
 package router
 
 import (
-	"net/http"
+	"time"
+
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 )
 
-func enableCORS(next http.HandlerFunc) http.HandlerFunc {
-    return func(w http.ResponseWriter, r *http.Request) {
-        // Set CORS headers
-        w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000") 
-        w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-        w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")
-        w.Header().Set("Access-Control-Allow-Credentials", "true") 
-        
-        // Handle OPTIONS preflight request
-        if r.Method == http.MethodOptions {
-            w.WriteHeader(http.StatusOK)
-            return
-        }
+func SetupHandlers(r *gin.Engine) {
 
-        // Call the next handler
-        next.ServeHTTP(w, r)
-    }
-}
-
-func SetupHandlers() {
-	http.HandleFunc("/api/user/register", enableCORS(RegisterHandler))
-	http.HandleFunc("/api/user/login", enableCORS(LoginHandler))
-	http.HandleFunc("/api/housing/add", enableCORS(AddHousingHandler))
-	http.HandleFunc("/api/housing/get", enableCORS(GetHousingHandler))
-	http.HandleFunc("/api/housing/delete", enableCORS(DeleteHousingHandler))
-	http.HandleFunc("/api/housing/update", enableCORS(UpdateHousingHandler))
-	http.HandleFunc("/api/comments/add", enableCORS(addCommentHandler))
-	http.HandleFunc("/api/comments/delete", enableCORS(deleteCommentHandler))
-	http.HandleFunc("/api/comments/get", enableCORS(getCommentHandler))
+	// Add CORS configuration
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+		AllowHeaders:     []string{"Origin", "Content-Type"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
+	r.POST("/api/user/register", RegisterHandler)
+	r.POST("/api/user/login", LoginHandler)
+	r.GET("/api/user/getUser", GetUserHandler)
+	r.PUT("/api/user/update", UpdateUserHandler)
+	r.POST("/api/housing/add", AddHousingHandler)
+	r.GET("/api/housing/get/:query", GetHousingHandler)
+	r.DELETE("/api/housing/delete", DeleteHousingHandler)
+	r.PUT("/api/housing/update", UpdateHousingHandler)
+	r.GET("/api/housing/getAll", GetAllHousingHandler)
+	r.POST("/api/housing/uploadimg", UploadImgHandler)
+	r.GET("/apt/housing/sortByDistance", sortByDistanceHandler)
+	r.POST("/api/comments/add", AddCommentHandler)
+	r.DELETE("/api/comments/delete", DeleteCommentHandler)
+	r.GET("/api/comments/get", GetCommentHandler)
 }

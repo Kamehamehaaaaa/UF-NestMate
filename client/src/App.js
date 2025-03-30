@@ -20,7 +20,7 @@ function App() {
   useEffect(() => {
     const fetchHousingData = async () => {
       try {
-        const response = await fetch('http://localhost:8080/pull');
+        const response = await fetch('http://localhost:8080/api/housing/getAll');
         if (!response.ok) throw new Error('Failed to fetch housing data');
         const data = await response.json();
         setHousingData(data.properties);

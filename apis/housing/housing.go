@@ -1,21 +1,23 @@
 package housing
 
 type Housing struct {
-	ID          string
-	Name        string
-	Address     string
-	Vacancy     int
-	Description string
-	Rating      float64
-	NumberOfReviews int
+	ID          int      `json:"id" bson:"id"`
+	Name        string   `json:"name" bson:"name"`
+	Image       string   `json:"image" bson:"image"`
+	Description string   `json:"description" bson:"description"`
+	Address     string   `json:"address" bson:"address"`
+	Vacancy     int      `json:"vacancy" bson:"vacancy"`
+	Rating      float64  `json:"rating" bson:"rating"`
+	Comments    []string `json:"comments" bson:"comments"`
 }
 
 type HousingPayload struct {
-	ID          string  `json:"housingId" validate:"required,min=2"`
-	Name        string  `json:"propertyName" validate:"required,min=2,max=30"`
-	Address     string  `json:"address" validate:"required,max=50"`
-	Vacancy     int     `json:"vacancy"`
-	Rating      float64 `json:"rating" validate:"omitempty,max=5"`
-	NumberOfReviews int     `json:"numberOfReviews"`
-	Description string  `json:"description"`
+	ID          int      `json:"id" bson:"id"`
+	Name        string   `json:"name" bson:"name"`
+	Image       string   `json:"image" bson:"image"`
+	Description string   `json:"description" bson:"description"`
+	Address     string   `json:"address" bson:"address"`
+	Vacancy     int      `json:"vacancy" bson:"vacancy"`
+	Rating      float64  `json:"rating" bson:"rating"`
+	Comments    []string `json:"comments" bson:"comments"`
 }
