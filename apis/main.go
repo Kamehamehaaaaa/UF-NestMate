@@ -233,6 +233,15 @@ func updateUserHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "User updated successfully"})
 }
+func filterRatingsHandler(c *gin.Context) {
+	properties, err := mongoDBService.GetPropertiesSortedByRating()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching properties"})
+		return
+	}
+
+	c.JSON(http.StatusOK, properties)
+}
 
 func main() {
 	r := gin.Default()
