@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 	"sort"
+	"strings"
 
 	"log"
 	"time"
@@ -312,33 +313,33 @@ func sortByDistanceHandler(c *gin.Context) {
 
 func getDistances(origin string, destinations []string) ([]float64, error) {
 	apiKey := "AIzaSyCJbMwl9Jpmbhx863HaRaQDu7iSMPjiK9Y"
-	fmt.Println("reached here ")
-	destString := url.QueryEscape(fmt.Sprintf("%s", destinations))
+	destString := url.QueryEscape(strings.Join(destinations, "|"))
 	apiURL := fmt.Sprintf(
 		"https://maps.googleapis.com/maps/api/distancematrix/json?origins=%s&destinations=%s&key=%s",
 		url.QueryEscape(origin), destString, apiKey,
 	)
-	fmt.Println("reached here ")
+
+	log.Printf("API URL: %s\n", apiURL)
+
 	resp, err := http.Get(apiURL)
 	if err != nil || resp.StatusCode != http.StatusOK {
 		log.Printf("Failed to call Google Distance Matrix API: %v", err)
 		return nil, fmt.Errorf("failed to fetch distances")
 	}
 	defer resp.Body.Close()
-
 	var result map[string]interface{}
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		log.Printf("Failed to parse Google Distance Matrix API response: %v", err)
 		return nil, fmt.Errorf("failed to parse response")
 	}
-	fmt.Print(resp.Body)
+
+	log.Printf("API Response: %+v\n", result)
 
 	var distances []float64
 	rows, ok := result["rows"].([]interface{})
 	if !ok {
 		return nil, fmt.Errorf("invalid response format")
 	}
-
 	for _, row := range rows {
 		rowMap, ok := row.(map[string]interface{})
 		if !ok {
@@ -350,28 +351,34 @@ func getDistances(origin string, destinations []string) ([]float64, error) {
 			continue
 		}
 
-		for _, element := range elements {
+		for i, element := range elements {
 			elementMap, ok := element.(map[string]interface{})
 			if !ok {
+				log.Printf("Skipping element %d: invalid format", i)
 				continue
 			}
 
 			status, ok := elementMap["status"].(string)
 			if !ok || status != "OK" {
+				log.Printf("Skipping element %d: status=%s", i, status)
 				continue
 			}
 
 			distanceMap, ok := elementMap["distance"].(map[string]interface{})
 			if !ok {
+				log.Printf("Skipping element %d: missing distance", i)
 				continue
 			}
 
 			distanceValue, ok := distanceMap["value"].(float64)
 			if ok {
 				distances = append(distances, distanceValue)
+				log.Printf("Added distance for element %d: %.2f meters", i, distanceValue)
 			}
 		}
 	}
+
+	log.Printf("Final Distances: %+v\n", distances)
 
 	return distances, nil
 }
