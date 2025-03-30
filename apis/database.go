@@ -76,7 +76,7 @@ func (m *MongoDBService) getNextID() (int, error) {
 	err := m.db.Collection("apartment_card").FindOne(context.Background(), bson.D{}, opts).Decode(&lastProperty)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return 1, nil // Start from 1 if no documents exist
+			return 1, nil
 		}
 		return 0, err
 	}
