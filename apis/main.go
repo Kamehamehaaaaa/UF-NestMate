@@ -1,8 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
+	"sort"
 
 	"log"
 	"time"
@@ -233,6 +236,145 @@ func updateUserHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "User updated successfully"})
 }
+func filterRatingsHandler(c *gin.Context) {
+	properties, err := mongoDBService.GetPropertiesSortedByRating()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching properties"})
+		return
+	}
+
+	c.JSON(http.StatusOK, properties)
+}
+
+func sortByDistanceHandler(c *gin.Context) {
+	log.Println("Handler reached")
+	university := c.Query("university")
+	if university == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "University name is required"})
+		return
+	}
+
+	apartmentList, err := mongoDBService.GetAllProperties()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch apartments"})
+		return
+	}
+
+	if len(apartmentList) == 0 {
+		c.JSON(http.StatusOK, gin.H{"message": "No apartments found"})
+		return
+	}
+
+	var destinations []string
+	for _, apartment := range apartmentList {
+		destinations = append(destinations, apartment.Address)
+	}
+
+	distances, err := getDistances(university, destinations)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to calculate distances"})
+		return
+	}
+	fmt.Println("r")
+	fmt.Println(distances)
+	fmt.Println("distances")
+
+	type ApartmentWithDistance struct {
+		Property
+		Distance float64
+	}
+	var apartmentsWithDistance []ApartmentWithDistance
+
+	for i, apartment := range apartmentList {
+		if i < len(distances) {
+			distanceInMeters := distances[i]
+
+			log.Printf("Apartment %s is %.2f km away from the university", apartment.Name, distanceInMeters/1000)
+
+			apartmentsWithDistance = append(apartmentsWithDistance, ApartmentWithDistance{
+				Property: apartment,
+				Distance: distanceInMeters,
+			})
+		}
+	}
+
+	sort.Slice(apartmentsWithDistance, func(i, j int) bool {
+		return apartmentsWithDistance[i].Distance < apartmentsWithDistance[j].Distance
+	})
+
+	var sortedProperties []Property
+	for _, apt := range apartmentsWithDistance {
+		sortedProperties = append(sortedProperties, apt.Property)
+	}
+
+	c.JSON(http.StatusOK, sortedProperties)
+}
+
+func getDistances(origin string, destinations []string) ([]float64, error) {
+	apiKey := "AIzaSyCJbMwl9Jpmbhx863HaRaQDu7iSMPjiK9Y"
+	fmt.Println("reached here ")
+	destString := url.QueryEscape(fmt.Sprintf("%s", destinations))
+	apiURL := fmt.Sprintf(
+		"https://maps.googleapis.com/maps/api/distancematrix/json?origins=%s&destinations=%s&key=%s",
+		url.QueryEscape(origin), destString, apiKey,
+	)
+	fmt.Println("reached here ")
+	resp, err := http.Get(apiURL)
+	if err != nil || resp.StatusCode != http.StatusOK {
+		log.Printf("Failed to call Google Distance Matrix API: %v", err)
+		return nil, fmt.Errorf("failed to fetch distances")
+	}
+	defer resp.Body.Close()
+
+	var result map[string]interface{}
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		log.Printf("Failed to parse Google Distance Matrix API response: %v", err)
+		return nil, fmt.Errorf("failed to parse response")
+	}
+	fmt.Print(resp.Body)
+
+	var distances []float64
+	rows, ok := result["rows"].([]interface{})
+	if !ok {
+		return nil, fmt.Errorf("invalid response format")
+	}
+
+	for _, row := range rows {
+		rowMap, ok := row.(map[string]interface{})
+		if !ok {
+			continue
+		}
+
+		elements, ok := rowMap["elements"].([]interface{})
+		if !ok {
+			continue
+		}
+
+		for _, element := range elements {
+			elementMap, ok := element.(map[string]interface{})
+			if !ok {
+				continue
+			}
+
+			status, ok := elementMap["status"].(string)
+			if !ok || status != "OK" {
+				continue
+			}
+
+			distanceMap, ok := elementMap["distance"].(map[string]interface{})
+			if !ok {
+				continue
+			}
+
+			distanceValue, ok := distanceMap["value"].(float64)
+			if ok {
+				distances = append(distances, distanceValue)
+			}
+		}
+	}
+
+	return distances, nil
+}
 
 func main() {
 	r := gin.Default()
@@ -255,5 +397,6 @@ func main() {
 	r.POST("/login", loginUserHandler)
 	r.GET("/user", getUserByUsernameHandler)
 	r.PUT("/user", updateUserHandler)
+	r.GET("/apt/sortByDistance", sortByDistanceHandler)
 	r.Run(":8080")
 }
