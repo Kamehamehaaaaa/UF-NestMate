@@ -6,12 +6,13 @@ import (
 	"log"
 	"strconv"
 
+	"fmt"
+	"time"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"time"
-	 "golang.org/x/crypto/bcrypt"
-	 "fmt"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type MongoDBService struct {
@@ -27,11 +28,11 @@ type Property struct {
 	Address     string   `json:"address" bson:"address"`
 	Vacancy     int      `json:"vacancy" bson:"vacancy"`
 	Rating      float64  `json:"rating" bson:"rating"`
-	Comments     []string `json:"comments" bson:"comments"`
+	Comments    []string `json:"comments" bson:"comments"`
 }
 
 func NewMongoDBService() *MongoDBService {
-	//clientOptions := options.Client().ApplyURI("mongodb://192.168.0.74:27017")
+	// clientOptions := options.Client().ApplyURI("mongodb://192.168.0.74:27017")
 	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
 	client, err := mongo.Connect(context.Background(), clientOptions)
 	if err != nil {
@@ -47,27 +48,26 @@ func NewMongoDBService() *MongoDBService {
 	return &MongoDBService{client: client, db: db}
 }
 
-
 func (m *MongoDBService) RegisterUser(user *User) error {
-    ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-    defer cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
-    // Hash the password
-    hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
-    if err != nil {
-        log.Printf("Password hashing error: %v", err)
-        return err
-    }
-    user.Password = string(hashedPassword)
+	// Hash the password
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		log.Printf("Password hashing error: %v", err)
+		return err
+	}
+	user.Password = string(hashedPassword)
 
-    // Insert user into database
-    _, err = m.db.Collection("users").InsertOne(ctx, user)
-    if err != nil {
-        log.Printf("MongoDB insert error: %v", err)
-        return err
-    }
+	// Insert user into database
+	_, err = m.db.Collection("users").InsertOne(ctx, user)
+	if err != nil {
+		log.Printf("MongoDB insert error: %v", err)
+		return err
+	}
 
-    return nil
+	return nil
 }
 
 func (m *MongoDBService) getNextID() (int, error) {
@@ -101,8 +101,8 @@ func (m *MongoDBService) GetProperty(query string) (*Property, error) {
 	idNum, err := strconv.Atoi(query)
 	if err == nil {
 		filter = bson.D{{"$or", bson.A{
-			bson.D{{"id", idNum}},  
-			bson.D{{"name", query}}, 
+			bson.D{{"id", idNum}},
+			bson.D{{"name", query}},
 		}}}
 	} else {
 		filter = bson.D{{"name", query}}
@@ -116,80 +116,99 @@ func (m *MongoDBService) GetProperty(query string) (*Property, error) {
 	return &property, nil
 }
 
-
-
-
-
-
 func (m *MongoDBService) GetAllProperties() ([]Property, error) {
-    ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-    defer cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
-    cursor, err := m.db.Collection("apartment_card").Find(ctx, bson.D{})
-    if err != nil {
-        log.Printf("MongoDB find error: %v", err)
-        return nil, err
-    }
-    defer cursor.Close(ctx)
+	cursor, err := m.db.Collection("apartment_card").Find(ctx, bson.D{})
+	if err != nil {
+		log.Printf("MongoDB find error: %v", err)
+		return nil, err
+	}
+	defer cursor.Close(ctx)
 
-    var properties []Property
-    if err = cursor.All(ctx, &properties); err != nil {
-        log.Printf("Cursor decode error: %v", err)
-        return nil, err
-    }
+	var properties []Property
+	if err = cursor.All(ctx, &properties); err != nil {
+		log.Printf("Cursor decode error: %v", err)
+		return nil, err
+	}
 
-    if len(properties) == 0 {
-        log.Println("No properties found in collection")
-        return []Property{}, nil
-    }
+	if len(properties) == 0 {
+		log.Println("No properties found in collection")
+		return []Property{}, nil
+	}
 
-    return properties, nil
+	return properties, nil
 }
 
-
 func (m *MongoDBService) StoreUser(user *User) error {
-    _, err := m.db.Collection("users").InsertOne(context.Background(), user)
-    if err != nil {
-        return err
-    }
-    return nil
+	_, err := m.db.Collection("users").InsertOne(context.Background(), user)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // Add to MongoDBService methods
 func (m *MongoDBService) AddComment(apartmentID int, comment string) error {
-    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-    defer cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
-    filter := bson.D{{"id", apartmentID}}
-    update := bson.D{
-        {"$push", bson.D{
-            {"comments", comment},
-        }},
-    }
+	filter := bson.D{{"id", apartmentID}}
+	update := bson.D{
+		{"$push", bson.D{
+			{"comments", comment},
+		}},
+	}
 
-    result, err := m.db.Collection("apartment_card").UpdateOne(ctx, filter, update)
-    if err != nil {
-        return err
-    }
+	result, err := m.db.Collection("apartment_card").UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
 
-    if result.MatchedCount == 0 {
-        return errors.New("apartment not found")
-    }
+	if result.MatchedCount == 0 {
+		return errors.New("apartment not found")
+	}
 
-    return nil
+	return nil
 }
 
 func (m *MongoDBService) GetUserByUsername(username string) (*User, error) {
-    ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-    defer cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
-    var user User
-    err := m.db.Collection("users").FindOne(ctx, bson.M{"username": username}).Decode(&user)
-    if err != nil {
-        if errors.Is(err, mongo.ErrNoDocuments) {
-            return nil, fmt.Errorf("user not found")
-        }
-        return nil, fmt.Errorf("database error: %v", err)
-    }
-    return &user, nil
+	var user User
+	err := m.db.Collection("users").FindOne(ctx, bson.M{"username": username}).Decode(&user)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, fmt.Errorf("user not found")
+		}
+		return nil, fmt.Errorf("database error: %v", err)
+	}
+	return &user, nil
+}
+
+func (m *MongoDBService) UpdateUser(username string, updatedUser User) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	filter := bson.M{"username": username} // Filter by username
+	update := bson.M{
+		"$set": bson.M{
+			"firstName": updatedUser.FirstName,
+			"lastName":  updatedUser.LastName,
+			"email":     updatedUser.Username,
+		},
+	}
+
+	result, err := m.db.Collection("users").UpdateOne(ctx, filter, update)
+	if err != nil {
+		return fmt.Errorf("database error: %v", err)
+	}
+
+	if result.MatchedCount == 0 {
+		return fmt.Errorf("user not found")
+	}
+
+	return nil
 }
