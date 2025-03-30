@@ -1,4 +1,517 @@
+openapi: 3.0.0
 info:
-  contact: {}
-paths: {}
-swagger: "2.0"
+  title: Housing API
+  description: API documentation for managing users, housing properties, and comments
+  version: 1.0.0
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+      required:
+        - username
+        - password
+        - firstName
+        - lastName
+    UserPayload:
+      type: object
+      properties:
+        firstname:
+          type: string
+        lastname:
+          type: string
+        username:
+          type: string
+        password:
+          type: string
+        email:
+          type: string
+      required:
+        - firstname
+        - lastname
+        - username
+        - password
+    LoginPayload:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - password
+    Housing:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        image:
+          type: string
+        description:
+          type: string
+        address:
+          type: string
+        vacancy:
+          type: integer
+        rating:
+          type: number
+          format: float
+        comments:
+          type: array
+          items:
+            type: string
+      required:
+        - id
+        - name
+        - address
+    Comments:
+      type: object
+      properties:
+        apartmentId:
+          type: integer
+        comment:
+          type: string
+      required:
+        - apartmentId
+        - comment
+paths:
+  /api/user/register:
+    post:
+      summary: Register a new user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserPayload'
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  username:
+                    type: string
+        '400':
+          description: Invalid JSON data or user already exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Error while adding the user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /api/user/login:
+    post:
+      summary: Login a user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginPayload'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  user:
+                    type: object
+                    properties:
+                      firstName:
+                        type: string
+                      lastName:
+                        type: string
+        '400':
+          description: Invalid JSON data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /api/user/getUser:
+    get:
+      summary: Get user by username
+      parameters:
+        - name: username
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /api/user/update:
+    put:
+      summary: Update user information
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '400':
+          description: Invalid JSON data or username required
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /api/housing/add:
+    post:
+      summary: Add a new housing property
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Housing'
+      responses:
+        '200':
+          description: Property stored successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '400':
+          description: Invalid JSON data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '500':
+          description: Failed to store property data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /api/housing/get/{query}:
+    get:
+      summary: Get a housing property by ID
+      parameters:
+        - name: query
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Property found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  property:
+                    $ref: '#/components/schemas/Housing'
+        '404':
+          description: Property not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /api/housing/delete:
+    delete:
+      summary: Delete a housing property
+      responses:
+        '200':
+          description: Property deleted successfully
+        '400':
+          description: Invalid delete
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /api/housing/update:
+    put:
+      summary: Update a housing property
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Housing'
+      responses:
+        '200':
+          description: Property updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '400':
+          description: Invalid JSON data or invalid update
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '500':
+          description: Failed to update property data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /api/housing/getAll:
+    get:
+      summary: Get all housing properties
+      responses:
+        '200':
+          description: List of properties
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                  properties:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Housing'
+        '500':
+          description: Failed to retrieve properties
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  details:
+                    type: string
+  /api/housing/uploadimg:
+    post:
+      summary: Upload an image for a housing property
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Image uploaded successfully
+        '400':
+          description: Failed to get image
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Failed to upload image to Cloudinary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /apt/housing/sortByDistance:
+    get:
+      summary: Get housing properties sorted by distance from a university
+      parameters:
+        - name: university
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of properties sorted by distance
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Housing'
+        '400':
+          description: University name required or failed to fetch apartments
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Failed to calculate distances or fetch apartments
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /api/comments/add:
+    post:
+      summary: Add a new comment to a housing property
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Comments'
+      responses:
+        '200':
+          description: Comment added successfully
+        '400':
+          description: Invalid JSON data or apartment doesn't exist
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Failed to save comment
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /api/comments/delete:
+    delete:
+      summary: Delete a comment
+      responses:
+        '200':
+          description: Comment deleted successfully
+        '400':
+          description: Invalid delete or comment doesn't exist
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /api/comments/get:
+    get:
+      summary: Get a comment by ID
+      responses:
+        '200':
+          description: Comment found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  comment:
+                    $ref: '#/components/schemas/Comments'
+        '400':
+          description: Comment doesn't exist
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
