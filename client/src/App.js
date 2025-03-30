@@ -4,10 +4,9 @@ import Contactform from './components/ContactForm/contactform';
 import SearchResults from './components/SearchResults/searchresults';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Container, Row, Col, Form, InputGroup, Button ,Dropdown} from 'react-bootstrap';
+import { Container, Row, Col, Form, InputGroup, Button, Dropdown } from 'react-bootstrap';
 import { FaSearch } from 'react-icons/fa';
 import Home_pic from './images/home_pic.jpg';
-
 import { BsFillFilterCircleFill } from "react-icons/bs";
 
 function App() {
@@ -15,16 +14,16 @@ function App() {
   const [searchTerm, setSearchTerm] = useState('');
   const [housingData, setHousingData] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
+  const [filterType, setFilterType] = useState('apartment');
 
- 
   useEffect(() => {
     const fetchHousingData = async () => {
       try {
         const response = await fetch('http://localhost:8080/pull');
         if (!response.ok) throw new Error('Failed to fetch housing data');
         const data = await response.json();
-        setHousingData(data.properties);
-        setSearchResults(data.properties); 
+        setHousingData(data.properties || []); 
+        setSearchResults(data.properties || []); 
       } catch (err) {
         console.error('Error fetching housing data:', err);
       }
@@ -32,26 +31,44 @@ function App() {
     fetchHousingData();
   }, []);
 
+  
   const scrollToContact = () => {
     contactRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const handleSearch = (e) => {
-    const value = e.target.value.toLowerCase();
-    setSearchTerm(value);
-
-    const filteredResults = housingData.filter(result =>
-      result.name.toLowerCase().includes(value)
-    );
-
-    setSearchResults(filteredResults);
+  
+  const handleSearchInputChange = (e) => {
+    setSearchTerm(e.target.value);
   };
 
+ 
+  const handleSearch = async () => {
+    if (filterType === 'apartment') {
+      
+      const filteredResults = housingData.filter((result) =>
+        result.name && result.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setSearchResults(filteredResults);
+    } else if (filterType === 'location') {
+     
+      try {
+        const response = await fetch(
+          `http://localhost:8080/apt/sortByDistance?university=${encodeURIComponent(searchTerm)}`
+        );
+        if (!response.ok) throw new Error('Failed to fetch sorted data');
+        const data = await response.json();
+        setSearchResults(data || []); 
+      } catch (err) {
+        console.error('Error fetching sorted data:', err);
+      }
+    }
+  };
 
-  const handleSort = (sortType) => {
-   
-    console.log(`Sorting by ${sortType}`);
-    
+  
+  const handleFilterChange = (type) => {
+    setFilterType(type);
+    setSearchTerm(''); 
+    setSearchResults(housingData);
   };
 
   return (
@@ -70,39 +87,36 @@ function App() {
           <Form className="search-form">
             <InputGroup className="rounded-search-bar">
               <Form.Control
-                placeholder="Apartment Name"
+                placeholder={
+                  filterType === 'apartment'
+                    ? 'Apartment Name'
+                    : 'University Name'
+                }
                 aria-label="Apartment Name"
                 className="search-input"
                 value={searchTerm}
-                onChange={handleSearch}
+                onChange={handleSearchInputChange}
               />
               <div className="search-button-wrapper">
-                <Button className="search-button">
+                <Button className="search-button" onClick={handleSearch}>
                   <FaSearch className="search-icon" />
                 </Button>
                 <Dropdown align="end">
-                  {/* Remove caret by using as={Button} */}
-                  <Dropdown.Toggle
-                    as={Button} // Replace default toggle with Button
-                    variant="light"
-                    className="filter-button no-caret"
-                  >
+                  <Dropdown.Toggle as={Button} variant="light" className="filter-button no-caret">
                     <BsFillFilterCircleFill />
                   </Dropdown.Toggle>
-
-                  {/* Dropdown Menu */}
                   <Dropdown.Menu>
                     <Dropdown.Header>Sort By</Dropdown.Header>
-                    <Dropdown.Item onClick={() => handleSort('rating')}>
-                      Customer Ratings
+                    <Dropdown.Item onClick={() => handleFilterChange('location')}>
+                      Location (University)
                     </Dropdown.Item>
-                    <Dropdown.Item onClick={() => handleSort('alphabetical')}>
-                      Alphabetical (A-Z)
+                    <Dropdown.Item onClick={() => handleFilterChange('apartment')}>
+                      Review
                     </Dropdown.Item>
+                    
                   </Dropdown.Menu>
                 </Dropdown>
               </div>
-             
             </InputGroup>
           </Form>
         </Col>
@@ -110,9 +124,12 @@ function App() {
           <img src={Home_pic} alt="Home" className="home-pic" />
         </Col>
       </Row>
-      <Row className=" card-class-row no-gutters" >
-        <SearchResults housingData={searchResults} />
+
+      <Row className="card-class-row no-gutters">
+        {}
+        <SearchResults housingData={searchResults || []} />
       </Row>
+
       <Row ref={contactRef} className="contact-section">
         <Contactform />
       </Row>
