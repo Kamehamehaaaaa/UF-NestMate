@@ -57,7 +57,13 @@ func AddHousingHandler(c *gin.Context) {
 		return
 	}
 
-	err := database.MongoDB.StoreProperty(&property)
+	_, err := database.MongoDB.GetProperty(strconv.Itoa(property.ID))
+	if err == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Property with id already exists"})
+		return
+	}
+
+	err = database.MongoDB.StoreProperty(&property)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to store property data"})
 		return
@@ -79,6 +85,15 @@ func UpdateHousingHandler(c *gin.Context) {
 		return
 	}
 
+	err = database.MongoDB.DeleteProperty(strconv.Itoa(property.ID))
+	if err != nil {
+		log.Printf("Database error: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error":   "Failed to update properties",
+			"details": "Database operation failed",
+		})
+		return
+	}
 	err = database.MongoDB.StoreProperty(&property)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to update property data"})
@@ -96,6 +111,7 @@ func DeleteHousingHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "invalid delete"})
 		return
 	}
+	c.JSON(http.StatusOK, gin.H{"message": "Property deleted successfully!"})
 }
 
 func UploadImgHandler(c *gin.Context) {

@@ -1,181 +1,252 @@
 package router
 
 import (
-	"apis/data"
+	"apis/cloudinary"
+	"apis/database"
 	"apis/housing"
 	"bytes"
 	"encoding/json"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
+
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
+// Mock for MongoDB
+type MockDatabase struct {
+	mock.Mock
+}
+
 func TestAddHousingHandler(t *testing.T) {
-	data.Housings = make(map[string]housing.Housing)
+	gin.SetMode(gin.TestMode)
+	r := gin.Default()
+	SetupHandlers(r)
 
-	housingPayload := housing.HousingPayload{
-		ID:          "1",
-		Name:        "Apartment1",
-		Address:     "Address",
-		Vacancy:     100,
-		Rating:      4.3,
-		Description: "A nice place to stay.",
-	}
-	payloadBytes, _ := json.Marshal(housingPayload)
+	// _ := new(MockDatabase)
+	database.MongoDB = database.NewMongoDBTestService()
 
-	req, err := http.NewRequest("POST", "/api/housing/add", bytes.NewBuffer(payloadBytes))
-	if err != nil {
-		t.Fatal(err)
-	}
-	recorder := httptest.NewRecorder()
-	handler := http.HandlerFunc(AddHousingHandler)
-	handler.ServeHTTP(recorder, req)
+	database.MongoDB.DeleteProperty("1")
 
-	if status := recorder.Code; status != http.StatusOK {
-		t.Errorf("expected status %d, got %d", http.StatusOK, status)
-	}
+	t.Run("Valid Property Data", func(t *testing.T) {
+		property := housing.Housing{
+			ID:          1,
+			Name:        "Test property",
+			Image:       "https://res.cloudinary.com/dbldemxes/image/upload/v1742855322/",
+			Description: "A beautiful seaside apartment.",
+			Address:     "123 Ocean Drive, Miami, FL",
+			Vacancy:     5,
+			Rating:      4.8,
+		}
+		jsonValue, _ := json.Marshal(property)
+		req, _ := http.NewRequest("POST", "/api/housing/add", bytes.NewBuffer(jsonValue))
 
-	dataEntry, exists := data.Housings["1"]
-	if !exists || dataEntry.Name != "Apartment1" || dataEntry.Address != "Address" {
-		t.Errorf("housing data was not added correctly")
-	}
+		w := httptest.NewRecorder()
+		r.ServeHTTP(w, req)
+
+		mockResponse := `{"message":"Property stored successfully!"}`
+		responseData, _ := io.ReadAll(w.Body)
+		assert.Equal(t, mockResponse, string(responseData))
+		assert.Equal(t, http.StatusOK, w.Code)
+	})
+
+	t.Run("Invalid JSON Data", func(t *testing.T) {
+		body := `{"id": 1`
+		req, _ := http.NewRequest(http.MethodPost, "/api/housing/add", strings.NewReader(body))
+		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
+
+		r.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+		assert.Contains(t, w.Body.String(), "Invalid JSON data")
+	})
+
+	t.Run("Property already exists", func(t *testing.T) {
+		property := housing.Housing{
+			ID:          1,
+			Name:        "Test property",
+			Image:       "https://res.cloudinary.com/dbldemxes/image/upload/v1742855322/",
+			Description: "A beautiful seaside apartment.",
+			Address:     "123 Ocean Drive, Miami, FL",
+			Vacancy:     5,
+			Rating:      4.8,
+		}
+		jsonValue, _ := json.Marshal(property)
+		req, _ := http.NewRequest("POST", "/api/housing/add", bytes.NewBuffer(jsonValue))
+
+		w := httptest.NewRecorder()
+		r.ServeHTTP(w, req)
+
+		mockResponse := `{"message":"Property with id already exists"}`
+		responseData, _ := io.ReadAll(w.Body)
+		assert.Equal(t, mockResponse, string(responseData))
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+	})
 }
 
 func TestGetHousingHandler(t *testing.T) {
-	data.Housings = make(map[string]housing.Housing)
+	gin.SetMode(gin.TestMode)
+	r := gin.Default()
+	SetupHandlers(r)
 
-	h1 := housing.Housing{
-		ID:          "1",
-		Name:        "Apartment1",
-		Address:     "Address1",
-		Vacancy:     100,
-		Rating:      4.3,
-		Description: "A nice place to stay.",
-	}
+	// _ := new(MockDatabase)
+	database.MongoDB = database.NewMongoDBTestService()
 
-	h2 := housing.Housing{
-		ID:          "2",
-		Name:        "Apartment2",
-		Address:     "Address2",
-		Vacancy:     50,
-		Rating:      4.8,
-		Description: "A very nice place to stay.",
-	}
+	t.Run("Get Property Data", func(t *testing.T) {
+		req, _ := http.NewRequest("GET", "/api/housing/get/1", nil)
 
-	data.Housings["1"] = h1
-	data.Housings["2"] = h2
+		w := httptest.NewRecorder()
+		r.ServeHTTP(w, req)
 
-	req, err := http.NewRequest("GET", "/api/housing/get", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
+		assert.Contains(t, w.Body.String(), "Test property")
+		assert.Equal(t, http.StatusOK, w.Code)
+	})
+}
 
-	recorder := httptest.NewRecorder()
-	handler := http.HandlerFunc(GetHousingHandler)
-	handler.ServeHTTP(recorder, req)
+func TestGetAllHousingHandler(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	r := gin.Default()
+	SetupHandlers(r)
 
-	if status := recorder.Code; status != http.StatusOK {
-		t.Errorf("expected status %d, got %d", http.StatusOK, status)
-	}
+	// _ := new(MockDatabase)
+	database.MongoDB = database.NewMongoDBTestService()
 
-	resp := recorder.Result()
-	body, _ := io.ReadAll(resp.Body)
-	var bodyJson map[string]housing.Housing
+	t.Run("Get All Property Data", func(t *testing.T) {
+		property := housing.Housing{
+			ID:          2,
+			Name:        "Test property 2",
+			Image:       "https://res.cloudinary.com/dbldemxes/image/upload/v1742855322/",
+			Description: "A beautiful seaside apartment.",
+			Address:     "123 Ocean Drive, Miami, FL",
+			Vacancy:     5,
+			Rating:      4.8,
+		}
+		database.MongoDB.StoreProperty(&property)
+		req, _ := http.NewRequest("GET", "/api/housing/getAll", nil)
 
-	err = json.Unmarshal(body, &bodyJson)
+		w := httptest.NewRecorder()
+		r.ServeHTTP(w, req)
 
-	if err != nil {
-		t.Errorf("housing data retrived correctly")
-	}
-
-	_, exists := bodyJson["1"]
-	if !exists {
-		t.Errorf("housing data missing entries")
-	}
-
-	_, exists1 := bodyJson["2"]
-	if !exists1 {
-		t.Errorf("housing data missing entries")
-	}
-
+		assert.Contains(t, w.Body.String(), "count\":2")
+		assert.Equal(t, http.StatusOK, w.Code)
+	})
 }
 
 func TestUpdateHousingHandler(t *testing.T) {
-	data.Housings = make(map[string]housing.Housing)
+	gin.SetMode(gin.TestMode)
+	r := gin.Default()
+	SetupHandlers(r)
 
-	h1 := housing.Housing{
-		ID:          "1",
-		Name:        "Apartment1",
-		Address:     "Address1",
-		Vacancy:     100,
-		Rating:      4.3,
-		Description: "A nice place to stay.",
-	}
+	// _ := new(MockDatabase)
+	database.MongoDB = database.NewMongoDBTestService()
 
-	data.Housings["1"] = h1
+	t.Run("Update Property Data", func(t *testing.T) {
+		property := housing.Housing{
+			ID:          1,
+			Name:        "Updated property Name",
+			Image:       "https://res.cloudinary.com/dbldemxes/image/upload/v1742855322/",
+			Description: "A beautiful seaside apartment.",
+			Address:     "123 Ocean Drive, Miami, FL",
+			Vacancy:     5,
+			Rating:      4.8,
+		}
+		jsonValue, _ := json.Marshal(property)
+		req, _ := http.NewRequest("PUT", "/api/housing/update", bytes.NewBuffer(jsonValue))
 
-	housingPayload := housing.HousingPayload{
-		ID:          "1",
-		Name:        "Apartment1",
-		Address:     "Address",
-		Vacancy:     60,
-		Rating:      4.5,
-		Description: "A nice place to stay.",
-	}
-	payloadBytes, _ := json.Marshal(housingPayload)
+		w := httptest.NewRecorder()
+		r.ServeHTTP(w, req)
 
-	req, err := http.NewRequest("PUT", "/api/housing/update", bytes.NewBuffer(payloadBytes))
-	if err != nil {
-		t.Fatal(err)
-	}
-	recorder := httptest.NewRecorder()
-	handler := http.HandlerFunc(UpdateHousingHandler)
-	handler.ServeHTTP(recorder, req)
+		mockResponse := `{"message":"Property updated successfully!"}`
+		responseData, _ := io.ReadAll(w.Body)
+		assert.Equal(t, mockResponse, string(responseData))
+		assert.Equal(t, http.StatusOK, w.Code)
+	})
 
-	if status := recorder.Code; status != http.StatusOK {
-		t.Errorf("expected status %d, got %d", http.StatusOK, status)
-	}
+	t.Run("Property doesnt exist", func(t *testing.T) {
+		property := housing.Housing{
+			ID:          5,
+			Name:        "Update Property Name",
+			Image:       "https://res.cloudinary.com/dbldemxes/image/upload/v1742855322/",
+			Description: "A beautiful seaside apartment.",
+			Address:     "123 Ocean Drive, Miami, FL",
+			Vacancy:     5,
+			Rating:      4.8,
+		}
+		jsonValue, _ := json.Marshal(property)
+		req, _ := http.NewRequest("PUT", "/api/housing/update", bytes.NewBuffer(jsonValue))
 
-	dataEntry, exists := data.Housings["1"]
-	if !exists || dataEntry.Name != "Apartment1" || dataEntry.Rating != 4.5 || dataEntry.Vacancy != 60 {
-		t.Errorf("housing data was not updated correctly")
-	}
+		w := httptest.NewRecorder()
+		r.ServeHTTP(w, req)
+
+		mockResponse := `{"message":"invalid update"}`
+		responseData, _ := io.ReadAll(w.Body)
+		assert.Equal(t, mockResponse, string(responseData))
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+	})
 }
 
 func TestDeleteHousingHandler(t *testing.T) {
-	data.Housings = make(map[string]housing.Housing)
+	gin.SetMode(gin.TestMode)
+	r := gin.Default()
+	SetupHandlers(r)
 
-	h1 := housing.Housing{
-		ID:          "1",
-		Name:        "Apartment1",
-		Address:     "Address1",
-		Vacancy:     100,
-		Rating:      4.3,
-		Description: "A nice place to stay.",
-	}
+	// _ := new(MockDatabase)
+	database.MongoDB = database.NewMongoDBTestService()
 
-	data.Housings["1"] = h1
+	t.Run("Delete Property", func(t *testing.T) {
+		req, _ := http.NewRequest("DELETE", "/api/housing/delete/1", nil)
 
-	housingPayload := housing.HousingPayload{
-		ID: "1",
-	}
-	payloadBytes, _ := json.Marshal(housingPayload)
+		w := httptest.NewRecorder()
+		r.ServeHTTP(w, req)
 
-	req, err := http.NewRequest("DELETE", "/api/housing/delete", bytes.NewBuffer(payloadBytes))
-	if err != nil {
-		t.Fatal(err)
-	}
-	recorder := httptest.NewRecorder()
-	handler := http.HandlerFunc(DeleteHousingHandler)
-	handler.ServeHTTP(recorder, req)
+		mockResponse := `{"message":"Property deleted successfully!"}`
+		responseData, _ := io.ReadAll(w.Body)
+		assert.Equal(t, mockResponse, string(responseData))
+		assert.Equal(t, http.StatusOK, w.Code)
+	})
 
-	if status := recorder.Code; status != http.StatusOK {
-		t.Errorf("expected status %d, got %d", http.StatusOK, status)
-	}
+	t.Run("Invalid Delete", func(t *testing.T) {
+		req, _ := http.NewRequest("DELETE", "/api/housing/delete/1", nil)
 
-	_, exists := data.Housings["1"]
-	if exists {
-		t.Errorf("housing data was not deleted.")
-	}
+		w := httptest.NewRecorder()
+		r.ServeHTTP(w, req)
+
+		mockResponse := `{"message":"invalid delete"}`
+		responseData, _ := io.ReadAll(w.Body)
+		assert.Equal(t, mockResponse, string(responseData))
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+	})
+
+}
+
+func TestUploadImgHandler(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	r := gin.Default()
+	SetupHandlers(r)
+
+	// _ := new(MockDatabase)
+	database.MongoDB = database.NewMongoDBTestService()
+	cloudinary.CloudinaryServiceInst = cloudinary.NewCloudinaryTestService()
+
+	t.Run("Upload image", func(t *testing.T) {
+		body := &bytes.Buffer{}
+		writer := multipart.NewWriter(body)
+		part, _ := writer.CreateFormFile("image", "test.jpg")
+		part.Write([]byte("fake image content"))
+		writer.Close()
+
+		req, _ := http.NewRequest("POST", "/api/housing/uploadimg", body)
+		req.Header.Set("Content-Type", writer.FormDataContentType())
+
+		w := httptest.NewRecorder()
+		r.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusOK, w.Code)
+	})
 }
