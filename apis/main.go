@@ -6,7 +6,7 @@ import (
 	"apis/router"
 
 	"github.com/gin-gonic/gin"
-	httpSwagger "github.com/swaggo/http-swagger"
+  "github.com/swaggo/http-swagger"
 )
 
 func main() {

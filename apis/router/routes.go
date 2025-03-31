@@ -32,4 +32,6 @@ func SetupHandlers(r *gin.Engine) {
 	r.POST("/api/comments/add", AddCommentHandler)
 	r.DELETE("/api/comments/delete", DeleteCommentHandler)
 	r.GET("/api/comments/get", GetCommentHandler)
+	r.GET("/api/filter/ratings", filterRatingsHandler)
+	
 }

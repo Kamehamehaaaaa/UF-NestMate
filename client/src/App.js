@@ -68,7 +68,7 @@ function App() {
      
       try {
         const response = await fetch(
-          `http://localhost:8080/apt/sortByDistance?university=${encodeURIComponent(searchTerm)}`
+          `http://localhost:8080/apt/housing/sortByDistance?university=${encodeURIComponent(searchTerm)}`
         );
         if (!response.ok) throw new Error('Failed to fetch sorted data');
         const data = await response.json();
