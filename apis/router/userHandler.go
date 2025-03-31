@@ -136,6 +136,24 @@ func UpdateUserHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "User updated successfully"})
 }
 
+func DeleteUserHandler(c *gin.Context) {
+	query := c.Query("username")
+
+	// Check if the user already exists
+	if !userExists(query) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "User with username " + query + " doesnt exist"})
+		return
+	} else {
+		err := database.MongoDB.DeleteUser(query)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while deleting the user"})
+			return
+		}
+		c.JSON(http.StatusNoContent, gin.H{"message": "User deleted successfully"})
+		return
+	}
+}
+
 func userExists(username string) bool {
 	_, err := database.MongoDB.GetUserByUsername(username)
 	return err == nil
