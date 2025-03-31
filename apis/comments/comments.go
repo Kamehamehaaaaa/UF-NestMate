@@ -1,13 +1,8 @@
 package comments
 
-import "time"
-
 type Comments struct {
-	ID        string
-	HousingID string
-	Comment   string
-	Rating    float64
-	Timestamp time.Time
+	ApartmentID int    `json:"apartmentId"`
+	Comment     string `json:"comment"`
 }
 
 type CommentsPayload struct {

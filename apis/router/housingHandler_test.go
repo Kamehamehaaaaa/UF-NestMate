@@ -42,7 +42,6 @@ func TestAddHousingHandler(t *testing.T) {
 			Address:     "123 Ocean Drive, Miami, FL",
 			Vacancy:     5,
 			Rating:      4.8,
-			Comments:    []string{},
 		}
 		jsonValue, _ := json.Marshal(property)
 		req, _ := http.NewRequest("POST", "/api/housing/add", bytes.NewBuffer(jsonValue))

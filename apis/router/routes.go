@@ -33,4 +33,5 @@ func SetupHandlers(r *gin.Engine) {
 	r.DELETE("/api/comments/delete/:query", DeleteCommentHandler)
 	r.GET("/api/comments/get/:query", GetCommentHandler)
 	r.GET("/api/comments/getAll/:query", GetAllCommentsHandler)
+	r.GET("/api/filter/ratings", filterRatingsHandler)
 }

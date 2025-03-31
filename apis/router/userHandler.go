@@ -1,117 +1,90 @@
 package router
 
 import (
-	"apis/data"
+	"apis/database"
 	"apis/user"
-	"encoding/json"
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
-	"io"
+	"log"
 	"net/http"
 	"time"
+
+	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 )
 
 var jwtSecretKey = []byte("secret-key") // Use an environment variable for production
 
 // RegisterHandler handles user registration
-func RegisterHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
+func RegisterHandler(c *gin.Context) {
+	var user user.User
 
-	
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		http.Error(w, "Error reading request body", http.StatusBadRequest)
-		return
-	}
-	defer r.Body.Close()
-
-	
-	var userPayload user.UserPayload
-	err = json.Unmarshal(body, &userPayload)
-	if err != nil {
-		http.Error(w, "Error unmarshalling JSON", http.StatusBadRequest)
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON data"})
 		return
 	}
 
 	// Check if the user already exists
-	if !userExists(userPayload.UserName) {
-		
-		data.Users[userPayload.UserName] = user.User{
-			UserId:    time.Now().UnixNano(),
-			FirstName: userPayload.FirstName,
-			LastName:  userPayload.LastName,
-			UserName:  userPayload.UserName,
-			Password:  userPayload.Password, 
-			Email:     userPayload.Email,
-		}
-
-		response := map[string]string{"message": "Registration successful"}
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(response)
+	if userExists(user.UserName) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "User with username " + user.UserName + " already exists"})
+		return
 	} else {
-		
-		response := map[string]string{"message": "User with username " + userPayload.UserName + " already exists"}
-		http.Error(w, response["message"], http.StatusBadRequest)
-	}
-}
-
-
-// LoginHandler handles user login and JWT token creation
-func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		http.Error(w, "Error reading request body", http.StatusBadRequest)
-		return
-	}
-	defer r.Body.Close()
-
-	var loginPayload user.LoginPayload
-	err = json.Unmarshal(body, &loginPayload)
-	if err != nil {
-		http.Error(w, "Error unmarshalling JSON", http.StatusBadRequest)
-		return
-	}
-
-	// Verify the username and password
-	if user, exists := data.Users[loginPayload.UserName]; exists {
-		err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginPayload.Password))
+		err := database.MongoDB.RegisterUser(&user)
 		if err != nil {
-			http.Error(w, "Invalid username or password", http.StatusUnauthorized)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while adding the user"})
 			return
 		}
-
-		
-		token := generateJWT(user.UserName)
-		fmt.Print(token)
-
-		// Send the JWT token back to the client
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(map[string]string{"token": token})
-	} else {
-		http.Error(w, "Invalid username or password", http.StatusUnauthorized)
+		c.JSON(http.StatusCreated, gin.H{
+			"message":  "User registered successfully",
+			"username": user.UserName,
+		})
+		return
 	}
 }
 
+// LoginHandler handles user login and JWT token creation
+func LoginHandler(c *gin.Context) {
+	var loginReq user.LoginPayload
+
+	if err := c.ShouldBindJSON(&loginReq); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON data"})
+		return
+	}
+
+	storedUser, err := database.MongoDB.GetUserByUsername(loginReq.Username)
+	if err != nil {
+		log.Printf("Login error: %v", err)
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+		return
+	}
+
+	err = bcrypt.CompareHashAndPassword(
+		[]byte(storedUser.Password),
+		[]byte(loginReq.Password),
+	)
+
+	if err != nil {
+		log.Printf("Password mismatch for user: %s", loginReq.Username)
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Login successful",
+		"user": gin.H{
+			"firstName": storedUser.FirstName,
+			"lastName":  storedUser.LastName,
+		},
+	})
+}
 
 func generateJWT(username string) string {
-	
+
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"username": username,
 		"exp":      time.Now().Add(1 * time.Hour).Unix(), // Expiry time
 	})
 
-	
 	tokenString, err := token.SignedString(jwtSecretKey)
 	if err != nil {
 		fmt.Println("Error signing the token:", err)
@@ -120,21 +93,50 @@ func generateJWT(username string) string {
 	return tokenString
 }
 
+func GetUserHandler(c *gin.Context) {
+	query := c.Query("username")
 
+	fmt.Println(query)
 
-func GetUsersHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+	user, err := database.MongoDB.GetUserByUsername(query)
+	if err != nil {
+		fmt.Println(err)
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(data.Users)
-	w.WriteHeader(http.StatusOK)
+	c.JSON(http.StatusOK, user)
 }
-func userExists(username string) bool {
-	if _, exists := data.Users[username]; exists {
-		return true
+
+func UpdateUserHandler(c *gin.Context) {
+	var user user.User
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON data"})
+		return
 	}
-	return false
+
+	fmt.Println("herer")
+	fmt.Println(user)
+
+	if user.UserName == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Username is required"})
+		return
+	}
+
+	err := database.MongoDB.UpdateUser(user.UserName, user)
+	if err != nil {
+		if err.Error() == "user not found" {
+			c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "User updated successfully"})
+}
+
+func userExists(username string) bool {
+	_, err := database.MongoDB.GetUserByUsername(username)
+	return err == nil
 }
