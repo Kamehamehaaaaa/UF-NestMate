@@ -328,3 +328,21 @@ func (m *MongoDBService) GetAllCommentsForApartment(query string) ([]string, err
 	}
 	return property.Comments, nil
 }
+
+func (m *MongoDBService) DeleteUser(username string) error {
+	var user user.User
+
+	filter := bson.M{"username": username} // Filter by username
+
+	err := m.db.Collection("users").FindOne(context.Background(), filter).Decode(&user)
+	if err != nil {
+		return err
+	}
+
+	err = m.db.Collection("users").Drop(context.Background())
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

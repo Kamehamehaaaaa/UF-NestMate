@@ -18,10 +18,12 @@ func SetupHandlers(r *gin.Engine) {
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
+
 	r.POST("/api/user/register", RegisterHandler)
 	r.POST("/api/user/login", LoginHandler)
 	r.GET("/api/user/getUser", GetUserHandler)
 	r.PUT("/api/user/update", UpdateUserHandler)
+	r.DELETE("/api/user/delete", DeleteUserHandler)
 	r.POST("/api/housing/add", AddHousingHandler)
 	r.GET("/api/housing/get/:query", GetHousingHandler)
 	r.DELETE("/api/housing/delete/:query", DeleteHousingHandler)
@@ -34,4 +36,5 @@ func SetupHandlers(r *gin.Engine) {
 	r.GET("/api/comments/get/:query", GetCommentHandler)
 	r.GET("/api/comments/getAll/:query", GetAllCommentsHandler)
 	r.GET("/api/filter/ratings", filterRatingsHandler)
+	r.GET("/api/housing/summary", ReviewSummarizerHandler)
 }

@@ -273,3 +273,8 @@ func filterRatingsHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, properties)
 }
+
+func ReviewSummarizerHandler(c *gin.Context) {
+
+	c.JSON(http.StatusOK, gin.H{"message": "Indian community with good ambience"})
+}
