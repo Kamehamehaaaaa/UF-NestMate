@@ -48,7 +48,7 @@ function App() {
       
       try {
         const response = await fetch(
-          `http://localhost:8080/filter/ratings`
+          `http://localhost:8080/api/filter/ratings`
         );
         if (!response.ok) throw new Error('Failed to fetch sorted data');
         const data = await response.json();
