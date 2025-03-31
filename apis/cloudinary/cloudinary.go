@@ -29,6 +29,17 @@ func NewCloudinaryService() *CloudinaryService {
 	return &CloudinaryService{client: cld}
 }
 
+func NewCloudinaryTestService() *CloudinaryService {
+	//cld, err := cloudinary.NewFromURL(os.Getenv("CLOUDINARY_URL"))
+	const cloudinaryURL = "cloudinary://313962122721152:oYF7Z9sXEYEOU6WuuAQ7jgvbywc@drebuc71d"
+	cld, err := cloudinary.NewFromURL(cloudinaryURL)
+	if err != nil {
+		log.Fatalf("Failed to initialize Cloudinary: %v", err)
+	}
+
+	return &CloudinaryService{client: cld}
+}
+
 func (c *CloudinaryService) UploadImage(file multipart.File, filename string) (string, error) {
 	publicID := strings.Split(filename, ".")[0]
 

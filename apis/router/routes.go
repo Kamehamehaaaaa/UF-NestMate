@@ -24,7 +24,7 @@ func SetupHandlers(r *gin.Engine) {
 	r.PUT("/api/user/update", UpdateUserHandler)
 	r.POST("/api/housing/add", AddHousingHandler)
 	r.GET("/api/housing/get/:query", GetHousingHandler)
-	r.DELETE("/api/housing/delete", DeleteHousingHandler)
+	r.DELETE("/api/housing/delete/:query", DeleteHousingHandler)
 	r.PUT("/api/housing/update", UpdateHousingHandler)
 	r.GET("/api/housing/getAll", GetAllHousingHandler)
 	r.POST("/api/housing/uploadimg", UploadImgHandler)

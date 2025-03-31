@@ -43,6 +43,23 @@ func NewMongoDBService() *MongoDBService {
 	return &MongoDBService{client: client, db: db}
 }
 
+func NewMongoDBTestService() *MongoDBService {
+	//clientOptions := options.Client().ApplyURI("mongodb://192.168.0.74:27017")
+	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+	client, err := mongo.Connect(context.Background(), clientOptions)
+	if err != nil {
+		log.Fatalf("Failed to connect to MongoDB: %v", err)
+	}
+
+	err = client.Ping(context.Background(), nil)
+	if err != nil {
+		log.Fatalf("Failed to ping MongoDB: %v", err)
+	}
+
+	db := client.Database("UF_NestMate_unittests")
+	return &MongoDBService{client: client, db: db}
+}
+
 func (m *MongoDBService) RegisterUser(user *user.User) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
