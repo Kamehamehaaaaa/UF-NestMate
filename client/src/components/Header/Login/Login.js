@@ -20,7 +20,7 @@ function Login({ onClose, onLoginSuccess }) {
       }
 
       try {
-        const response = await fetch('http://localhost:8080/register', {
+        const response = await fetch('http://localhost:8080/api/user/register', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -46,7 +46,7 @@ function Login({ onClose, onLoginSuccess }) {
       }
     } else {
       try {
-        const response = await fetch('http://localhost:8080/login', {
+        const response = await fetch('http://localhost:8080/api/user/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -62,7 +62,7 @@ function Login({ onClose, onLoginSuccess }) {
           
           
           // Fetch user details from backend using username
-          const userResponse = await fetch(`http://localhost:8080/user?username=${username}`);
+          const userResponse = await fetch(`http://localhost:8080/api/user/getUser?username=${username}`);
           const userData = await userResponse.json();
           
           if (userResponse.ok) {

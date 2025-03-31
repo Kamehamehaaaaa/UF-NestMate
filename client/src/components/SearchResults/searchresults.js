@@ -30,7 +30,7 @@ const SearchResults = ({housingData}) => {
       const newComment = `User: ${comment}`;
       
       
-      fetch('http://localhost:8080/comment', {
+      fetch('http://localhost:8080/api/comments/add', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
