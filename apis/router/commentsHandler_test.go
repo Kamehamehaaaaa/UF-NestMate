@@ -2,235 +2,125 @@ package router
 
 import (
 	"apis/comments"
-	"apis/data"
+	"apis/database"
 	"apis/housing"
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestAddCommentHandler(t *testing.T) {
-	data.Housings = make(map[string]housing.Housing)
+	gin.SetMode(gin.TestMode)
+	r := gin.Default()
+	SetupHandlers(r)
 
-	h1 := housing.Housing{
-		ID:          "1",
-		Name:        "Apartment1",
-		Address:     "Address1",
-		Vacancy:     100,
-		Rating:      4.3,
-		Description: "A nice place to stay.",
+	// _ := new(MockDatabase)
+	database.MongoDB = database.NewMongoDBTestService()
+
+	property := housing.Housing{
+		ID:          1,
+		Name:        "Test property",
+		Image:       "https://res.cloudinary.com/dbldemxes/image/upload/v1742855322/",
+		Description: "A beautiful seaside apartment.",
+		Address:     "123 Ocean Drive, Miami, FL",
+		Vacancy:     5,
+		Rating:      4.8,
+		Comments:    []string{},
 	}
 
-	data.Housings["1"] = h1
+	t.Run("Add comment successful", func(t *testing.T) {
+		comment := comments.Comments{ApartmentID: 1, Comment: "Test comment"}
+		database.MongoDB.StoreProperty(&property)
+		jsonValue, _ := json.Marshal(comment)
+		req, _ := http.NewRequest("POST", "/api/comments/add", bytes.NewBuffer(jsonValue))
 
-	commentPayload := comments.CommentsPayload{
-		ID:        "1001",
-		HousingID: "1",
-		Comment:   "Great space to live",
-		Rating:    5.0,
-	}
-	payloadBytes, _ := json.Marshal(commentPayload)
+		w := httptest.NewRecorder()
+		r.ServeHTTP(w, req)
 
-	req, err := http.NewRequest("POST", "/api/comment/add", bytes.NewBuffer(payloadBytes))
-	if err != nil {
-		t.Fatal(err)
-	}
-	recorder := httptest.NewRecorder()
-	handler := http.HandlerFunc(addCommentHandler)
-	handler.ServeHTTP(recorder, req)
+		mockResponse := `{"message":"Comment added successfully"}`
+		responseData, _ := io.ReadAll(w.Body)
+		assert.Equal(t, mockResponse, string(responseData))
+		assert.Equal(t, http.StatusOK, w.Code)
+	})
 
-	if status := recorder.Code; status != http.StatusOK {
-		t.Errorf("expected status %d, got %d", http.StatusOK, status)
-	}
+	t.Run("Add comment failed", func(t *testing.T) {
+		comment := comments.Comments{ApartmentID: 101, Comment: "Test comment"}
+		database.MongoDB.StoreProperty(&property)
+		jsonValue, _ := json.Marshal(comment)
+		req, _ := http.NewRequest("POST", "/api/comments/add", bytes.NewBuffer(jsonValue))
 
-	dataEntry, exists := data.Comments["1001"]
-	if !exists || dataEntry.HousingID != "1" || dataEntry.Comment != "Great space to live" {
-		t.Errorf("comment was not added correctly")
-	}
+		w := httptest.NewRecorder()
+		r.ServeHTTP(w, req)
+
+		mockResponse := `{"error":"The apartment doesnt exist"}`
+		responseData, _ := io.ReadAll(w.Body)
+		assert.Equal(t, mockResponse, string(responseData))
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+	})
 }
 
-func TestGetCommentHandler(t *testing.T) {
-	data.Housings = make(map[string]housing.Housing)
+func TestGetAllCommentsHandler(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	r := gin.Default()
+	SetupHandlers(r)
 
-	h1 := housing.Housing{
-		ID:          "1",
-		Name:        "Apartment1",
-		Address:     "Address1",
-		Vacancy:     100,
-		Rating:      4.3,
-		Description: "A nice place to stay.",
-	}
+	// _ := new(MockDatabase)
+	database.MongoDB = database.NewMongoDBTestService()
 
-	data.Housings["1"] = h1
+	t.Run("Get All Property Data", func(t *testing.T) {
+		property := housing.Housing{
+			ID:          2,
+			Name:        "Test property 2",
+			Image:       "https://res.cloudinary.com/dbldemxes/image/upload/v1742855322/",
+			Description: "A beautiful seaside apartment.",
+			Address:     "123 Ocean Drive, Miami, FL",
+			Vacancy:     5,
+			Rating:      4.8,
+			Comments:    []string{"test comment 1", "test comment 2", "test comment 3"},
+		}
+		database.MongoDB.StoreProperty(&property)
+		req, _ := http.NewRequest("GET", "/api/comments/getAll/2", nil)
 
-	data.Comments = make(map[string]comments.Comments)
+		w := httptest.NewRecorder()
+		r.ServeHTTP(w, req)
 
-	c1 := comments.Comments{
-		ID:        "1001",
-		HousingID: "1",
-		Comment:   "Great place to live",
-		Rating:    5.0,
-	}
+		assert.Contains(t, w.Body.String(), "count\":3")
+		assert.Equal(t, http.StatusOK, w.Code)
+	})
 
-	c2 := comments.Comments{
-		ID:        "1002",
-		HousingID: "1",
-		Comment:   "Suburban vibes",
-		Rating:    4.5,
-	}
+	t.Run("get all comments failed", func(t *testing.T) {
+		req, _ := http.NewRequest("GET", "/api/comments/getAll/100", nil)
 
-	data.Comments["1001"] = c1
-	data.Comments["1002"] = c2
+		w := httptest.NewRecorder()
+		r.ServeHTTP(w, req)
 
-	commentPayload := comments.CommentsPayload{
-		HousingID: "1",
-	}
-	payloadBytes, _ := json.Marshal(commentPayload)
-
-	req, err := http.NewRequest("GET", "/api/comments/get", bytes.NewBuffer(payloadBytes))
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	recorder := httptest.NewRecorder()
-	handler := http.HandlerFunc(getCommentHandler)
-	handler.ServeHTTP(recorder, req)
-
-	if status := recorder.Code; status != http.StatusOK {
-		t.Errorf("expected status %d, got %d", http.StatusOK, status)
-	}
-
-	resp := recorder.Result()
-	body, _ := io.ReadAll(resp.Body)
-	var bodyJson map[string]comments.Comments
-
-	err = json.Unmarshal(body, &bodyJson)
-
-	if err != nil {
-		t.Errorf("comment data not retrived correctly")
-	}
-
-	_, exists := bodyJson["1001"]
-	if !exists {
-		t.Errorf("comment %d doesnt exist", 1001)
-	}
-
-	_, exists1 := bodyJson["1002"]
-	if !exists1 {
-		t.Errorf("comment %d doesnt exist", 1001)
-	}
-
-}
-
-func TestGetCommentHandler2(t *testing.T) {
-	data.Housings = make(map[string]housing.Housing)
-
-	h1 := housing.Housing{
-		ID:          "1",
-		Name:        "Apartment1",
-		Address:     "Address1",
-		Vacancy:     100,
-		Rating:      4.3,
-		Description: "A nice place to stay.",
-	}
-
-	data.Housings["1"] = h1
-
-	data.Comments = make(map[string]comments.Comments)
-
-	c1 := comments.Comments{
-		ID:        "1001",
-		HousingID: "1",
-		Comment:   "Great place to live",
-		Rating:    5.0,
-	}
-
-	data.Comments["1001"] = c1
-
-	commentPayload := comments.CommentsPayload{
-		ID: "1001",
-	}
-	payloadBytes, _ := json.Marshal(commentPayload)
-
-	req, err := http.NewRequest("GET", "/api/comments/get", bytes.NewBuffer(payloadBytes))
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	recorder := httptest.NewRecorder()
-	handler := http.HandlerFunc(getCommentHandler)
-	handler.ServeHTTP(recorder, req)
-
-	if status := recorder.Code; status != http.StatusOK {
-		t.Errorf("expected status %d, got %d", http.StatusOK, status)
-	}
-
-	resp := recorder.Result()
-	body, _ := io.ReadAll(resp.Body)
-	var bodyJson comments.Comments
-
-	err = json.Unmarshal(body, &bodyJson)
-
-	fmt.Println(bodyJson)
-	fmt.Println(err)
-
-	if err != nil {
-		t.Errorf("comment data not retrived correctly")
-	}
-
-	if bodyJson.ID != "1001" {
-		t.Errorf("comment %d doesnt exist", 1001)
-	}
+		mockResponse := `{"error":"apartment doesnt exist"}`
+		responseData, _ := io.ReadAll(w.Body)
+		assert.Equal(t, mockResponse, string(responseData))
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+	})
 }
 
 func TestDeleteCommentHandler(t *testing.T) {
-	data.Housings = make(map[string]housing.Housing)
+	gin.SetMode(gin.TestMode)
+	r := gin.Default()
+	SetupHandlers(r)
 
-	h1 := housing.Housing{
-		ID:          "1",
-		Name:        "Apartment1",
-		Address:     "Address1",
-		Vacancy:     100,
-		Rating:      4.3,
-		Description: "A nice place to stay.",
-	}
+	// _ := new(MockDatabase)
+	database.MongoDB = database.NewMongoDBTestService()
 
-	data.Housings["1"] = h1
+	t.Run("Delete comment", func(t *testing.T) {
+		req, _ := http.NewRequest("DELETE", "/api/comments/delete/1", nil)
 
-	data.Comments = make(map[string]comments.Comments)
+		w := httptest.NewRecorder()
+		r.ServeHTTP(w, req)
 
-	c1 := comments.Comments{
-		ID:        "1001",
-		HousingID: "1",
-		Comment:   "New place",
-		Rating:    4.0,
-	}
-
-	data.Comments["1001"] = c1
-
-	commentPayload := comments.CommentsPayload{
-		ID: "1001",
-	}
-	payloadBytes, _ := json.Marshal(commentPayload)
-
-	req, err := http.NewRequest("DELETE", "/api/housing/delete", bytes.NewBuffer(payloadBytes))
-	if err != nil {
-		t.Fatal(err)
-	}
-	recorder := httptest.NewRecorder()
-	handler := http.HandlerFunc(deleteCommentHandler)
-	handler.ServeHTTP(recorder, req)
-
-	if status := recorder.Code; status != http.StatusOK {
-		t.Errorf("expected status %d, got %d", http.StatusOK, status)
-	}
-
-	_, exists := data.Comments["1001"]
-	if exists {
-		t.Errorf("comment was not deleted.")
-	}
+		assert.Equal(t, http.StatusOK, w.Code)
+	})
 }

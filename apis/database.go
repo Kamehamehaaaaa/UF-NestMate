@@ -1,4 +1,4 @@
-package main
+package database
 
 import (
 	"context"
@@ -9,30 +9,25 @@ import (
 	"fmt"
 	"time"
 
+	"apis/comments"
+	"apis/housing"
+	"apis/user"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/crypto/bcrypt"
 )
 
+var MongoDB *MongoDBService
+
 type MongoDBService struct {
 	client *mongo.Client
 	db     *mongo.Database
 }
 
-type Property struct {
-	ID          int      `json:"id" bson:"id"`
-	Name        string   `json:"name" bson:"name"`
-	Image       string   `json:"image" bson:"image"`
-	Description string   `json:"description" bson:"description"`
-	Address     string   `json:"address" bson:"address"`
-	Vacancy     int      `json:"vacancy" bson:"vacancy"`
-	Rating      float64  `json:"rating" bson:"rating"`
-	Comments    []string `json:"comments" bson:"comments"`
-}
-
 func NewMongoDBService() *MongoDBService {
-	// clientOptions := options.Client().ApplyURI("mongodb://192.168.0.74:27017")
+	//clientOptions := options.Client().ApplyURI("mongodb://192.168.0.74:27017")
 	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
 	client, err := mongo.Connect(context.Background(), clientOptions)
 	if err != nil {
@@ -48,7 +43,24 @@ func NewMongoDBService() *MongoDBService {
 	return &MongoDBService{client: client, db: db}
 }
 
-func (m *MongoDBService) RegisterUser(user *User) error {
+func NewMongoDBTestService() *MongoDBService {
+	//clientOptions := options.Client().ApplyURI("mongodb://192.168.0.74:27017")
+	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+	client, err := mongo.Connect(context.Background(), clientOptions)
+	if err != nil {
+		log.Fatalf("Failed to connect to MongoDB: %v", err)
+	}
+
+	err = client.Ping(context.Background(), nil)
+	if err != nil {
+		log.Fatalf("Failed to ping MongoDB: %v", err)
+	}
+
+	db := client.Database("UF_NestMate_unittests")
+	return &MongoDBService{client: client, db: db}
+}
+
+func (m *MongoDBService) RegisterUser(user *user.User) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -71,19 +83,19 @@ func (m *MongoDBService) RegisterUser(user *User) error {
 }
 
 func (m *MongoDBService) getNextID() (int, error) {
-	var lastProperty Property
+	var lastProperty housing.Housing
 	opts := options.FindOne().SetSort(bson.D{{"id", -1}})
 	err := m.db.Collection("apartment_card").FindOne(context.Background(), bson.D{}, opts).Decode(&lastProperty)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return 1, nil
+			return 1, nil // Start from 1 if no documents exist
 		}
 		return 0, err
 	}
 	return lastProperty.ID + 1, nil
 }
 
-func (m *MongoDBService) StoreProperty(property *Property) error {
+func (m *MongoDBService) StoreProperty(property *housing.Housing) error {
 	id, err := m.getNextID()
 	if err != nil {
 		return err
@@ -94,8 +106,8 @@ func (m *MongoDBService) StoreProperty(property *Property) error {
 	return err
 }
 
-func (m *MongoDBService) GetProperty(query string) (*Property, error) {
-	var property Property
+func (m *MongoDBService) GetProperty(query string) (*housing.Housing, error) {
+	var property housing.Housing
 	var filter bson.D
 
 	idNum, err := strconv.Atoi(query)
@@ -116,7 +128,34 @@ func (m *MongoDBService) GetProperty(query string) (*Property, error) {
 	return &property, nil
 }
 
-func (m *MongoDBService) GetAllProperties() ([]Property, error) {
+func (m *MongoDBService) DeleteProperty(query string) error {
+	var property housing.Housing
+	var filter bson.D
+
+	idNum, err := strconv.Atoi(query)
+	if err == nil {
+		filter = bson.D{{"$or", bson.A{
+			bson.D{{"id", idNum}},
+			bson.D{{"name", query}},
+		}}}
+	} else {
+		filter = bson.D{{"name", query}}
+	}
+
+	err = m.db.Collection("apartment_card").FindOne(context.Background(), filter).Decode(&property)
+	if err != nil {
+		return err
+	}
+
+	err = m.db.Collection("apartment_card").Drop(context.Background())
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *MongoDBService) GetAllProperties() ([]housing.Housing, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -127,7 +166,7 @@ func (m *MongoDBService) GetAllProperties() ([]Property, error) {
 	}
 	defer cursor.Close(ctx)
 
-	var properties []Property
+	var properties []housing.Housing
 	if err = cursor.All(ctx, &properties); err != nil {
 		log.Printf("Cursor decode error: %v", err)
 		return nil, err
@@ -135,13 +174,13 @@ func (m *MongoDBService) GetAllProperties() ([]Property, error) {
 
 	if len(properties) == 0 {
 		log.Println("No properties found in collection")
-		return []Property{}, nil
+		return []housing.Housing{}, nil
 	}
 
 	return properties, nil
 }
 
-func (m *MongoDBService) StoreUser(user *User) error {
+func (m *MongoDBService) StoreUser(user *user.User) error {
 	_, err := m.db.Collection("users").InsertOne(context.Background(), user)
 	if err != nil {
 		return err
@@ -173,11 +212,11 @@ func (m *MongoDBService) AddComment(apartmentID int, comment string) error {
 	return nil
 }
 
-func (m *MongoDBService) GetUserByUsername(username string) (*User, error) {
+func (m *MongoDBService) GetUserByUsername(username string) (*user.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	var user User
+	var user user.User
 	err := m.db.Collection("users").FindOne(ctx, bson.M{"username": username}).Decode(&user)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
@@ -188,7 +227,43 @@ func (m *MongoDBService) GetUserByUsername(username string) (*User, error) {
 	return &user, nil
 }
 
-func (m *MongoDBService) UpdateUser(username string, updatedUser User) error {
+func (m *MongoDBService) DeleteComment(query string) error {
+	// var filter bson.D
+
+	// idNum, err := strconv.Atoi(query)
+	// if err == nil {
+	// 	filter = bson.D{{"id", idNum}}
+	// } else {
+	// 	return fmt.Errorf("database error: %v", err)
+	// }
+
+	// err = m.db.Collection("apartment_card").Drop(context.Background())
+	// if err != nil {
+	// 	return err
+	// }
+
+	return nil
+}
+
+func (m *MongoDBService) GetComment(query string) (*comments.Comments, error) {
+	// var filter bson.D
+
+	// idNum, err := strconv.Atoi(query)
+	// if err == nil {
+	// 	filter = bson.D{{"id", idNum}}
+	// } else {
+	// 	return fmt.Errorf("database error: %v", err)
+	// }
+
+	// err = m.db.Collection("apartment_card").Drop(context.Background())
+	// if err != nil {
+	// 	return err
+	// }
+
+	return nil, nil
+}
+
+func (m *MongoDBService) UpdateUser(username string, updatedUser user.User) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -197,7 +272,7 @@ func (m *MongoDBService) UpdateUser(username string, updatedUser User) error {
 		"$set": bson.M{
 			"firstName": updatedUser.FirstName,
 			"lastName":  updatedUser.LastName,
-			"email":     updatedUser.Username,
+			"email":     updatedUser.UserName,
 		},
 	}
 
@@ -213,7 +288,7 @@ func (m *MongoDBService) UpdateUser(username string, updatedUser User) error {
 	return nil
 }
 
-func (m *MongoDBService) GetPropertiesSortedByRating() ([]Property, error) {
+func (m *MongoDBService) GetPropertiesSortedByRating() ([]housing.Housing, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -224,10 +299,32 @@ func (m *MongoDBService) GetPropertiesSortedByRating() ([]Property, error) {
 	}
 	defer cursor.Close(ctx)
 
-	var properties []Property
+	var properties []housing.Housing
 	if err = cursor.All(ctx, &properties); err != nil {
 		return nil, err
 	}
 
 	return properties, nil
+}
+
+func (m *MongoDBService) GetAllCommentsForApartment(query string) ([]string, error) {
+	var property housing.Housing
+	var filter bson.D
+
+	idNum, err := strconv.Atoi(query)
+	if err == nil {
+		filter = bson.D{{"$or", bson.A{
+			bson.D{{"id", idNum}},
+			bson.D{{"name", query}},
+		}}}
+	} else {
+		filter = bson.D{{"name", query}}
+	}
+
+	err = m.db.Collection("apartment_card").FindOne(context.Background(), filter).Decode(&property)
+
+	if err != nil {
+		return nil, err
+	}
+	return property.Comments, nil
 }
