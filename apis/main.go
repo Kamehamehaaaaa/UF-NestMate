@@ -6,6 +6,8 @@ import (
 	"apis/router"
 
 	"github.com/gin-gonic/gin"
+    "github.com/swaggo/http-swagger"
+    
 )
 func main() {
 	database.MongoDB = database.NewMongoDBService()
