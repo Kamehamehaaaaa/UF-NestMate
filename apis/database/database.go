@@ -306,3 +306,25 @@ func (m *MongoDBService) GetPropertiesSortedByRating() ([]housing.Housing, error
 
 	return properties, nil
 }
+
+func (m *MongoDBService) GetAllCommentsForApartment(query string) ([]string, error) {
+	var property housing.Housing
+	var filter bson.D
+
+	idNum, err := strconv.Atoi(query)
+	if err == nil {
+		filter = bson.D{{"$or", bson.A{
+			bson.D{{"id", idNum}},
+			bson.D{{"name", query}},
+		}}}
+	} else {
+		filter = bson.D{{"name", query}}
+	}
+
+	err = m.db.Collection("apartment_card").FindOne(context.Background(), filter).Decode(&property)
+
+	if err != nil {
+		return nil, err
+	}
+	return property.Comments, nil
+}

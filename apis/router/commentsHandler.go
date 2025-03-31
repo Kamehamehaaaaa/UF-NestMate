@@ -3,6 +3,7 @@ package router
 import (
 	"apis/comments"
 	"apis/database"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -21,10 +22,13 @@ func AddCommentHandler(c *gin.Context) {
 
 	if err == nil {
 		err := database.MongoDB.AddComment(comment.ApartmentID, comment.Comment)
+		fmt.Println(err)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save comment"})
 			return
 		}
+		c.JSON(http.StatusOK, gin.H{"message": "Comment added successfully"})
+		return
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "The apartment doesnt exist"})
 		return
@@ -46,6 +50,8 @@ func DeleteCommentHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "comment doesnt exist"})
 		return
 	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "comment deleted"})
 }
 
 func GetCommentHandler(c *gin.Context) {
@@ -60,12 +66,15 @@ func GetCommentHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"comment": comment})
 }
 
-// func getAllCommentsForHousing(housingId string) map[string]comments.Comments {
-// 	var comments = make(map[string]comments.Comments)
-// 	for key, value := range data.Comments {
-// 		if value.HousingID == housingId {
-// 			comments[key] = value
-// 		}
-// 	}
-// 	return comments
-// }
+func GetAllCommentsHandler(c *gin.Context) {
+	query := c.Param("query")
+
+	comment, err := database.MongoDB.GetAllCommentsForApartment(query)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "apartment doesnt exist"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"count": len(comment), "comment": comment})
+}

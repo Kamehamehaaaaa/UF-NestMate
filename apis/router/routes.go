@@ -30,8 +30,8 @@ func SetupHandlers(r *gin.Engine) {
 	r.POST("/api/housing/uploadimg", UploadImgHandler)
 	r.GET("/apt/housing/sortByDistance", sortByDistanceHandler)
 	r.POST("/api/comments/add", AddCommentHandler)
-	r.DELETE("/api/comments/delete", DeleteCommentHandler)
-	r.GET("/api/comments/get", GetCommentHandler)
+	r.DELETE("/api/comments/delete/:query", DeleteCommentHandler)
+	r.GET("/api/comments/get/:query", GetCommentHandler)
+	r.GET("/api/comments/getAll/:query", GetAllCommentsHandler)
 	r.GET("/api/filter/ratings", filterRatingsHandler)
-	
 }
