@@ -7,12 +7,17 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
-
 func main() {
 	database.MongoDB = database.NewMongoDBService()
 	cloudinary.CloudinaryServiceInst = cloudinary.NewCloudinaryService()
 
 	r := gin.Default()
+  
+  r.StaticFile("/docs/swagger.yaml", "./docs/swagger.yaml")
+
+  r.GET("/swagger/*any", gin.WrapH(httpSwagger.Handler(
+		httpSwagger.URL("/docs/swagger.yaml"),
+	)))
 
 	router.SetupHandlers(r)
 
