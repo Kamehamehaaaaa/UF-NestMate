@@ -96,6 +96,7 @@ describe('SearchResults Component', () => {
     fireEvent.click(screen.getByText('Post Comment'));
     
   });
+  
 
   test('closes modal when Close button is clicked', async () => {
     render(<SearchResults housingData={mockHousingData} />);
@@ -103,4 +104,7 @@ describe('SearchResults Component', () => {
     fireEvent.click(screen.getByText('Close'));
    
   });
+
+  
 });
+
