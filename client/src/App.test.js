@@ -107,10 +107,12 @@ test('scrolls to contact section when scrollToContact is called', () => {
   
     const locationOption = screen.getByText(/Location \(University\)/i);
     const ratingOption = screen.getByText(/Rating/i);
+    
    
   
     expect(locationOption).toBeInTheDocument();
     expect(ratingOption).toBeInTheDocument();
+   
   });
   
   test('changes placeholder text to "University Name" when location filter is selected', () => {

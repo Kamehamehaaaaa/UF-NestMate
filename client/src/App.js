@@ -128,9 +128,7 @@ function App() {
                     <Dropdown.Item onClick={() => handleFilterChange('rating')}>
                       Rating
                     </Dropdown.Item>
-                    <Dropdown.Item onClick={() => handleFilterChange('apartment')}>
-                      Apartment
-                    </Dropdown.Item>
+                    
                     
                   </Dropdown.Menu>
                 </Dropdown>
