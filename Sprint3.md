@@ -117,57 +117,71 @@
 ### For User APIs 
 
 **TestRegisterHandler**
+- /api/user/register
 - This registers new users.
 - This has two test cases: Register User Success, Register User Failure.
 
 **TestUpdateUserHandler**
+- /api/user/update
 - This updates users first name and last name.
 - This has one test case: Register User Success.
 
 **TestDeleteHandler**
+- /api/user/delete
 - This Deletes user from database. 
 - This has two test cases: Delete User Success, Delete User Failure.
 
 **TestGetUserHandler**
+- /api/user/getUser
 - This fetches user from database.
 - This has two test cases: Get User Success, Get User Failure.
 
 **TestLoginHandler**
+- /api/user/login
 - This Logs in user into system using user name and password. 
 - This has two test cases: Login User Success, Login User Failure.
 
 ### For Housing APIs
 
 **TestAddHousingHandler**
+- /api/housing/add
 - This adds new property into the system.
 - This has three test cases: Valid property data, Invalid JSON data, Property already exists.
 
 **TestGetHousingHandler**
+- /api/housing/get/:query
 - This fetches property data usong the ID.
 
 **TestGetAllHousingHandler**
+- /api/housing/getAll
 - This Fetches all the property registered in our website.
 
 **TestUpdateHousingHandler**
+- api/housing/update
 - This Updates property name.
 - This has two test cases:  Updated property data, Property dosen't exists. 
 
 **TestDeleteHousingHandler**
+- /api/housing/delete/:query
 - This deletes property from our website.
 - This has two test cases:  Delete property , Invalid Property.
 
 **TestUploadImgHandler**
+- /api/housing/uploadimg
 - This uploads property images to our database.
 
 ### For Comments APIs
 **AddCommentHandler**
+- /api/comments/add
 - This adds comments for specific apartments.
 - This has two test cases: Add comment successful, Add comment failed
 
 **DeleteCommentHandler**
+- /api/comments/delete/:query
 - This deletes comments for specific apartments.
 
 **GetAllCommentsHandler**
+- /api/comments/getAll/:query
 - This fetches all the comments related to specific apartments.
 - This has two test cases: Get all comment sucessful, Get all comment failed.
 
