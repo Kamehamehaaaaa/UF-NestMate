@@ -429,3 +429,9 @@ GET /apt/housing/sortByDistance?university={university}
 - `400`: University name required or failed to fetch apartments
 - `500`: Failed to calculate distances or fetch apartments
 
+### Cypress Tests (Frontend)
+
+<img width="1440" alt="Screenshot 2025-03-31 at 11 00 17 PM" src="https://github.com/user-attachments/assets/75b29ab8-47eb-4221-8482-4c5770f006b1" />
+<img width="1440" alt="Screenshot 2025-03-31 at 10 59 43 PM" src="https://github.com/user-attachments/assets/b820a927-196e-438c-af65-2aa072b75d6a" />
+<img width="1440" alt="Screenshot 2025-03-31 at 10 59 34 PM" src="https://github.com/user-attachments/assets/897987b4-09a3-4696-b4b6-45e9942146c1" />
+<img width="1440" alt="Screenshot 2025-03-31 at 10 59 26 PM" src="https://github.com/user-attachments/assets/9e0183fe-aeb3-4ceb-b403-a54ae957ac81" />
