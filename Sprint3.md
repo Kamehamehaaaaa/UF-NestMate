@@ -44,6 +44,9 @@
     **Password Hashing**
     -   Implemented secure password hashing using bcrypt in the backend.
     -   Ensured passwords are hashed before storage in MongoDB and securely verified during login attempts, enhancing authentication security.
+ **Swagger Framework**
+    -   We have specified our APIs as OpenAPI specefication.
+    -   This document is useful for cross team API sharing.
 
 ## Future Enhancements and Improvements
 
@@ -107,3 +110,322 @@
 - Switches to signup form when clicking sign up link
 - Switches back to login form when clicking login link
 - Calls onClose when close button is clicked
+
+
+## Backend Unit Test
+
+### For User APIs 
+
+**TestRegisterHandler**
+- /api/user/register
+- This registers new users.
+- This has two test cases: Register User Success, Register User Failure.
+
+**TestUpdateUserHandler**
+- /api/user/update
+- This updates users first name and last name.
+- This has one test case: Register User Success.
+
+**TestDeleteHandler**
+- /api/user/delete
+- This Deletes user from database. 
+- This has two test cases: Delete User Success, Delete User Failure.
+
+**TestGetUserHandler**
+- /api/user/getUser
+- This fetches user from database.
+- This has two test cases: Get User Success, Get User Failure.
+
+**TestLoginHandler**
+- /api/user/login
+- This Logs in user into system using user name and password. 
+- This has two test cases: Login User Success, Login User Failure.
+
+### For Housing APIs
+
+**TestAddHousingHandler**
+- /api/housing/add
+- This adds new property into the system.
+- This has three test cases: Valid property data, Invalid JSON data, Property already exists.
+
+**TestGetHousingHandler**
+- /api/housing/get/:query
+- This fetches property data usong the ID.
+
+**TestGetAllHousingHandler**
+- /api/housing/getAll
+- This Fetches all the property registered in our website.
+
+**TestUpdateHousingHandler**
+- api/housing/update
+- This Updates property name.
+- This has two test cases:  Updated property data, Property dosen't exists. 
+
+**TestDeleteHousingHandler**
+- /api/housing/delete/:query
+- This deletes property from our website.
+- This has two test cases:  Delete property , Invalid Property.
+
+**TestUploadImgHandler**
+- /api/housing/uploadimg
+- This uploads property images to our database.
+
+### For Comments APIs
+**AddCommentHandler**
+- /api/comments/add
+- This adds comments for specific apartments.
+- This has two test cases: Add comment successful, Add comment failed
+
+**DeleteCommentHandler**
+- /api/comments/delete/:query
+- This deletes comments for specific apartments.
+
+**GetAllCommentsHandler**
+- /api/comments/getAll/:query
+- This fetches all the comments related to specific apartments.
+- This has two test cases: Get all comment sucessful, Get all comment failed.
+
+
+## API Documentation
+
+### Table of Contents
+
+- [Users](#users)
+- [Housing Properties](#housing-properties)
+- [Comments](#comments)
+- [Filtering and Sorting](#filtering-and-sorting)
+
+### Register a new user
+```
+POST /api/user/register
+```
+**Request Body:**
+```json
+{
+  "firstname": "string",
+  "lastname": "string",
+  "username": "string",
+  "password": "string",
+  "email": "string"
+}
+```
+**Responses:**
+- `201`: User registered successfully
+- `400`: Invalid JSON data or user already exists
+- `500`: Error while adding the user
+
+### Login a user
+```
+POST /api/user/login
+```
+**Request Body:**
+```json
+{
+  "username": "string",
+  "password": "string"
+}
+```
+**Responses:**
+- `200`: Login successful
+- `400`: Invalid JSON data
+- `401`: Invalid credentials
+
+## Users
+
+### Get user by username
+```
+GET /api/user/getUser?username={username}
+```
+**Parameters:**
+- `username` (query, required): Username of the user to retrieve
+
+**Responses:**
+- `200`: User found
+- `404`: User not found
+
+### Delete user by username
+```
+GET /api/user/delete?username={username}
+```
+**Parameters:**
+- `username` (query, required): Username of the user to delete
+
+**Responses:**
+- `204`: User deleted
+- `404`: User not found
+
+### Update user information
+```
+PUT /api/user/update
+```
+**Request Body:**
+```json
+{
+  "username": "string",
+  "password": "string",
+  "firstName": "string",
+  "lastName": "string"
+}
+```
+**Responses:**
+- `200`: User updated successfully
+- `400`: Invalid JSON data or username required
+- `404`: User not found
+- `500`: Internal server error
+
+## Housing Properties
+
+### Add a new housing property
+```
+POST /api/housing/add
+```
+**Request Body:**
+```json
+{
+  "id": 0,
+  "name": "string",
+  "image": "string",
+  "description": "string",
+  "address": "string",
+  "vacancy": 0,
+  "rating": 0,
+  "comments": [
+    "string"
+  ]
+}
+```
+**Responses:**
+- `200`: Property stored successfully
+- `400`: Invalid JSON data
+- `500`: Failed to store property data
+
+### Get a housing property by ID
+```
+GET /api/housing/get/{query}
+```
+**Parameters:**
+- `query` (path, required): ID of the housing property to retrieve
+
+**Responses:**
+- `200`: Property found
+- `404`: Property not found
+
+### Delete a housing property
+```
+DELETE /api/housing/delete
+```
+**Responses:**
+- `200`: Property deleted successfully
+- `400`: Invalid delete
+
+### Update a housing property
+```
+PUT /api/housing/update
+```
+**Request Body:**
+```json
+{
+  "id": 0,
+  "name": "string",
+  "image": "string",
+  "description": "string",
+  "address": "string",
+  "vacancy": 0,
+  "rating": 0,
+  "comments": [
+    "string"
+  ]
+}
+```
+**Responses:**
+- `200`: Property updated successfully
+- `400`: Invalid JSON data or invalid update
+- `500`: Failed to update property data
+
+### Get all housing properties
+```
+GET /api/housing/getAll
+```
+**Responses:**
+- `200`: List of properties
+- `500`: Failed to retrieve properties
+
+### Upload an image for a housing property
+```
+POST /api/housing/uploadimg
+```
+**Request Body:**
+- `image` (binary): The image file to upload
+
+**Responses:**
+- `200`: Image uploaded successfully
+- `400`: Failed to get image
+- `500`: Failed to upload image to Cloudinary
+
+### Get summary for apartment using its reviews
+```
+GET /api/housing/summary?query={query}
+```
+**Parameters:**
+- `query` (path, required): Query to identify the apartment
+
+**Responses:**
+- `200`: Summary generated
+- `404`: Property not found
+
+## Comments
+
+### Add a new comment to a housing property
+```
+POST /api/comments/add
+```
+**Request Body:**
+```json
+{
+  "apartmentId": 0,
+  "comment": "string"
+}
+```
+**Responses:**
+- `200`: Comment added successfully
+- `400`: Invalid JSON data or apartment doesn't exist
+- `500`: Failed to save comment
+
+### Delete a comment
+```
+DELETE /api/comments/delete
+```
+**Responses:**
+- `200`: Comment deleted successfully
+- `400`: Invalid delete or comment doesn't exist
+
+### Get a comment by ID
+```
+GET /api/comments/get
+```
+**Responses:**
+- `200`: Comment found
+- `400`: Comment doesn't exist
+
+## Filtering and Sorting
+
+### Get properties sorted by rating
+```
+GET /api/filter/ratings
+```
+**Responses:**
+- `200`: Properties sorted by rating
+- `404`: No properties exist
+
+### Get housing properties sorted by distance from a university
+```
+GET /apt/housing/sortByDistance?university={university}
+```
+**Parameters:**
+- `university` (query, required): Name of the university for distance calculation
+
+**Responses:**
+- `200`: List of properties sorted by distance
+- `400`: University name required or failed to fetch apartments
+- `500`: Failed to calculate distances or fetch apartments
+
