@@ -4,12 +4,13 @@
   "private": true,
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
+    "@testing-library/react": "^14.0.0",
     "bootstrap": "^5.3.3",
     "cra-template": "1.2.0",
     "crypto-js": "^4.2.0",
-    "react": "^19.0.0",
+    "react": "^18.2.0",
     "react-bootstrap": "^2.10.9",
-    "react-dom": "^19.0.0",
+    "react-dom": "^18.2.0",
     "react-icons": "^5.4.0",
     "react-scripts": "5.0.1"
   },
@@ -39,6 +40,8 @@
   },
   "proxy": "http://localhost:8080",
   "devDependencies": {
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/user-event": "^14.6.1",
     "cypress": "^14.1.0"
   }
 }

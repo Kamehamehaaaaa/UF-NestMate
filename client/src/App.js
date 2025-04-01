@@ -113,11 +113,11 @@ function App() {
                 onChange={handleSearchInputChange}
               />
               <div className="search-button-wrapper">
-                <Button className="search-button" onClick={handleSearch}>
+                <Button aria-label="Search" className="search-button" onClick={handleSearch}>
                   <FaSearch className="search-icon" />
                 </Button>
                 <Dropdown align="end">
-                  <Dropdown.Toggle as={Button} variant="light" className="filter-button no-caret">
+                  <Dropdown.Toggle aria-label="Filter" as={Button} variant="light" data-testid="filter-button" className="filter-button no-caret">
                     <BsFillFilterCircleFill />
                   </Dropdown.Toggle>
                   <Dropdown.Menu>
