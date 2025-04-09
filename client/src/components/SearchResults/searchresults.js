@@ -5,7 +5,7 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import { FaMapMarkerAlt } from 'react-icons/fa';
 
 
-const SearchResults = ({housingData}) => {
+const SearchResults = ({housingData,loggedInUser}) => {
   console.log(housingData)
   const [show, setShow] = useState(false);
   const [selectedHousing, setSelectedHousing] = useState(null);
@@ -30,7 +30,7 @@ const SearchResults = ({housingData}) => {
   const handleCommentSubmit = (e) => {
     e.preventDefault();
     if (comment.trim()) {
-      const newComment = `User: ${comment}`;
+      const newComment = `${loggedInUser?.firstName || 'Anonymous'} ${loggedInUser?.lastName || 'User'}: ${comment}`;
       
       
       fetch('http://localhost:8080/api/comments/add', {
@@ -168,10 +168,10 @@ const SearchResults = ({housingData}) => {
                 </div>
                 <div>
                   <div className="comment-meta text-muted small">
-                    <span className="me-2">Anonymous User</span>
+                    <span className="me-2">{comment.split(':')[0]}</span>
                     <span>{new Date().toLocaleDateString()}</span>
                   </div>
-                  <p className="comment-text mb-0">{comment}</p>
+                  <p className="comment-text mb-0">{comment.split(':')[1]}</p>
                 </div>
               </div>
             </div>

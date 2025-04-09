@@ -15,6 +15,7 @@ function App() {
   const [housingData, setHousingData] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const [filterType, setFilterType] = useState('apartment');
+  const [loggedInUser, setLoggedInUser] = useState(null);
 
   useEffect(() => {
     const fetchHousingData = async () => {
@@ -31,25 +32,22 @@ function App() {
     fetchHousingData();
   }, []);
 
-  
   const scrollToContact = () => {
     contactRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  
   const handleSearchInputChange = (e) => {
     setSearchTerm(e.target.value);
   };
 
- 
-  const handleSearch = async () => {
+  const handleLoginSuccess = (user) => {
+    setLoggedInUser(user);
+  };
 
+  const handleSearch = async () => {
     if (filterType === 'rating') {
-      
       try {
-        const response = await fetch(
-          `http://localhost:8080/api/filter/ratings`
-        );
+        const response = await fetch(`http://localhost:8080/api/filter/ratings`);
         if (!response.ok) throw new Error('Failed to fetch sorted data');
         const data = await response.json();
         setSearchResults(data || []); 
@@ -58,14 +56,12 @@ function App() {
       }
     }
 
-    if (filterType === 'apartment' ) {
-      
+    if (filterType === 'apartment') {
       const filteredResults = housingData.filter((result) =>
         result.name && result.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setSearchResults(filteredResults);
     } else if (filterType === 'location') {
-     
       try {
         const response = await fetch(
           `http://localhost:8080/apt/housing/sortByDistance?university=${encodeURIComponent(searchTerm)}`
@@ -79,17 +75,16 @@ function App() {
     }
   };
 
-  
   const handleFilterChange = (type) => {
     setFilterType(type);
-    setSearchTerm(''); 
+    setSearchTerm('');
     setSearchResults(housingData);
   };
 
   return (
     <Container fluid className="App">
       <Row>
-        <Header scrollToContact={scrollToContact} />
+        <Header scrollToContact={scrollToContact} onLoginSuccess={handleLoginSuccess} />
       </Row>
 
       <Row className='home-background-row'>
@@ -128,8 +123,6 @@ function App() {
                     <Dropdown.Item onClick={() => handleFilterChange('rating')}>
                       Rating
                     </Dropdown.Item>
-                    
-                    
                   </Dropdown.Menu>
                 </Dropdown>
               </div>
@@ -142,8 +135,7 @@ function App() {
       </Row>
 
       <Row className="card-class-row no-gutters">
-        {}
-        <SearchResults housingData={searchResults || []} />
+        <SearchResults housingData={searchResults || []} loggedInUser={loggedInUser} />
       </Row>
 
       <Row ref={contactRef} className="contact-section">
