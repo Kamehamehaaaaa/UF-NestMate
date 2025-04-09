@@ -25,8 +25,8 @@ func RegisterHandler(c *gin.Context) {
 	}
 
 	// Check if the user already exists
-	if userExists(user.UserName) {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "User with username " + user.UserName + " already exists"})
+	if userExists(user.Username) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "User with username " + user.Username + " already exists"})
 		return
 	} else {
 		err := database.MongoDB.RegisterUser(&user)
@@ -36,7 +36,7 @@ func RegisterHandler(c *gin.Context) {
 		}
 		c.JSON(http.StatusCreated, gin.H{
 			"message":  "User registered successfully",
-			"username": user.UserName,
+			"username": user.Username,
 		})
 		return
 	}
@@ -118,12 +118,12 @@ func UpdateUserHandler(c *gin.Context) {
 	fmt.Println("herer")
 	fmt.Println(user)
 
-	if user.UserName == "" {
+	if user.Username == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Username is required"})
 		return
 	}
 
-	err := database.MongoDB.UpdateUser(user.UserName, user)
+	err := database.MongoDB.UpdateUser(user.Username, user)
 	if err != nil {
 		if err.Error() == "user not found" {
 			c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
@@ -157,4 +157,83 @@ func DeleteUserHandler(c *gin.Context) {
 func userExists(username string) bool {
 	_, err := database.MongoDB.GetUserByUsername(username)
 	return err == nil
+}
+
+
+
+func AddFavoriteHandler(c *gin.Context) {
+    var req struct {
+        Username string `json:"username"`
+        AptID    int    `json:"aptId"`
+    }
+    
+    if err := c.ShouldBindJSON(&req); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+        return
+    }
+
+    // Verify user exists
+    if !userExists(req.Username) {
+        c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+        return
+    }
+
+    err := database.MongoDB.AddFavorite(req.Username, req.AptID)
+    if err != nil {
+        log.Printf("Add favorite error: %v", err)
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to add favorite"})
+        return
+    }
+    
+    c.JSON(http.StatusOK, gin.H{
+        "message": "Added to favorites",
+        "success": true,
+    })
+}
+
+// RemoveFavoriteHandler removes an apartment from favorites
+func RemoveFavoriteHandler(c *gin.Context) {
+    var req struct {
+        Username string `json:"username"`
+        AptID    int    `json:"aptId"`
+    }
+    
+    if err := c.ShouldBindJSON(&req); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+        return
+    }
+
+    err := database.MongoDB.RemoveFavorite(req.Username, req.AptID)
+    if err != nil {
+        log.Printf("Remove favorite error: %v", err)
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to remove favorite"})
+        return
+    }
+    
+    c.JSON(http.StatusOK, gin.H{
+        "message": "Removed from favorites",
+        "success": true,
+    })
+}
+
+// GetFavoritesHandler retrieves user's favorite apartments
+func GetFavoritesHandler(c *gin.Context) {
+    username := c.Query("username")
+    
+    if username == "" {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Username is required"})
+        return
+    }
+
+    favorites, err := database.MongoDB.GetFavorites(username)
+    if err != nil {
+        log.Printf("Get favorites error: %v", err)
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve favorites"})
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{
+        "count": len(favorites),
+        "favorites": favorites,
+    })
 }

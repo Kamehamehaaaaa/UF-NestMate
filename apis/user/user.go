@@ -14,12 +14,12 @@ type LoginPayload struct {
 }
 
 type User struct {
-	UserName  string `json:"username" bson:"username"`
+	Username  string `json:"username" bson:"username"`
 	Password  string `json:"password" bson:"password"`
 	FirstName string `json:"firstName" bson:"firstName"`
 	LastName  string `json:"lastName" bson:"lastName"`
+	Favorites []int  `json:"favorites" bson:"favorites"`
 }
-
 // type User struct {
 // 	UserId    int64  `json:"userId"`
 // 	FirstName string `json:"firstName"`

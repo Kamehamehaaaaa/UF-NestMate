@@ -272,7 +272,7 @@ func (m *MongoDBService) UpdateUser(username string, updatedUser user.User) erro
 		"$set": bson.M{
 			"firstName": updatedUser.FirstName,
 			"lastName":  updatedUser.LastName,
-			"email":     updatedUser.UserName,
+			"email":     updatedUser.Username,
 		},
 	}
 
@@ -345,4 +345,53 @@ func (m *MongoDBService) DeleteUser(username string) error {
 	}
 
 	return nil
+}
+
+
+// AddFavorite adds an apartment ID to user's favorites
+func (m *MongoDBService) AddFavorite(username string, aptID int) error {
+    ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+    defer cancel()
+
+    _, err := m.db.Collection("users").UpdateOne(
+        ctx,
+        bson.M{"username": username},
+        bson.M{"$addToSet": bson.M{"favorites": aptID}},
+    )
+    return err
+}
+
+// RemoveFavorite removes an apartment ID from user's favorites
+func (m *MongoDBService) RemoveFavorite(username string, aptID int) error {
+    ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+    defer cancel()
+
+    _, err := m.db.Collection("users").UpdateOne(
+        ctx,
+        bson.M{"username": username},
+        bson.M{"$pull": bson.M{"favorites": aptID}},
+    )
+    return err
+}
+
+// GetFavorites retrieves user's favorite apartments
+func (m *MongoDBService) GetFavorites(username string) ([]housing.Housing, error) {
+    ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+    defer cancel()
+
+    var user user.User
+    err := m.db.Collection("users").FindOne(ctx, bson.M{"username": username}).Decode(&user)
+    if err != nil {
+        return nil, err
+    }
+
+    var favorites []housing.Housing
+    for _, aptID := range user.Favorites {
+        apt, err := m.GetProperty(strconv.Itoa(aptID))
+        if err == nil {
+            favorites = append(favorites, *apt)
+        }
+    }
+    
+    return favorites, nil
 }
