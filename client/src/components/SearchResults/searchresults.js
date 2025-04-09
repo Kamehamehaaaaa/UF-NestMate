@@ -11,8 +11,6 @@ const SearchResults = ({housingData,loggedInUser}) => {
   const [selectedHousing, setSelectedHousing] = useState(null);
   const [comment, setComment] = useState('');
   const [comments, setComments] = useState([]);
-  
-  const [sortType, setSortType] = useState('none'); 
   const [showCommentForm, setShowCommentForm] = useState(false);
 
   

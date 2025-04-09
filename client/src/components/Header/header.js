@@ -7,7 +7,7 @@ function Header({ scrollToContact, onLoginSuccess }) {
   const [activeLink, setActiveLink] = useState('home');
   const [showLogin, setShowLogin] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
-  const [userProfile, setUserProfile] = useState(null);
+  const [userProfile, setUserProfile] = useState({});
 
   const handleProfileSave = (updatedProfile) => {
     fetch('http://localhost:8080/api/user/update', {
