@@ -17,7 +17,10 @@ const SearchResults = ({housingData}) => {
 
   
 
-  const handleClose = () => setShow(false);
+  const handleClose = () => {
+    setShow(false);
+    setShowCommentForm(false); 
+  };
   const handleShow = (housing) => {
     setSelectedHousing(housing);
     setComments(housing.comments || []);
@@ -73,7 +76,7 @@ const SearchResults = ({housingData}) => {
                   src={housing.image} 
                   onError={(e) => {
                     e.target.onerror = null;
-                    e.target.src = '/fallback-image.jpg';
+                  //  e.target.src = '/fallback-image.jpg';
                   }}
                 />
                 <Card.Body>
