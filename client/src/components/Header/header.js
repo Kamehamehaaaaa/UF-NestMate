@@ -8,6 +8,21 @@ function Header({ scrollToContact, onLoginSuccess }) {
   const [showLogin, setShowLogin] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [userProfile, setUserProfile] = useState({});
+  
+
+  const handleShowProfile = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/user/favorites?username=${userProfile.email}`);
+      const data = await response.json();
+      setUserProfile((prev) => ({
+        ...prev,
+        favorites: data.favorites || [],
+      }));
+      setShowProfile(true);
+    } catch (error) {
+      console.error("Failed to fetch favorites:", error);
+    }
+  };
 
   const handleProfileSave = (updatedProfile) => {
     fetch('http://localhost:8080/api/user/update', {
@@ -56,7 +71,7 @@ function Header({ scrollToContact, onLoginSuccess }) {
     <header className="app-header">
       <nav>
         <div className="logo-avatar-container">
-          <div className="profile-avatar" onClick={() => setShowProfile(true)}>
+          <div className="profile-avatar" onClick={handleShowProfile}>
             {userProfile?.firstName ? userProfile.firstName.charAt(0) : "?"}
           </div>
           <div className="logo-container">

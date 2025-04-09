@@ -30,6 +30,7 @@ function Login({ onClose, onLoginSuccess }) {
             lastname: lastName,
             username: username,
             password: password,
+            email: username
           }),
         });
 

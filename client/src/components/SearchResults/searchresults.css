@@ -255,5 +255,43 @@
   color:#c79a63;
 }
 
+/* Favorite Icon */
+.favorite-icon-container {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+}
+
+.favorite-icon {
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 70%;
+  padding: 5px;
+  transition: all 0.3s ease;
+}
+
+.favorite-icon:hover {
+  transform: scale(1.1);
+}
+
+.favorite-outline {
+  color: #666;
+}
+
+.favorite-filled {
+  color: #ff4081;
+}
+
+
+.profile-section .search-results {
+  margin-top: 15px;
+  padding: 10px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+
 
 

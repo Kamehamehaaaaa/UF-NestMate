@@ -3,6 +3,7 @@ import { Card, Col, Row, Modal, Button, Form,Dropdown} from 'react-bootstrap';
 import './searchresults.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { FaMapMarkerAlt } from 'react-icons/fa';
+import { FaRegHeart, FaHeart } from 'react-icons/fa';
 
 
 const SearchResults = ({housingData,loggedInUser}) => {
@@ -12,7 +13,50 @@ const SearchResults = ({housingData,loggedInUser}) => {
   const [comment, setComment] = useState('');
   const [comments, setComments] = useState([]);
   const [showCommentForm, setShowCommentForm] = useState(false);
+  const [favorites, setFavorites] = useState([]);
 
+  // Add functions
+  const isFavorite = (aptId) => favorites.includes(aptId);
+  
+  const handleFavoriteToggle = async (aptId) => {
+    try {
+      if (isFavorite(aptId)) {
+        await fetch('http://localhost:8080/api/user/favorites/remove', {
+          method: 'DELETE',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            username: loggedInUser.email,
+            aptId: aptId
+          }),
+        });
+        setFavorites(favorites.filter(id => id !== aptId));
+      } else {
+        await fetch('http://localhost:8080/api/user/favorites/add', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            username: loggedInUser.email,
+            aptId: aptId
+          }),
+        });
+        setFavorites([...favorites, aptId]);
+      }
+    } catch (error) {
+      console.error('Error updating favorite:', error);
+    }
+  };
+  
+  // Fetch favorites on component mount
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      if (loggedInUser) {
+        const response = await fetch(`http://localhost:8080/api/user/favorites?username=${loggedInUser.email}`);
+        const data = await response.json();
+        setFavorites(data.favorites?.map(apt => apt.id) || []);
+      }
+    };
+    fetchFavorites();
+  }, [loggedInUser]);
   
 
   const handleClose = () => {
@@ -69,6 +113,32 @@ const SearchResults = ({housingData,loggedInUser}) => {
           housingData.map((housing) => (
             <Col key={housing.id} xs={12} sm={6} md={4} lg={3} className="d-flex">
               <Card className="clickable-card flex-grow-1" onClick={() => handleShow(housing)}>
+              <div className="favorite-icon-container">
+    {loggedInUser ? (
+      <div 
+        className="favorite-icon" 
+        onClick={(e) => {
+          e.stopPropagation();
+          handleFavoriteToggle(housing.id);
+        }}
+      >
+        {isFavorite(housing.id) ? (
+          <FaHeart className="favorite-filled" />
+        ) : (
+          <FaRegHeart className="favorite-outline" />
+        )}
+      </div>
+    ) : (
+      <FaRegHeart 
+        className="favorite-outline" 
+        onClick={(e) => {
+          e.stopPropagation();
+          alert('Please log in to save favorites!');
+        }}
+      />
+    )}
+  </div>
+  
                 <Card.Img 
                   variant="top" 
                   src={housing.image} 

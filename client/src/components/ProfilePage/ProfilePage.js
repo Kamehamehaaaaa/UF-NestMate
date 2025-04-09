@@ -1,10 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import './ProfilePage.css'; 
+import SearchResults from '../../components/SearchResults/searchresults';
+
 
 const ProfilePage = ({ profile, onClose, onSave }) => {
   const [editMode, setEditMode] = useState(false);
   const [editedProfile, setEditedProfile] = useState(profile);
+  const [favorites, setFavorites] = useState(profile.favorites || []);
+  const [selectedApartment, setSelectedApartment] = useState(null);
 
+
+  useEffect(() => {
+    setFavorites(profile.favorites || []);
+  }, [profile.favorites]);
+
+
+  const handleApartmentClick = (apartment) => {
+    setSelectedApartment(apartment);
+  };
+  
+  const closeApartmentModal = () => {
+    setSelectedApartment(null);
+  };
   const handleChange = (e) => {
     setEditedProfile({ ...editedProfile, [e.target.name]: e.target.value });
   };
@@ -92,16 +109,46 @@ const ProfilePage = ({ profile, onClose, onSave }) => {
               </div>
 
               <div className="profile-section">
-                <h3>Contact Information</h3>
-                <div className="info-item">
-                  <span className="info-label">Phone:</span>
-                  <span className="info-value">{profile.phone}</span>
-                </div>
-                <div className="info-item">
-                  <span className="info-label">Email:</span>
-                  <span className="info-value">{profile.email}</span>
-                </div>
-              </div>
+  <h3>Favorite Apartments</h3>
+  {favorites.length > 0 ? (
+    <div className="favorites-grid">
+      {favorites.map((apartment) => (
+        <div 
+          key={apartment.id} 
+          className="favorite-item" 
+          onClick={() => handleApartmentClick(apartment)}
+        >
+          <img 
+            src={apartment.image} 
+            alt={apartment.name} 
+            className="favorite-image"
+          />
+          <p className="favorite-name">{apartment.name}</p>
+        </div>
+      ))}
+      {selectedApartment && (
+  <div className="apartment-modal-overlay">
+    <div className="apartment-modal">
+      <button className="back-btn" onClick={closeApartmentModal}>Back</button>
+      <img 
+        src={selectedApartment.image} 
+        alt={selectedApartment.name} 
+        className="modal-image"
+      />
+      <h2>{selectedApartment.name}</h2>
+      <p><strong>Location:</strong> {selectedApartment.address}</p>
+      <p><strong>Vacancy:</strong> {selectedApartment.vacancy}</p>
+      <p><strong>Description:</strong> {selectedApartment.description}</p>
+    </div>
+  </div>
+)}
+    </div>
+  ) : (
+    <p className="text-muted">No favorite apartments yet.</p>
+  )
+  }
+</div>
+             
 
               <button 
                 className="edit-profile-btn"

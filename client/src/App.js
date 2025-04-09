@@ -16,6 +16,7 @@ function App() {
   const [searchResults, setSearchResults] = useState([]);
   const [filterType, setFilterType] = useState('apartment');
   const [loggedInUser, setLoggedInUser] = useState(null);
+  
 
   useEffect(() => {
     const fetchHousingData = async () => {
@@ -42,6 +43,16 @@ function App() {
 
   const handleLoginSuccess = (user) => {
     setLoggedInUser(user);
+  };
+
+   const fetchUserProfile = async (email) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/user/getUser?username=${email}`);
+      const userData = await response.json();
+      setLoggedInUser(userData);
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+    }
   };
 
   const handleSearch = async () => {
