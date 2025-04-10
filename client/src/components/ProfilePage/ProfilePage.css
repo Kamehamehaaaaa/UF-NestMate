@@ -262,3 +262,60 @@
   margin-bottom: 10px;
   
 }
+
+/* Tabs Navigation */
+.profile-tabs-container {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.profile-tab {
+  background: #f8f9fa; /* Light background for visibility */
+  border: 1px solid #dee2e6; /* Border for separation */
+  padding: 0.5rem 1rem;
+  font-size: 1.1rem;
+  color: #6c757d; /* Neutral gray for inactive tabs */
+  cursor: pointer;
+  position: relative;
+  border-radius: 8px; /* Rounded corners */
+  transition: all 0.3s ease;
+}
+
+.profile-tab:hover {
+  
+}
+
+.profile-tab.active {
+  color: #2c1810; /* Darker text for active tab */
+  font-weight: bold;
+  
+}
+
+.profile-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  
+}
+
+.animation {
+  background: radial-gradient(
+      circle,
+      skyblue 10%,
+      rgb(80, 148, 174) 35%,  
+      #a8d0f9 100%  
+  );
+  font-weight: 600;
+  background-size: 200% auto;
+  color: #000;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: animatedTextGradient 3s linear infinite;
+  font-family: 'Special Elite';
+  backdrop-filter: blur(5px);
+  font-size: 20px;
+}

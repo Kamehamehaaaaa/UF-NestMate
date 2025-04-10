@@ -1,0 +1,80 @@
+/* RoommatePreferencesForm.css */
+.roommate-preferences-form {
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 15px;
+    margin: 15px;
+  }
+  
+  .roommate-preferences-form h4 {
+    color: #2c1810;
+    font-family: 'Special Elite';
+    margin-bottom: 1.5rem;
+    
+  }
+  
+  .budget-input-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  
+  .budget-input-group .form-control {
+    border-radius: 25px;
+    padding: 10px 15px;
+    border: 1px solid #dee2e6;
+  }
+  
+  .budget-separator {
+    color: #6c757d;
+  }
+  
+  .radio-group {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+  
+  .form-check-input:checked {
+    background-color: #c79a63;
+    border-color: #c79a63;
+  }
+  
+  .cleanliness-slider {
+    padding: 0 10px;
+  }
+  
+  .cleanliness-labels {
+    display: flex;
+    justify-content: space-between;
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-top: 5px;
+  }
+  
+  .save-button {
+    background:  #c8b297;;
+   
+    border-color: #c79a63 !important;
+    border-radius: 25px;
+    padding: 10px 30px;
+    float: none;
+    margin-top: 20px;
+  }
+  
+  .save-button:hover {
+    background: #b08a58 !important;
+    border-color: #b08a58 !important;
+  }
+  
+  /* Match existing select styles */
+  .form-control[as="select"] {
+    border-radius: 25px;
+    padding: 10px 15px;
+    min-height: auto;
+  }
+  
+  .form-control[as="select"]:focus {
+    box-shadow: 0 0 0 2px rgba(199, 154, 99, 0.2);
+  }
+  
