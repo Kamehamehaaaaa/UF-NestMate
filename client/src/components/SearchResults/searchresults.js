@@ -5,6 +5,7 @@ import useAmenities from '../../hooks/useAmenities';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { FaMapMarkerAlt } from 'react-icons/fa';
 import { FaRegHeart, FaHeart } from 'react-icons/fa';
+import { Accordion } from 'react-bootstrap';
 
 
 const SearchResults = ({housingData,loggedInUser}) => {
@@ -301,28 +302,34 @@ const SearchResults = ({housingData,loggedInUser}) => {
 
      
     <div className="amenities-section">
-  <h5>Nearby Amenities</h5>
-  {loading ? (
-    <p>Loading...</p>
-  ) : Object.keys(amenities).length > 0 ? (
-    <div className="amenities-grid">
-      {Object.entries(amenities).map(([category, places]) => (
-        <div key={category} className="amenity-category">
-          <h6>{category.charAt(0).toUpperCase() + category.slice(1)}</h6>
-          <ul className="amenity-list">
-            {places.slice(0, 3).map(place => (
-              <li key={place.name}>
-                <span className="amenity-name">{place.name}</span>
-                <span className="amenity-address">{place.vicinity}</span>
-              </li>
+  <Accordion>
+    <Accordion.Item eventKey="0">
+      <Accordion.Header>Nearby Amenities</Accordion.Header>
+      <Accordion.Body>
+        {loading ? (
+          <p>Loading...</p>
+        ) : Object.keys(amenities).length > 0 ? (
+          <div className="amenities-grid">
+            {Object.entries(amenities).map(([category, places]) => (
+              <div key={category} className="amenity-category">
+                <h6>{category.charAt(0).toUpperCase() + category.slice(1)}</h6>
+                <ul className="amenity-list">
+                  {places.slice(0, 3).map(place => (
+                    <li key={place.name}>
+                      <span className="amenity-name">{place.name}</span>
+                      <span className="amenity-address">{place.vicinity}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             ))}
-          </ul>
-        </div>
-      ))}
-    </div>
-  ) : (
-    <p>No amenities found within 500 meters</p>
-  )}
+          </div>
+        ) : (
+          <p>No amenities found within 500 meters</p>
+        )}
+      </Accordion.Body>
+    </Accordion.Item>
+  </Accordion>
 </div>
 
   </Modal.Body>
