@@ -395,3 +395,5 @@ func (m *MongoDBService) GetFavorites(username string) ([]housing.Housing, error
     
     return favorites, nil
 }
+
+

@@ -44,4 +44,7 @@ r.POST("/api/user/favorites/add", AddFavoriteHandler)
 r.DELETE("/api/user/favorites/remove", RemoveFavoriteHandler)
 r.GET("/api/user/favorites", GetFavoritesHandler)
 
+r.GET("/api/housing/amenities/:query", GetNearbyAmenitiesHandler)
+
+
 }

@@ -25,6 +25,7 @@ function App() {
         if (!response.ok) throw new Error('Failed to fetch housing data');
         const data = await response.json();
         setHousingData(data.properties || []); 
+        console.log(data.properties)
         setSearchResults(data.properties || []); 
       } catch (err) {
         console.error('Error fetching housing data:', err);

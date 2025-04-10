@@ -9,6 +9,8 @@ type Housing struct {
 	Vacancy     int      `json:"vacancy" bson:"vacancy"`
 	Rating      float64  `json:"rating" bson:"rating"`
 	Comments    []string `json:"comments" bson:"comments"`
+	Lat         float64  `json:"lat" bson:"lat"`      
+    Lng         float64  `json:"lng" bson:"lng"` 
 }
 
 type HousingPayload struct {
@@ -20,4 +22,6 @@ type HousingPayload struct {
 	Vacancy     int      `json:"vacancy" bson:"vacancy"`
 	Rating      float64  `json:"rating" bson:"rating"`
 	Comments    []string `json:"comments" bson:"comments"`
+	Lat         float64  `json:"lat" bson:"lat"`       
+    Lng         float64  `json:"lng" bson:"lng"` 
 }

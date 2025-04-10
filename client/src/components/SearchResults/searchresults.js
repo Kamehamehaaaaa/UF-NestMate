@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Col, Row, Modal, Button, Form,Dropdown} from 'react-bootstrap';
 import './searchresults.css';
+import useAmenities from '../../hooks/useAmenities';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { FaMapMarkerAlt } from 'react-icons/fa';
 import { FaRegHeart, FaHeart } from 'react-icons/fa';
 
 
 const SearchResults = ({housingData,loggedInUser}) => {
+
+  
+  
+
   console.log(housingData)
   const [show, setShow] = useState(false);
   const [selectedHousing, setSelectedHousing] = useState(null);
@@ -15,8 +20,17 @@ const SearchResults = ({housingData,loggedInUser}) => {
   const [showCommentForm, setShowCommentForm] = useState(false);
   const [favorites, setFavorites] = useState([]);
 
-  // Add functions
+ 
   const isFavorite = (aptId) => favorites.includes(aptId);
+  
+  const { amenities, loading } = useAmenities(
+    selectedHousing?.lat,
+    selectedHousing?.lng,
+    selectedHousing?.id
+  );
+  
+
+
   
   const handleFavoriteToggle = async (aptId) => {
     try {
@@ -284,6 +298,33 @@ const SearchResults = ({housingData,loggedInUser}) => {
         </Form>
       )}
     </div>
+
+     
+    <div className="amenities-section">
+  <h5>Nearby Amenities</h5>
+  {loading ? (
+    <p>Loading...</p>
+  ) : Object.keys(amenities).length > 0 ? (
+    <div className="amenities-grid">
+      {Object.entries(amenities).map(([category, places]) => (
+        <div key={category} className="amenity-category">
+          <h6>{category.charAt(0).toUpperCase() + category.slice(1)}</h6>
+          <ul className="amenity-list">
+            {places.slice(0, 3).map(place => (
+              <li key={place.name}>
+                <span className="amenity-name">{place.name}</span>
+                <span className="amenity-address">{place.vicinity}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  ) : (
+    <p>No amenities found within 500 meters</p>
+  )}
+</div>
+
   </Modal.Body>
   <Modal.Footer>
     <Button  className="custom-btn" variant="secondary" onClick={handleClose}>
