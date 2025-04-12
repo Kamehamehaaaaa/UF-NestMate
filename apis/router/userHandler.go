@@ -275,3 +275,63 @@ func SavePreferencesHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Preferences saved successfully"})
 }
+
+
+
+// GetMatchesHandler retrieves users whose preferences match the current user's preferences
+func GetMatchesHandler(c *gin.Context) {
+	username := c.Query("username")
+	if username == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Username is required"})
+		return
+	}
+
+	// Fetch current user's preferences
+	currentUser, err := database.MongoDB.GetUserByUsername(username)
+	if err != nil {
+		log.Printf("Error fetching user: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user"})
+		return
+	}
+
+	if currentUser.Preferences == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "User has no preferences set"})
+		return
+	}
+
+	// Fetch all users from the database
+	allUsers, err := database.MongoDB.GetAllUsers()
+	if err != nil {
+		log.Printf("Error fetching all users: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve users"})
+		return
+	}
+
+	var matches []user.User
+
+	for _, potentialMatch := range allUsers {
+		if potentialMatch.Username == currentUser.Username {
+			continue // Skip comparing with self
+		}
+
+		if isPreferencesMatch(currentUser.Preferences, potentialMatch.Preferences) {
+			matches = append(matches, potentialMatch)
+		}
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"matches": matches,
+	})
+}
+
+// Helper function to compare preferences
+func isPreferencesMatch(pref1, pref2 *user.Preferences) bool {
+	if pref1 == nil || pref2 == nil {
+		return false
+	}
+
+	return pref1.Budget.Min <= pref2.Budget.Max &&
+		pref1.Budget.Max >= pref2.Budget.Min &&
+		pref1.Smoking == pref2.Smoking &&
+		pref1.Cleanliness == pref2.Cleanliness
+}

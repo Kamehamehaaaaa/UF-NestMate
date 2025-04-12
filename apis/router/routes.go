@@ -48,5 +48,7 @@ r.GET("/api/housing/amenities/:query", GetNearbyAmenitiesHandler)
 r.PUT("/api/user/preferences", SavePreferencesHandler)
 r.GET("/api/user/preferences", GetPreferencesHandler)
 
+r.GET("/api/user/matches", GetMatchesHandler)
+
 
 }

@@ -424,3 +424,25 @@ func (m *MongoDBService) GetPreferences(username string) (*user.Preferences, err
 
 	return user.Preferences, nil
 }
+
+
+
+func (m *MongoDBService) GetAllUsers() ([]user.User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	cursor, err := m.db.Collection("users").Find(ctx, bson.D{})
+	if err != nil {
+		log.Printf("MongoDB find error: %v", err)
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	var users []user.User
+	if err = cursor.All(ctx, &users); err != nil {
+		log.Printf("Cursor decode error: %v", err)
+		return nil, err
+	}
+
+	return users, nil
+}
