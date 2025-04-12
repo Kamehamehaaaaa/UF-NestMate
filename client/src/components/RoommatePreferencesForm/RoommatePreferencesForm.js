@@ -54,7 +54,7 @@ const RoommatePreferencesForm = ({ preferences, onSave }) => {
 
     
 
-      {/* Lifestyle Preferences */}
+    
       <div className="lifestyle-section">
         {/* Smoking */}
         <Form.Group className="mb-4">

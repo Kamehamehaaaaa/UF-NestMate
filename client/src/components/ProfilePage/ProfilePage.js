@@ -8,6 +8,37 @@ const ProfilePage = ({ profile, onClose, onSave }) => {
   const [favorites, setFavorites] = useState(profile.favorites || []);
   const [selectedApartment, setSelectedApartment] = useState(null);
   const [activeTab, setActiveTab] = useState('profile');
+  const [preferences, setPreferences] = useState({
+    budget: { min: '', max: '' },
+    smoking: 'no',
+    cleanliness: 3,
+  });
+  const [loadingPreferences, setLoadingPreferences] = useState(true);
+
+  useEffect(() => {
+    const fetchPreferences = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/api/user/preferences?username=${profile.email}`
+        );
+        if (!response.ok) throw new Error('Failed to fetch preferences');
+
+        const data = await response.json();
+        setPreferences(data.preferences || {
+          budget: { min: '', max: '' },
+          smoking: 'no',
+          cleanliness: 3,
+        });
+      } catch (error) {
+        console.error('Error fetching preferences:', error);
+      } finally {
+        setLoadingPreferences(false);
+      }
+    };
+
+    fetchPreferences();
+  }, [profile.username]);
+
 
   useEffect(() => {
     setFavorites(profile.favorites || []);
@@ -30,11 +61,26 @@ const ProfilePage = ({ profile, onClose, onSave }) => {
     setEditMode(false);
   };
 
-  const handleSavePreferences = (preferences) => {
-    onSave({
-      ...editedProfile,
-      preferences: preferences,
-    });
+   const handleSavePreferences = async (updatedPreferences) => {
+    console.log(profile.username)
+    try {
+      const response = await fetch('http://localhost:8080/api/user/preferences', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: profile.email,
+          preferences: updatedPreferences,
+        }),
+      });
+
+      if (!response.ok) throw new Error('Failed to save preferences');
+
+      alert('Preferences saved successfully!');
+      setPreferences(updatedPreferences); // Update local state
+    } catch (error) {
+      console.error('Error saving preferences:', error);
+      alert('Failed to save preferences.');
+    }
   };
 
   return (
@@ -186,14 +232,9 @@ const ProfilePage = ({ profile, onClose, onSave }) => {
             <>
               {/* Roommate Preferences Form */}
               <RoommatePreferencesForm
-                preferences={{
-                  budget: { min: '', max: '' },
-                  smoking: 'no',
-                  cleanliness: 3,
-                  ...profile.preferences,
-                }}
-                onSave={handleSavePreferences}
-              />
+                  preferences={preferences}
+                  onSave={handleSavePreferences}
+                />
             </>
           )}
         </div>

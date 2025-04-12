@@ -397,3 +397,30 @@ func (m *MongoDBService) GetFavorites(username string) ([]housing.Housing, error
 }
 
 
+func (m *MongoDBService) SavePreferences(username string, preferences user.Preferences) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	filter := bson.M{"username": username}
+	update := bson.M{"$set": bson.M{"preferences": preferences}}
+
+	result, err := m.db.Collection("users").UpdateOne(ctx, filter, update)
+	if err != nil || result.MatchedCount == 0 {
+		return errors.New("failed to update preferences or user not found")
+	}
+
+	return nil
+}
+
+func (m *MongoDBService) GetPreferences(username string) (*user.Preferences, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	var user user.User
+	err := m.db.Collection("users").FindOne(ctx, bson.M{"username": username}).Decode(&user)
+	if err != nil {
+		return nil, err
+	}
+
+	return user.Preferences, nil
+}

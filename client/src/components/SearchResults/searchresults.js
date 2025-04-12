@@ -242,30 +242,30 @@ const SearchResults = ({housingData,loggedInUser}) => {
       </div>
       
       {comments.length > 0 ? (
-        <div className="comments-list mb-3">
-          {comments.map((comment, idx) => (
-            <div key={idx} className="comment-card mb-2 p-2">
-              <div className="d-flex align-items-center">
-                <div className="user-icon me-2">
-                  <i className="bi bi-person-circle"></i>
-                </div>
-                <div>
-                  <div className="comment-meta text-muted small">
-                    <span className="me-2">{comment.split(':')[0]}</span>
-                    <span>{new Date().toLocaleDateString()}</span>
-                  </div>
-                  <p className="comment-text mb-0">{comment.split(':')[1]}</p>
-                </div>
-              </div>
+    <div className="comments-list mb-3">
+      {comments.map((comment, idx) => (
+        <div key={idx} className="comment-card mb-0 p-2">
+          <div className="d-flex align-items-center">
+            <div className="user-icon me-2">
+              <i className="bi bi-person-circle"></i>
             </div>
-          ))}
+            <div>
+              <div className="comment-meta text-muted small">
+                <span className="me-2">{comment.split(':')[0]}</span>
+                <span>{new Date().toLocaleDateString()}</span>
+              </div>
+              <p className="comment-text mb-0">{comment.split(':')[1]}</p>
+            </div>
+          </div>
         </div>
-      ) : (
-        <div className="no-comments text-center py-3">
-          <i className="bi bi-chat-dots fs-4 text-muted"></i>
-          <p className="text-muted mt-2">No comments yet. Be the first to share your thoughts!</p>
-        </div>
-      )}
+      ))}
+    </div>
+  ) : (
+    <div className="no-comments text-center py-3">
+      <i className="bi bi-chat-dots fs-4 text-muted"></i>
+      <p className="text-muted mt-2">No comments yet. Be the first to share your thoughts!</p>
+    </div>
+  )}
 
       {showCommentForm && (
         <Form onSubmit={handleCommentSubmit} className="mt-3">

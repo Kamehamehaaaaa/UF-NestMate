@@ -237,3 +237,41 @@ func GetFavoritesHandler(c *gin.Context) {
         "favorites": favorites,
     })
 }
+
+
+func GetPreferencesHandler(c *gin.Context) {
+	username := c.Query("username")
+	if username == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Username is required"})
+		return
+	}
+
+	preferences, err := database.MongoDB.GetPreferences(username)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve preferences"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"preferences": preferences})
+}
+
+
+func SavePreferencesHandler(c *gin.Context) {
+	var req struct {
+		Username    string       `json:"username"`
+		Preferences user.Preferences  `json:"preferences"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+
+	err := database.MongoDB.SavePreferences(req.Username, req.Preferences)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save preferences"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Preferences saved successfully"})
+}
