@@ -29,6 +29,10 @@ func RegisterHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "User with username " + user.Username + " already exists"})
 		return
 	} else {
+
+		if user.Favorites == nil {
+			user.Favorites = []int{}
+		}
 		err := database.MongoDB.RegisterUser(&user)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while adding the user"})
@@ -177,7 +181,7 @@ func AddFavoriteHandler(c *gin.Context) {
         c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
         return
     }
-
+		 fmt.Printf(req.Username)
     err := database.MongoDB.AddFavorite(req.Username, req.AptID)
     if err != nil {
         log.Printf("Add favorite error: %v", err)

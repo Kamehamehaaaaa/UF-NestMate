@@ -18,6 +18,7 @@ type LoginPayload struct {
 type User struct {
 	Username    string       `json:"username" bson:"username"`
 	Password    string       `json:"password" bson:"password"`
+	Email       string       `json:"email"`
 	FirstName   string       `json:"firstName" bson:"firstName"`
 	LastName    string       `json:"lastName" bson:"lastName"`
 	Favorites   []int        `json:"favorites" bson:"favorites"`
