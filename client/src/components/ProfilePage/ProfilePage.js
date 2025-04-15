@@ -73,7 +73,7 @@ const ProfilePage = ({ profile, onClose, onSave }) => {
     setEditMode(false);
   };
 
-  const handleSavePreferences = async (updatedPreferences) => {
+   const handleSavePreferences = async (updatedPreferences) => {
     try {
       const response = await fetch('http://localhost:8080/api/user/preferences', {
         method: 'PUT',

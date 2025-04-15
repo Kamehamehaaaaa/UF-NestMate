@@ -7,7 +7,7 @@ type UserPayload struct {
 	Password    string       `json:"password"`
 	Email       string       `json:"email"`
 	Favorites   []int        `json:"favorites" bson:"favorites"`
-	Preferences *Preferences `json:"preferences,omitempty" bson:"preferences,omitempty"`
+	Preferences *Preferences `json:"preferences"  bson:"preferences"`
 }
 
 type LoginPayload struct {
@@ -21,7 +21,7 @@ type User struct {
 	FirstName   string       `json:"firstName" bson:"firstName"`
 	LastName    string       `json:"lastName" bson:"lastName"`
 	Favorites   []int        `json:"favorites" bson:"favorites"`
-	Preferences *Preferences `json:"preferences,omitempty" bson:"preferences,omitempty"`
+	Preferences *Preferences `json:"preferences" bson:"preferences"`
 }
 
 type Preferences struct {
