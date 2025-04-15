@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom'; // Add this import
 import './header.css';
 import Login from './Login/Login';
 import ProfilePage from '../ProfilePage/ProfilePage';
@@ -8,7 +9,6 @@ function Header({ scrollToContact, onLoginSuccess }) {
   const [showLogin, setShowLogin] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [userProfile, setUserProfile] = useState({});
-  
 
   const handleShowProfile = async () => {
     try {
@@ -20,7 +20,7 @@ function Header({ scrollToContact, onLoginSuccess }) {
       }));
       setShowProfile(true);
     } catch (error) {
-      console.error("Failed to fetch favorites:", error);
+      console.error('Failed to fetch favorites:', error);
     }
   };
 
@@ -31,13 +31,15 @@ function Header({ scrollToContact, onLoginSuccess }) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(updatedProfile),
-    }).then((response) => {
-      if (!response.ok) throw new Error('Failed to save profile');
-      return response.json();
-    }).catch((error) => {
-      console.error('Error saving profile:', error);
-      alert('Failed to save profile. Please try again.');
-    });
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error('Failed to save profile');
+        return response.json();
+      })
+      .catch((error) => {
+        console.error('Error saving profile:', error);
+        alert('Failed to save profile. Please try again.');
+      });
   };
 
   const handleLoginSuccess = (profileData) => {
@@ -46,12 +48,12 @@ function Header({ scrollToContact, onLoginSuccess }) {
   };
 
   useEffect(() => {
-    document.addEventListener("mousemove", eyeball);
-    return () => document.removeEventListener("mousemove", eyeball);
+    document.addEventListener('mousemove', eyeball);
+    return () => document.removeEventListener('mousemove', eyeball);
   }, []);
 
   const eyeball = (event) => {
-    const eyes = document.querySelectorAll(".eye");
+    const eyes = document.querySelectorAll('.eye');
     eyes.forEach((eye) => {
       const rect = eye.getBoundingClientRect();
       const eyeX = rect.left + rect.width / 2;
@@ -62,8 +64,8 @@ function Header({ scrollToContact, onLoginSuccess }) {
       const maxMove = 8;
       const pupilX = Math.cos(angle) * maxMove;
       const pupilY = Math.sin(angle) * maxMove;
-      eye.style.setProperty("--pupil-x", `${pupilX}px`);
-      eye.style.setProperty("--pupil-y", `${pupilY}px`);
+      eye.style.setProperty('--pupil-x', `${pupilX}px`);
+      eye.style.setProperty('--pupil-y', `${pupilY}px`);
     });
   };
 
@@ -72,7 +74,7 @@ function Header({ scrollToContact, onLoginSuccess }) {
       <nav>
         <div className="logo-avatar-container">
           <div className="profile-avatar" onClick={handleShowProfile}>
-            {userProfile?.firstName ? userProfile.firstName.charAt(0) : "?"}
+            {userProfile?.firstName ? userProfile.firstName.charAt(0) : '?'}
           </div>
           <div className="logo-container">
             <div className="logo">NestMate</div>
@@ -84,32 +86,37 @@ function Header({ scrollToContact, onLoginSuccess }) {
         </div>
         <ul className="nav-links">
           <li>
-            <a
-              href="home"
+            <Link
+              to="/"
               className={activeLink === 'home' ? 'active' : ''}
               onClick={() => setActiveLink('home')}
             >
               Home
-            </a>
+            </Link>
           </li>
           <li>
-            <a
-              href="/matches"
+            <Link
+              to="/matches"
               className={activeLink === 'matches' ? 'active' : ''}
               onClick={() => setActiveLink('matches')}
             >
               Match
-            </a>
+            </Link>
           </li>
- 
           <li>
-            <button onClick={() => setShowLogin(true)} className="login-btn">Login</button>
+            <button onClick={() => setShowLogin(true)} className="login-btn">
+              Login
+            </button>
           </li>
           <li>
             <a
-              href="contact"
+              href="#contact"
               className={activeLink === 'contact' ? 'active' : ''}
-              onClick={(e) => { e.preventDefault(); scrollToContact(); }}
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToContact();
+                setActiveLink('contact');
+              }}
             >
               Contact
             </a>
@@ -118,15 +125,15 @@ function Header({ scrollToContact, onLoginSuccess }) {
       </nav>
 
       {showLogin && (
-        <Login 
-          onClose={() => setShowLogin(false)} 
-          onLoginSuccess={handleLoginSuccess} 
+        <Login
+          onClose={() => setShowLogin(false)}
+          onLoginSuccess={handleLoginSuccess}
         />
       )}
 
       {showProfile && (
-        <ProfilePage 
-          profile={userProfile} 
+        <ProfilePage
+          profile={userProfile}
           onClose={() => setShowProfile(false)}
           onSave={handleProfileSave}
         />

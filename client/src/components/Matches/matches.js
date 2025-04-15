@@ -1,65 +1,65 @@
-// matches.js
-import React, { useEffect, useState } from 'react';
-import Header from './components/Header/header';
+import React, { useState, useEffect } from 'react';
+import { Card, Col, Row } from 'react-bootstrap';
 import './matches.css';
-import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 
-const Matches = () => {
+const Matches = ({ loggedInUser }) => {
   const [matches, setMatches] = useState([]);
-  const [loggedInUser, setLoggedInUser] = useState(null);
 
+  // Fetch matches on component mount
   useEffect(() => {
     const fetchMatches = async () => {
-      try {
-        const username = localStorage.getItem('username');  // Assuming username is stored in localStorage
-        const response = await fetch(`http://localhost:8080/api/matches/${username}`);
-        if (!response.ok) throw new Error('Failed to fetch matches');
-        const data = await response.json();
-        setMatches(data);  // Set the fetched user matches
-      } catch (error) {
-        console.error('Error fetching matches:', error);
+      if (loggedInUser) {
+        try {
+          const response = await fetch(
+            `http://localhost:8080/api/user/matches?username=${loggedInUser.email}`
+          );
+          const data = await response.json();
+          setMatches(data.matches || []);
+        } catch (error) {
+          console.error('Error fetching matches:', error);
+        }
       }
     };
-
     fetchMatches();
-  }, []);
+  }, [loggedInUser]);
 
   return (
-    <Container fluid className="App">
-      <Row>
-        <Header />
-      </Row>
-
-      <Row className="matches-header">
-        <Col>
-          <h1>Your Roommate Matches</h1>
-        </Col>
-      </Row>
-
-      <Row className="matches-row">
-        {matches.map((match, index) => (
-          <Col xs={12} md={6} lg={4} key={index} className="match-col">
-            <Card className="match-card">
+    <Row>
+      {matches.length > 0 ? (
+        matches.map((match) => (
+          <Col key={match.username} xs={12} sm={6} md={4} lg={3} className="d-flex">
+            <Card className="clickable-card flex-grow-1">
+              <Card.Img
+                variant="top"
+                src="/user-placeholder.jpg" // Fallback image for users
+                onError={(e) => {
+                  e.target.onerror = null;
+                 // e.target.src = '/user-placeholder.jpg';
+                }}
+              />
               <Card.Body>
-                <Card.Title>{match.username}</Card.Title>
+                <Card.Title>
+                  {match.firstName} {match.lastName}
+                </Card.Title>
                 <Card.Text>
-                  <strong>Budget:</strong> ${match.budget.min} - ${match.budget.max} <br />
-                  <strong>Major:</strong> {match.major} <br />
-                  <strong>Hobbies:</strong> {match.hobbies} <br />
-                  <strong>Food Preference:</strong> {match.food} <br />
-                  <strong>Sleeping Habit:</strong> {match.sleeping_habit} <br />
-                  <strong>Smoking:</strong> {match.smoking} <br />
-                  <strong>Cleanliness:</strong> {match.cleanliness} <br />
-                  <strong>Gender Preference:</strong> {match.gender_preference} <br />
-                  <strong>Pet Preference:</strong> {match.pet_preference} <br />
+                  <strong>Major:</strong> {match.preferences.major || 'Not specified'}<br />
+                  <strong>Hobbies:</strong> {match.preferences.hobbies || 'Not specified'}<br />
+                  <strong>Budget:</strong> $
+                  {match.preferences.budget.min || 0} - $
+                  {match.preferences.budget.max || 0}<br />
+                  <strong>Smoking:</strong> {match.preferences.smoking || 'Not specified'}<br />
+                  <strong>Pets:</strong> {match.preferences.pet_preference || 'Not specified'}
                 </Card.Text>
-                <Button variant="primary">Contact</Button>
               </Card.Body>
             </Card>
           </Col>
-        ))}
-      </Row>
-    </Container>
+        ))
+      ) : (
+        <Col className="no-results-container">
+          <h4 className="no-results">No matches found</h4>
+        </Col>
+      )}
+    </Row>
   );
 };
 

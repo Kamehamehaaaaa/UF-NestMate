@@ -1,13 +1,15 @@
 import React, { useRef, useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'; 
 import Header from './components/Header/header';
 import Contactform from './components/ContactForm/contactform';
 import SearchResults from './components/SearchResults/searchresults';
+import Matches from './components/Matches/matches'; 
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Container, Row, Col, Form, InputGroup, Button, Dropdown } from 'react-bootstrap';
 import { FaSearch } from 'react-icons/fa';
 import Home_pic from './images/home_pic.jpg';
-import { BsFillFilterCircleFill } from "react-icons/bs";
+import { BsFillFilterCircleFill } from 'react-icons/bs';
 
 function App() {
   const contactRef = useRef(null);
@@ -16,7 +18,6 @@ function App() {
   const [searchResults, setSearchResults] = useState([]);
   const [filterType, setFilterType] = useState('apartment');
   const [loggedInUser, setLoggedInUser] = useState(null);
-  
 
   useEffect(() => {
     const fetchHousingData = async () => {
@@ -24,9 +25,9 @@ function App() {
         const response = await fetch('http://localhost:8080/api/housing/getAll');
         if (!response.ok) throw new Error('Failed to fetch housing data');
         const data = await response.json();
-        setHousingData(data.properties || []); 
-        console.log(data.properties)
-        setSearchResults(data.properties || []); 
+        setHousingData(data.properties || []);
+        console.log(data.properties);
+        setSearchResults(data.properties || []);
       } catch (err) {
         console.error('Error fetching housing data:', err);
       }
@@ -46,13 +47,13 @@ function App() {
     setLoggedInUser(user);
   };
 
-   const fetchUserProfile = async (email) => {
+  const fetchUserProfile = async (email) => {
     try {
       const response = await fetch(`http://localhost:8080/api/user/getUser?username=${email}`);
       const userData = await response.json();
       setLoggedInUser(userData);
     } catch (error) {
-      console.error("Error fetching user profile:", error);
+      console.error('Error fetching user profile:', error);
     }
   };
 
@@ -62,7 +63,7 @@ function App() {
         const response = await fetch(`http://localhost:8080/api/filter/ratings`);
         if (!response.ok) throw new Error('Failed to fetch sorted data');
         const data = await response.json();
-        setSearchResults(data || []); 
+        setSearchResults(data || []);
       } catch (err) {
         console.error('Error fetching sorted data:', err);
       }
@@ -80,7 +81,7 @@ function App() {
         );
         if (!response.ok) throw new Error('Failed to fetch sorted data');
         const data = await response.json();
-        setSearchResults(data || []); 
+        setSearchResults(data || []);
       } catch (err) {
         console.error('Error fetching sorted data:', err);
       }
@@ -93,13 +94,9 @@ function App() {
     setSearchResults(housingData);
   };
 
-  return (
-    <Container fluid className="App">
-      <Row>
-        <Header scrollToContact={scrollToContact} onLoginSuccess={handleLoginSuccess} />
-      </Row>
-
-      <Row className='home-background-row'>
+  const Home = () => (
+    <>
+      <Row className="home-background-row">
         <Col xs={4} className="roommate-finder-col">
           <div className="roommate-finder-text">
             <div className="roommate">Apartment</div>
@@ -109,11 +106,7 @@ function App() {
           <Form className="search-form">
             <InputGroup className="rounded-search-bar">
               <Form.Control
-                placeholder={
-                   filterType === 'apartment' || filterType === 'rating'
-                    ? 'Apartment Name'
-                    : 'University Name'
-                }
+                placeholder={filterType === 'apartment' || filterType === 'rating' ? 'Apartment Name' : 'University Name'}
                 aria-label="Apartment Name"
                 className="search-input"
                 value={searchTerm}
@@ -124,17 +117,19 @@ function App() {
                   <FaSearch className="search-icon" />
                 </Button>
                 <Dropdown align="end">
-                  <Dropdown.Toggle aria-label="Filter" as={Button} variant="light" data-testid="filter-button" className="filter-button no-caret">
+                  <Dropdown.Toggle
+                    aria-label="Filter"
+                    as={Button}
+                    variant="light"
+                    data-testid="filter-button"
+                    className="filter-button no-caret"
+                  >
                     <BsFillFilterCircleFill />
                   </Dropdown.Toggle>
                   <Dropdown.Menu>
                     <Dropdown.Header>Sort By</Dropdown.Header>
-                    <Dropdown.Item onClick={() => handleFilterChange('location')}>
-                      Location (University)
-                    </Dropdown.Item>
-                    <Dropdown.Item onClick={() => handleFilterChange('rating')}>
-                      Rating
-                    </Dropdown.Item>
+                    <Dropdown.Item onClick={() => handleFilterChange('location')}>Location (University)</Dropdown.Item>
+                    <Dropdown.Item onClick={() => handleFilterChange('rating')}>Rating</Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>
               </div>
@@ -153,7 +148,21 @@ function App() {
       <Row ref={contactRef} className="contact-section">
         <Contactform />
       </Row>
-    </Container>
+    </>
+  );
+
+  return (
+    <Router>
+      <Container fluid className="App">
+        <Row>
+          <Header scrollToContact={scrollToContact} onLoginSuccess={handleLoginSuccess} />
+        </Row>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/matches" element={<Matches  loggedInUser={loggedInUser} />} />
+        </Routes>
+      </Container>
+    </Router>
   );
 }
 
