@@ -28,7 +28,8 @@ type MongoDBService struct {
 
 func NewMongoDBService() *MongoDBService {
 	//clientOptions := options.Client().ApplyURI("mongodb://192.168.0.74:27017")
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+
+	clientOptions := options.Client().ApplyURI("mongodb+srv://root:root@cluster0.xsdbgk5.mongodb.net/UF_NestMate?retryWrites=true&w=majority")
 	client, err := mongo.Connect(context.Background(), clientOptions)
 	if err != nil {
 		log.Fatalf("Failed to connect to MongoDB: %v", err)
@@ -45,7 +46,7 @@ func NewMongoDBService() *MongoDBService {
 
 func NewMongoDBTestService() *MongoDBService {
 	//clientOptions := options.Client().ApplyURI("mongodb://192.168.0.74:27017")
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+	clientOptions := options.Client().ApplyURI("mongodb+srv://root:root@cluster0.xsdbgk5.mongodb.net/UF_NestMate_unittests?retryWrites=true&w=majority")
 	client, err := mongo.Connect(context.Background(), clientOptions)
 	if err != nil {
 		log.Fatalf("Failed to connect to MongoDB: %v", err)
