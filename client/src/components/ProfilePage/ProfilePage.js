@@ -73,25 +73,32 @@ const ProfilePage = ({ profile, onClose, onSave }) => {
     setEditMode(false);
   };
 
-   const handleSavePreferences = async (updatedPreferences) => {
-    console.log(profile.username)
+  const handleSavePreferences = async (updatedPreferences) => {
     try {
       const response = await fetch('http://localhost:8080/api/user/preferences', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          username: profile.email,
-          preferences: updatedPreferences,
+          username: profile.email, // Use profile.email
+          preferences: {
+            ...updatedPreferences,
+            budget: {
+              min: parseInt(updatedPreferences.budget.min, 10),
+              max: parseInt(updatedPreferences.budget.max, 10),
+            },
+          },
         }),
       });
 
-      if (!response.ok) throw new Error('Failed to save preferences');
+      if (!response.ok) {
+        throw new Error(`Failed to save preferences: ${response.statusText}`);
+      }
 
       alert('Preferences saved successfully!');
       setPreferences(updatedPreferences); // Update local state
     } catch (error) {
       console.error('Error saving preferences:', error);
-      alert('Failed to save preferences.');
+      alert(`Failed to save preferences: ${error.message}`);
     }
   };
 

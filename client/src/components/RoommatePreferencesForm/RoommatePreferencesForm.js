@@ -25,10 +25,7 @@ const RoommatePreferencesForm = ({ preferences, onSave, username }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSave({
-      username: username,
-      preferences: formData
-    });
+    onSave(formData);
   };
 
   return (

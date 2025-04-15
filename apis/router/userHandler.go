@@ -262,6 +262,18 @@ func SavePreferencesHandler(c *gin.Context) {
 		Preferences user.Preferences  `json:"preferences"`
 	}
 
+	// Print all preferences to console
+	fmt.Printf("Received preferences for user %s:\n", req.Username)
+	fmt.Printf("Budget: Min=%d, Max=%d\n", req.Preferences.Budget.Min, req.Preferences.Budget.Max)
+	fmt.Printf("Major: %s\n", req.Preferences.Major)
+	fmt.Printf("Hobbies: %s\n", req.Preferences.Hobbies)
+	fmt.Printf("Food: %s\n", req.Preferences.Food)
+	fmt.Printf("Sleeping Habit: %s\n", req.Preferences.SleepingHabit)
+	fmt.Printf("Smoking/Drinking: %s\n", req.Preferences.SmokingDrinking)
+	fmt.Printf("Cleanliness: %d\n", req.Preferences.Cleanliness)
+	fmt.Printf("Gender Preference: %s\n", req.Preferences.GenderPreference)
+	fmt.Printf("Pet Preference: %s\n", req.Preferences.PetPreference)
+
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
@@ -332,6 +344,6 @@ func isPreferencesMatch(pref1, pref2 *user.Preferences) bool {
 
 	return pref1.Budget.Min <= pref2.Budget.Max &&
 		pref1.Budget.Max >= pref2.Budget.Min &&
-		pref1.Smoking == pref2.Smoking &&
+		pref1.SmokingDrinking == pref2.SmokingDrinking &&
 		pref1.Cleanliness == pref2.Cleanliness
 }
