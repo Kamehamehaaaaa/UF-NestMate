@@ -1,5 +1,7 @@
 /* RoommatePreferencesForm.css */
 .roommate-preferences-form {
+    max-height: 60vh; /* or any value that works well for your layout */
+    overflow-y: auto;
     padding: 20px;
     background: #f8f9fa;
     border-radius: 15px;
@@ -33,7 +35,16 @@
     display: flex;
     gap: 15px;
     flex-wrap: wrap;
+    align-items: center;
   }
+
+  .radio-group .form-check {
+    display: flex;
+    align-items: center; /* vertical centering */
+    gap: 6px;
+    margin-bottom: 0; /* remove default spacing if needed */
+  }
+  
   
   .form-check-input:checked {
     background-color: #c79a63;
@@ -77,4 +88,44 @@
   .form-control[as="select"]:focus {
     box-shadow: 0 0 0 2px rgba(199, 154, 99, 0.2);
   }
+
+  input[type='radio']:after {
+    width: 15px;
+    height: 15px;
+    border-radius: 15px;
+    top: -9.5px;
+    left: -7.5px;
+    position: relative;
+    background-color: #d1d3d1;
+    content: '';
+    display: inline-block;
+    visibility: visible;
+    border: 2px solid white;
+  }
   
+  /* Dark brown when checked */
+  input[type='radio']:checked:after {
+    width: 15px;
+    height: 15px;
+    border-radius: 15px;
+    top: -9.5px;
+    left: -7.5px;
+    position: relative;
+    background-color: #5c4033; /* dark brown */
+    content: '';
+    display: inline-block;
+    visibility: visible;
+    border: 2px solid white;
+  }  
+
+  /* Target WebKit browsers like Chrome, Safari */
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  background: #5c4033; 
+  border: 2px solid white;
+  cursor: pointer;
+  margin-top: -6px; /* adjust vertical alignment */
+}

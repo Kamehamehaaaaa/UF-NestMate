@@ -94,13 +94,14 @@ function Header({ scrollToContact, onLoginSuccess }) {
           </li>
           <li>
             <a
-              href="about"
-              className={activeLink === 'about' ? 'active' : ''}
-              onClick={() => setActiveLink('about')}
+              href="/matches"
+              className={activeLink === 'matches' ? 'active' : ''}
+              onClick={() => setActiveLink('matches')}
             >
-              About
+              Match
             </a>
-          </li> 
+          </li>
+ 
           <li>
             <button onClick={() => setShowLogin(true)} className="login-btn">Login</button>
           </li>

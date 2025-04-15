@@ -2,13 +2,19 @@ import React, { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import './RoommatePreferencesForm.css';
 
-const RoommatePreferencesForm = ({ preferences, onSave }) => {
-    const [formData, setFormData] = useState({
-        budget: { min: '', max: '' }, 
-        smoking: 'no',
-        cleanliness: 3,
-        ...preferences  
-      });
+const RoommatePreferencesForm = ({ preferences, onSave, username }) => {
+  const [formData, setFormData] = useState({
+    budget: { min: '0', max: '1000' },
+    major: 'N/A',
+    hobbies: 'N/A',
+    food: "any",
+    sleeping_habit: "any",
+    smoking: 'no',
+    cleanliness: 3,
+    gender_preference: "any",
+    pet_preference: 'fine with pets',
+    ...preferences,
+  });
 
   const handleChange = (field, value) => {
     setFormData(prev => ({
@@ -19,7 +25,10 @@ const RoommatePreferencesForm = ({ preferences, onSave }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSave(formData);
+    onSave({
+      username: username,
+      preferences: formData
+    });
   };
 
   return (
@@ -52,15 +61,61 @@ const RoommatePreferencesForm = ({ preferences, onSave }) => {
         </div>
       </Form.Group>
 
-    
+      {/* Major */}
+      <Form.Group className="mb-4">
+          <Form.Label>Major</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter your major"
+            value={formData.major}
+            onChange={(e) => handleChange('major', e.target.value)}
+          />
+      </Form.Group>
+
+      {/* Hobbies */}
+      <Form.Group className="mb-4">
+          <Form.Label>Hobbies</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter your hobbies"
+            value={formData.hobbies}
+            onChange={(e) => handleChange('hobbies', e.target.value)}
+          />
+      </Form.Group>
+
+      {/* Food Preference */}
+      <Form.Group className="mb-4">
+          <Form.Label>Food Preference</Form.Label>
+          <Form.Select
+            value={formData.food}
+            onChange={(e) => handleChange('food', e.target.value)}
+          >
+            <option value="any">Any</option>
+            <option value="vegetarian">Vegetarian</option>
+            <option value="non-vegetarian">Non-Vegetarian</option>
+          </Form.Select>
+      </Form.Group>
+
+      {/* Sleeping Habit */}
+      <Form.Group className="mb-4">
+          <Form.Label>Sleeping Habit</Form.Label>
+          <Form.Select
+            value={formData.sleeping_habit}
+            onChange={(e) => handleChange('sleeping_habit', e.target.value)}
+          >
+            <option value="any">Any</option>
+            <option value="late sleeper">Late Sleeper</option>
+            <option value="early sleeper">Early Sleeper</option>
+          </Form.Select>
+      </Form.Group>
 
     
       <div className="lifestyle-section">
-        {/* Smoking */}
+        {/* Smoking/Drinking */}
         <Form.Group className="mb-4">
-          <Form.Label>Smoking Preference</Form.Label>
+          <Form.Label>Smoking / Drinking</Form.Label>
           <div className="radio-group">
-            {['No', 'Occasionally', 'Regularly'].map(option => (
+            {['YES', 'NO'].map((option) => (
               <Form.Check
                 key={option}
                 type="radio"
@@ -88,11 +143,42 @@ const RoommatePreferencesForm = ({ preferences, onSave }) => {
             />
             <div className="cleanliness-labels">
               <span>Casual</span>
-              <span>Neutral</span>
               <span>Very Clean</span>
             </div>
           </div>
         </Form.Group>
+
+        <Form.Group className="mb-4">
+          <Form.Label>Gender Preference</Form.Label>
+          <div className="radio-group">
+            {['MALE', 'FEMALE', 'ANY'].map((option) => (
+              <Form.Check
+                key={option}
+                type="radio"
+                label={option}
+                name="gender_preference"
+                id={`gender-${option}`}
+                value={option.toLowerCase()}
+                checked={formData.gender_preference === option.toLowerCase()}
+                onChange={(e) => handleChange('gender_preference', e.target.value)}
+              />
+            ))}
+          </div>
+        </Form.Group>
+
+
+        {/* Pet Preference */}
+        <Form.Group className="mb-4">
+          <Form.Label>Pet Preference</Form.Label>
+          <Form.Select
+            value={formData.pet_preference}
+            onChange={(e) => handleChange('pet_preference', e.target.value)}
+          >
+            <option value="fine with pets">Fine with pets</option>
+            <option value="not fine with pets">Not fine with pets</option>
+          </Form.Select>
+        </Form.Group>
+
       </div>
 
       <Button variant="primary" type="submit" className="save-button">

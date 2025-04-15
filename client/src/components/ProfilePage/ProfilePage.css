@@ -123,12 +123,12 @@
 }
 
 .save-btn, .edit-profile-btn {
-  background: #c8b297;
+  background: #573a2d !important;
   color: white;
 }
 
 .save-btn:hover, .edit-profile-btn:hover {
-  background: #c8b297;
+  background: #2d1f14 !important;
 }
 
 .cancel-btn {

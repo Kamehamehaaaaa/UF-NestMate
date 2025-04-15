@@ -9,9 +9,15 @@ const ProfilePage = ({ profile, onClose, onSave }) => {
   const [selectedApartment, setSelectedApartment] = useState(null);
   const [activeTab, setActiveTab] = useState('profile');
   const [preferences, setPreferences] = useState({
-    budget: { min: '', max: '' },
+    budget: { min: '0', max: '1000' },
+    major: 'N/A',
+    hobbies: 'N/A',
+    food: "any",
+    sleeping_habit: "any",
     smoking: 'no',
     cleanliness: 3,
+    gender_preference: "any",
+    pet_preference: 'fine with pets',
   });
   const [loadingPreferences, setLoadingPreferences] = useState(true);
 
@@ -25,9 +31,15 @@ const ProfilePage = ({ profile, onClose, onSave }) => {
 
         const data = await response.json();
         setPreferences(data.preferences || {
-          budget: { min: '', max: '' },
+          budget: { min: '0', max: '1000' },
+          major: 'N/A',
+          hobbies: 'N/A',
+          food: "any",
+          sleeping_habit: "any",
           smoking: 'no',
           cleanliness: 3,
+          gender_preference: "any",
+          pet_preference: 'fine with pets',
         });
       } catch (error) {
         console.error('Error fetching preferences:', error);
