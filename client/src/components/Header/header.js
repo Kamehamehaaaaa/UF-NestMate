@@ -4,11 +4,17 @@ import './header.css';
 import Login from './Login/Login';
 import ProfilePage from '../ProfilePage/ProfilePage';
 
-function Header({ scrollToContact, onLoginSuccess }) {
+function Header({ scrollToContact, onLoginSuccess , onLogout}) {
   const [activeLink, setActiveLink] = useState('home');
   const [showLogin, setShowLogin] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [userProfile, setUserProfile] = useState({});
+
+  const handleLogoutClick = () => {
+    setUserProfile({});
+    onLogout();
+    setShowProfile(false); 
+  };
 
   const handleShowProfile = async () => {
     try {
@@ -73,9 +79,19 @@ function Header({ scrollToContact, onLoginSuccess }) {
     <header className="app-header">
       <nav>
         <div className="logo-avatar-container">
-          <div className="profile-avatar" onClick={handleShowProfile}>
-            {userProfile?.firstName ? userProfile.firstName.charAt(0) : '?'}
-          </div>
+        <div
+  className="profile-avatar"
+  onClick={() => {
+    if (userProfile && userProfile.firstName) {
+      handleShowProfile();
+    } else {
+      setShowLogin(true);
+    }
+  }}
+>
+  {userProfile?.firstName ? userProfile.firstName.charAt(0) : "?"}
+</div>
+
           <div className="logo-container">
             <div className="logo">NestMate</div>
             <div className="eyes-container">
@@ -85,43 +101,39 @@ function Header({ scrollToContact, onLoginSuccess }) {
           </div>
         </div>
         <ul className="nav-links">
-          <li>
-            <Link
-              to="/"
-              className={activeLink === 'home' ? 'active' : ''}
-              onClick={() => setActiveLink('home')}
-            >
-              Home
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/matches"
-              className={activeLink === 'matches' ? 'active' : ''}
-              onClick={() => setActiveLink('matches')}
-            >
-              Match
-            </Link>
-          </li>
-          <li>
-            <button onClick={() => setShowLogin(true)} className="login-btn">
-              Login
-            </button>
-          </li>
-          <li>
-            <a
-              href="#contact"
-              className={activeLink === 'contact' ? 'active' : ''}
-              onClick={(e) => {
-                e.preventDefault();
-                scrollToContact();
-                setActiveLink('contact');
-              }}
-            >
-              Contact
-            </a>
-          </li>
-        </ul>
+  <li>
+    <Link
+      to="/"
+      className={activeLink === 'home' ? 'active' : ''}
+      onClick={() => setActiveLink('home')}
+    >
+      Home
+    </Link>
+  </li>
+  <li>
+    <Link
+      to="/matches"
+      className={activeLink === 'matches' ? 'active' : ''}
+      onClick={() => setActiveLink('matches')}
+    >
+      Match
+    </Link>
+  </li>
+  <li>
+    <a
+      href="#contact"
+      className={activeLink === 'contact' ? 'active' : ''}
+      onClick={(e) => {
+        e.preventDefault();
+        scrollToContact();
+        setActiveLink('contact');
+      }}
+    >
+      Contact
+    </a>
+  </li>
+</ul>
+
       </nav>
 
       {showLogin && (
@@ -136,6 +148,7 @@ function Header({ scrollToContact, onLoginSuccess }) {
           profile={userProfile}
           onClose={() => setShowProfile(false)}
           onSave={handleProfileSave}
+          onLogout={handleLogoutClick}
         />
       )}
     </header>

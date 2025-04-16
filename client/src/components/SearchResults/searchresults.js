@@ -10,10 +10,6 @@ import { Accordion } from 'react-bootstrap';
 
 const SearchResults = ({housingData,loggedInUser}) => {
 
-  
-  
-
-  console.log(housingData)
   const [show, setShow] = useState(false);
   const [selectedHousing, setSelectedHousing] = useState(null);
   const [comment, setComment] = useState('');

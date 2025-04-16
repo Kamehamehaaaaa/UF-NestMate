@@ -89,7 +89,7 @@ func (m *MongoDBService) getNextID() (int, error) {
 	err := m.db.Collection("apartment_card").FindOne(context.Background(), bson.D{}, opts).Decode(&lastProperty)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return 1, nil // Start from 1 if no documents exist
+			return 1, nil 
 		}
 		return 0, err
 	}
@@ -333,7 +333,7 @@ func (m *MongoDBService) GetAllCommentsForApartment(query string) ([]string, err
 func (m *MongoDBService) DeleteUser(username string) error {
 	var user user.User
 
-	filter := bson.M{"username": username} // Filter by username
+	filter := bson.M{"username": username} 
 
 	err := m.db.Collection("users").FindOne(context.Background(), filter).Decode(&user)
 	if err != nil {
@@ -348,8 +348,6 @@ func (m *MongoDBService) DeleteUser(username string) error {
 	return nil
 }
 
-
-// AddFavorite adds an apartment ID to user's favorites
 func (m *MongoDBService) AddFavorite(username string, aptID int) error {
     ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
     defer cancel()
@@ -425,8 +423,6 @@ func (m *MongoDBService) GetPreferences(username string) (*user.Preferences, err
 
 	return user.Preferences, nil
 }
-
-
 
 func (m *MongoDBService) GetAllUsers() ([]user.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)

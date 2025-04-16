@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './ProfilePage.css';
 import RoommatePreferencesForm from '../RoommatePreferencesForm/RoommatePreferencesForm';
 
-const ProfilePage = ({ profile, onClose, onSave }) => {
+const ProfilePage = ({ profile, onClose, onSave , onLogout }) => {
   const [editMode, setEditMode] = useState(false);
   const [editedProfile, setEditedProfile] = useState(profile);
   const [favorites, setFavorites] = useState(profile.favorites || []);
@@ -235,13 +235,24 @@ const ProfilePage = ({ profile, onClose, onSave }) => {
 
                   {/* Edit Profile Button */}
                   {!editMode && (
-                    <button
-                      className="edit-profile-btn"
-                      onClick={() => setEditMode(true)}
-                    >
-                      Edit Profile
-                    </button>
-                  )}
+  <div className="profile-actions">
+    <button
+      className="edit-profile-btn"
+      onClick={() => setEditMode(true)}
+    >
+      Edit Profile
+    </button>
+    <button
+      className="edit-profile-btn logout-btn"
+      onClick={onLogout}
+      style={{ marginLeft: '10px' }}
+    >
+      Logout
+    </button>
+  </div>
+)}
+
+          
                 </div>
               )}
             </div>

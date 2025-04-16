@@ -26,7 +26,6 @@ function App() {
         if (!response.ok) throw new Error('Failed to fetch housing data');
         const data = await response.json();
         setHousingData(data.properties || []);
-        console.log(data.properties);
         setSearchResults(data.properties || []);
       } catch (err) {
         console.error('Error fetching housing data:', err);
@@ -47,15 +46,9 @@ function App() {
     setLoggedInUser(user);
   };
 
-  const fetchUserProfile = async (email) => {
-    try {
-      const response = await fetch(`http://localhost:8080/api/user/getUser?username=${email}`);
-      const userData = await response.json();
-      setLoggedInUser(userData);
-    } catch (error) {
-      console.error('Error fetching user profile:', error);
-    }
-  };
+const handleLogout = () => {
+  setLoggedInUser(null);
+};
 
   const handleSearch = async () => {
     if (filterType === 'rating') {
@@ -155,7 +148,7 @@ function App() {
     <Router>
       <Container fluid className="App">
         <Row>
-          <Header scrollToContact={scrollToContact} onLoginSuccess={handleLoginSuccess} />
+          <Header scrollToContact={scrollToContact} onLoginSuccess={handleLoginSuccess}   onLogout={handleLogout} />
         </Row>
         <Routes>
           <Route path="/" element={<Home />} />
