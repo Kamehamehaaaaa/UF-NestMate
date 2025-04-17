@@ -1,5 +1,6 @@
+/* eslint-disable no-unused-vars */
 import React, { useRef, useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'; 
+import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom'; 
 import Header from './components/Header/header';
 import Contactform from './components/ContactForm/contactform';
 import SearchResults from './components/SearchResults/searchresults';
@@ -18,6 +19,10 @@ function App() {
   const [searchResults, setSearchResults] = useState([]);
   const [filterType, setFilterType] = useState('apartment');
   const [loggedInUser, setLoggedInUser] = useState(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  
 
   useEffect(() => {
     const fetchHousingData = async () => {
@@ -34,8 +39,22 @@ function App() {
     fetchHousingData();
   }, []);
 
+  useEffect(() => {
+    if (location.pathname === '/' && location.state?.scrollToContact) {
+      setTimeout(() => {
+        contactRef.current?.scrollIntoView({ behavior: 'smooth' });
+        navigate(location.pathname, { replace: true, state: {} });
+      }, 200);
+    }
+  }, [location, navigate]);
+  
+
   const scrollToContact = () => {
-    contactRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (location.pathname !== '/') {
+      navigate('/', { state: { scrollToContact: true } });
+    } else {
+      contactRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   const handleSearchInputChange = (e) => {
@@ -145,7 +164,6 @@ const handleLogout = () => {
   );
 
   return (
-    <Router>
       <Container fluid className="App">
         <Row>
           <Header scrollToContact={scrollToContact} onLoginSuccess={handleLoginSuccess}   onLogout={handleLogout} />
@@ -155,7 +173,6 @@ const handleLogout = () => {
           <Route path="/matches" element={<Matches  loggedInUser={loggedInUser} />} />
         </Routes>
       </Container>
-    </Router>
   );
 }
 

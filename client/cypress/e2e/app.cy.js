@@ -44,4 +44,4 @@ describe('Apartment Finder App', () => {
       cy.get('header').contains('Contact').click();
       cy.get('.contact-section').should('be.visible');
     });
-  });   
+  });  

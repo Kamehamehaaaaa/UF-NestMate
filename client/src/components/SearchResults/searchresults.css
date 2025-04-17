@@ -314,6 +314,11 @@
   min-width: 150px;
 }
 
+.amenity-category:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
 .amenity-category h6 {
   font-size: 1rem;
   font-weight: bold;
@@ -336,11 +341,11 @@
 
 .amenity-address {
   font-size: 0.8rem;
+  color: #777777;
+  font-style: italic;
 }
 
 .comments-list {
   max-height: 150px; 
   overflow-y: auto;
 }
-
-

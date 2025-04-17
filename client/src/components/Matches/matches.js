@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { Card, Col, Row, Modal, Tab, Tabs } from 'react-bootstrap';
 import './matches.css';
@@ -44,7 +45,7 @@ const Matches = ({ loggedInUser }) => {
               >
                 <Card.Img
                   variant="top"
-                  src={'https://images.unsplash.com/photo-1534528741775-53994a69daeb'}
+                  src={`https://res.cloudinary.com/dbldemxes/image/upload/v1744844160/${match.username}.png`}
                   onError={(e) => {
                     e.target.onerror = null;
                     e.target.src = '/user-placeholder.jpg';
@@ -82,9 +83,13 @@ const Matches = ({ loggedInUser }) => {
         <Modal.Body>
           <div className="modal-image-container">
             <img
-              src={'https://images.unsplash.com/photo-1534528741775-53994a69daeb'}
+              src={`https://res.cloudinary.com/dbldemxes/image/upload/v1744844160/${selectedMatch?.username}.png`}
               alt={selectedMatch?.firstName}
               className="modal-image"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = '/user-placeholder.jpg';
+              }}
             />
           </div>
 

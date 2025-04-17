@@ -16,7 +16,6 @@ const SearchResults = ({housingData,loggedInUser}) => {
   const [comments, setComments] = useState([]);
   const [showCommentForm, setShowCommentForm] = useState(false);
   const [favorites, setFavorites] = useState([]);
-
  
   const isFavorite = (aptId) => favorites.includes(aptId);
   
@@ -25,9 +24,6 @@ const SearchResults = ({housingData,loggedInUser}) => {
     selectedHousing?.lng,
     selectedHousing?.id
   );
-  
-
-
   
   const handleFavoriteToggle = async (aptId) => {
     try {
@@ -79,6 +75,7 @@ const SearchResults = ({housingData,loggedInUser}) => {
     setComments(housing.comments || []);
     setShow(true);
   };
+
 
   const handleCommentSubmit = (e) => {
     e.preventDefault();
@@ -313,7 +310,7 @@ const SearchResults = ({housingData,loggedInUser}) => {
                   {places.slice(0, 3).map(place => (
                     <li key={place.name}>
                       <span className="amenity-name">{place.name}</span>
-                      <span className="amenity-address">{place.vicinity}</span>
+                      <span className="amenity-address"> - {place.vicinity}</span>
                     </li>
                   ))}
                 </ul>
