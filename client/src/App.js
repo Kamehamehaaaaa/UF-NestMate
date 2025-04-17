@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useRef, useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom'; 
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom'; 
 import Header from './components/Header/header';
 import Contactform from './components/ContactForm/contactform';
 import SearchResults from './components/SearchResults/searchresults';
@@ -12,17 +12,76 @@ import { FaSearch } from 'react-icons/fa';
 import Home_pic from './images/home_pic.jpg';
 import { BsFillFilterCircleFill } from 'react-icons/bs';
 
+// Define Home component outside App to prevent re-creation
+const Home = ({ searchTerm, filterType, searchResults, loggedInUser, handleSearchInputChange, handleSearch, handleFilterChange, contactRef, inputRef }) => (
+  <>
+    <Row className="home-background-row">
+      <Col xs={4} className="roommate-finder-col">
+        <div className="roommate-finder-text">
+          <div className="roommate">Apartment</div>
+          <div className="finder">Finder</div>
+        </div>
+
+        <Form className="search-form">
+          <InputGroup className="rounded-search-bar">
+            <Form.Control
+              placeholder={filterType === 'apartment' || filterType === 'rating' ? 'Apartment Name' : 'University Name'}
+              aria-label="Apartment Name"
+              className="search-input"
+              value={searchTerm}
+              onChange={handleSearchInputChange}
+              ref={inputRef} // Attach ref for focus management
+            />
+            <div className="search-button-wrapper">
+              <Button aria-label="Search" className="search-button" onClick={handleSearch}>
+                <FaSearch className="search-icon" />
+              </Button>
+              <Dropdown align="end">
+                <Dropdown.Toggle
+                  aria-label="Filter"
+                  as={Button}
+                  variant="light"
+                  data-testid="filter-button"
+                  className="filter-button no-caret"
+                >
+                  <BsFillFilterCircleFill />
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  <Dropdown.Header>Sort By</Dropdown.Header>
+                  <Dropdown.Item onClick={() => handleFilterChange('location')}>Location (University)</Dropdown.Item>
+                  <Dropdown.Item onClick={() => handleFilterChange('rating')}>Rating</Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+            </div>
+          </InputGroup>
+        </Form>
+      </Col>
+      <Col xs={8} className="image-col">
+        <img src={Home_pic} alt="Home" className="home-pic" />
+      </Col>
+    </Row>
+
+    <Row className="card-class-row no-gutters">
+      <SearchResults housingData={searchResults || []} loggedInUser={loggedInUser} />
+    </Row>
+
+    <Row ref={contactRef} className="contact-section">
+      <Contactform />
+    </Row>
+  </>
+);
+
 function App() {
   const contactRef = useRef(null);
+  const inputRef = useRef(null); // Ref for the input
   const [searchTerm, setSearchTerm] = useState('');
   const [housingData, setHousingData] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const [filterType, setFilterType] = useState('apartment');
   const [loggedInUser, setLoggedInUser] = useState(null);
+  const [isInputFocused, setIsInputFocused] = useState(false); // Track focus state
   const navigate = useNavigate();
   const location = useLocation();
-
-  
 
   useEffect(() => {
     const fetchHousingData = async () => {
@@ -47,7 +106,27 @@ function App() {
       }, 200);
     }
   }, [location, navigate]);
-  
+
+  // Handle outside clicks to blur input
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (inputRef.current && !inputRef.current.contains(event.target)) {
+        setIsInputFocused(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // Refocus input if isInputFocused is true
+  useEffect(() => {
+    if (isInputFocused && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [searchTerm, isInputFocused]);
 
   const scrollToContact = () => {
     if (location.pathname !== '/') {
@@ -59,15 +138,17 @@ function App() {
 
   const handleSearchInputChange = (e) => {
     setSearchTerm(e.target.value);
+    setIsInputFocused(true); // Keep input focused on typing
+    console.log('searchTerm:', e.target.value); // Debug log
   };
 
   const handleLoginSuccess = (user) => {
     setLoggedInUser(user);
   };
 
-const handleLogout = () => {
-  setLoggedInUser(null);
-};
+  const handleLogout = () => {
+    setLoggedInUser(null);
+  };
 
   const handleSearch = async () => {
     if (filterType === 'rating') {
@@ -104,75 +185,37 @@ const handleLogout = () => {
     setFilterType(type);
     setSearchTerm('');
     setSearchResults(housingData);
+    setIsInputFocused(true); // Refocus input after filter change
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
   };
 
-  const Home = () => (
-    <>
-      <Row className="home-background-row">
-        <Col xs={4} className="roommate-finder-col">
-          <div className="roommate-finder-text">
-            <div className="roommate">Apartment</div>
-            <div className="finder">Finder</div>
-          </div>
-
-          <Form className="search-form">
-            <InputGroup className="rounded-search-bar">
-              <Form.Control
-                placeholder={filterType === 'apartment' || filterType === 'rating' ? 'Apartment Name' : 'University Name'}
-                aria-label="Apartment Name"
-                className="search-input"
-                value={searchTerm}
-                onChange={handleSearchInputChange}
-              />
-              <div className="search-button-wrapper">
-                <Button aria-label="Search" className="search-button" onClick={handleSearch}>
-                  <FaSearch className="search-icon" />
-                </Button>
-                <Dropdown align="end">
-                  <Dropdown.Toggle
-                    aria-label="Filter"
-                    as={Button}
-                    variant="light"
-                    data-testid="filter-button"
-                    className="filter-button no-caret"
-                  >
-                    <BsFillFilterCircleFill />
-                  </Dropdown.Toggle>
-                  <Dropdown.Menu>
-                    <Dropdown.Header>Sort By</Dropdown.Header>
-                    <Dropdown.Item onClick={() => handleFilterChange('location')}>Location (University)</Dropdown.Item>
-                    <Dropdown.Item onClick={() => handleFilterChange('rating')}>Rating</Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
-              </div>
-            </InputGroup>
-          </Form>
-        </Col>
-        <Col xs={8} className="image-col">
-          <img src={Home_pic} alt="Home" className="home-pic" />
-        </Col>
-      </Row>
-
-      <Row className="card-class-row no-gutters">
-        <SearchResults housingData={searchResults || []} loggedInUser={loggedInUser} />
-      </Row>
-
-      <Row ref={contactRef} className="contact-section">
-        <Contactform />
-      </Row>
-    </>
-  );
-
   return (
-      <Container fluid className="App">
-        <Row>
-          <Header scrollToContact={scrollToContact} onLoginSuccess={handleLoginSuccess}   onLogout={handleLogout} />
-        </Row>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/matches" element={<Matches  loggedInUser={loggedInUser} />} />
-        </Routes>
-      </Container>
+    <Container fluid className="App">
+      <Row>
+        <Header scrollToContact={scrollToContact} onLoginSuccess={handleLoginSuccess} onLogout={handleLogout} />
+      </Row>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <Home
+              searchTerm={searchTerm}
+              filterType={filterType}
+              searchResults={searchResults}
+              loggedInUser={loggedInUser}
+              handleSearchInputChange={handleSearchInputChange}
+              handleSearch={handleSearch}
+              handleFilterChange={handleFilterChange}
+              contactRef={contactRef}
+              inputRef={inputRef}
+            />
+          }
+        />
+        <Route path="/matches" element={<Matches loggedInUser={loggedInUser} />} />
+      </Routes>
+    </Container>
   );
 }
 
