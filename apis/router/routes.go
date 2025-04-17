@@ -36,5 +36,5 @@ func SetupHandlers(r *gin.Engine) {
 	r.GET("/api/comments/get/:query", GetCommentHandler)
 	r.GET("/api/comments/getAll/:query", GetAllCommentsHandler)
 	r.GET("/api/filter/ratings", filterRatingsHandler)
-	r.GET("/api/housing/summary", ReviewSummarizerHandler)
+	r.GET("/api/housing/summary/:query", ReviewSummarizerHandler)
 }

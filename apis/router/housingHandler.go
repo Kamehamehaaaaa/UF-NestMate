@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"sort"
 	"strconv"
 	"strings"
@@ -15,6 +16,11 @@ import (
 	"apis/cloudinary"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-resty/resty/v2"
+)
+
+const (
+	apiEndpoint = "https://api.openai.com/v1/chat/completions"
 )
 
 func GetHousingHandler(c *gin.Context) {
@@ -274,7 +280,73 @@ func filterRatingsHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, properties)
 }
 
-func ReviewSummarizerHandler(c *gin.Context) {
+func queryGPT(inputText string) {
+	apiKey := os.Getenv("OPENAI_KEY")
+	client := resty.New()
 
-	c.JSON(http.StatusOK, gin.H{"message": "Indian community with good ambience"})
+	response, err := client.R().
+		SetAuthToken(apiKey).
+		SetHeader("Content-Type", "application/json").
+		SetBody(map[string]interface{}{
+			"model":      "gpt-4o",
+			"messages":   []interface{}{map[string]interface{}{"role": "system", "content": "Summarize the below text to 4 or less sentences. " + inputText}},
+			"max_tokens": 5000,
+		}).
+		Post(apiEndpoint)
+
+	if err != nil {
+		log.Fatalf("Error while sending send the request: %v", err)
+	}
+
+	body := response.Body()
+
+	var data map[string]interface{}
+	err = json.Unmarshal(body, &data)
+	if err != nil {
+		fmt.Println("Error while decoding JSON response:", err)
+		return
+	}
+
+	fmt.Println(data)
+
+	// Extract the content from the JSON response
+	content := data["choices"].([]interface{})[0].(map[string]interface{})["message"].(map[string]interface{})["content"].(string)
+	fmt.Println(content)
+}
+
+func ReviewSummarizerHandler(c *gin.Context) {
+	query := c.Param("query")
+
+	fmt.Println(query)
+
+	commentsApartment, err := GetAllCommentsForApartmentHelper(query)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching property comments"})
+		return
+	}
+
+	commentsCombined := ""
+
+	for _, val := range commentsApartment {
+		commentsCombined += val
+		commentsCombined += ". "
+	}
+	// textB, _ := os.ReadFile("/Users/rohitbogulla/Desktop/Sem 2/SE/Gat-o-Buddy/apis/housing/file.txt")
+	// text := string(textB)
+
+	// queryGPT(text)
+
+	// res := housing.CreateFromText(text)
+
+	summary, err := housing.BasicSummarizer(commentsCombined, 2)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching properties"})
+		return
+	}
+
+	// summarized := rephraseSentences(strings.Split(summary, "\n"))
+
+	c.JSON(http.StatusOK, gin.H{"message": summary})
 }
