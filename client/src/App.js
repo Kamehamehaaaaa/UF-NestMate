@@ -48,6 +48,7 @@ const Home = ({ searchTerm, filterType, searchResults, loggedInUser, handleSearc
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
                   <Dropdown.Header>Sort By</Dropdown.Header>
+                  <Dropdown.Item onClick={() => handleFilterChange('apartment')}>Apartment Name</Dropdown.Item>
                   <Dropdown.Item onClick={() => handleFilterChange('location')}>Location (University)</Dropdown.Item>
                   <Dropdown.Item onClick={() => handleFilterChange('rating')}>Rating</Dropdown.Item>
                 </Dropdown.Menu>
@@ -100,10 +101,13 @@ function App() {
 
   useEffect(() => {
     if (location.pathname === '/' && location.state?.scrollToContact) {
+      navigate(location.pathname, { replace: true, state: {} });
+  
       setTimeout(() => {
         contactRef.current?.scrollIntoView({ behavior: 'smooth' });
-        navigate(location.pathname, { replace: true, state: {} });
       }, 200);
+    } else {
+      window.scrollTo({ top: 0, behavior: 'auto' });
     }
   }, [location, navigate]);
 
@@ -129,18 +133,41 @@ function App() {
   }, [searchTerm, isInputFocused]);
 
   const scrollToContact = () => {
-    if (location.pathname !== '/') {
-      navigate('/', { state: { scrollToContact: true } });
-    } else {
-      contactRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }
+    navigate('/', { state: { scrollToContact: true } });
   };
 
   const handleSearchInputChange = (e) => {
-    setSearchTerm(e.target.value);
-    setIsInputFocused(true); // Keep input focused on typing
-    console.log('searchTerm:', e.target.value); // Debug log
+    const value = e.target.value;
+    setSearchTerm(value);
+    setIsInputFocused(true);
+  
+    let filteredResults = [];
+  
+    if (value.trim() === '') {
+      if (filterType === 'rating') {
+        handleFilterChange('rating'); // re-fetching sorted data
+      } else {
+        setSearchResults(housingData);
+      }
+      return;
+    }
+  
+    if (filterType === 'apartment') {
+      filteredResults = searchResults.filter((result) =>
+        result.name && result.name.toLowerCase().includes(value.toLowerCase())
+      );
+    } else if (filterType === 'location') {
+      return;
+    } else if (filterType === 'rating') {
+      filteredResults = searchResults.filter((result) =>
+        result.name && result.name.toLowerCase().includes(value.toLowerCase())
+      );
+    }
+  
+    setSearchResults(filteredResults);
+    console.log('searchTerm:', value);
   };
+  
 
   const handleLoginSuccess = (user) => {
     setLoggedInUser(user);
@@ -151,16 +178,6 @@ function App() {
   };
 
   const handleSearch = async () => {
-    if (filterType === 'rating') {
-      try {
-        const response = await fetch(`http://localhost:8080/api/filter/ratings`);
-        if (!response.ok) throw new Error('Failed to fetch sorted data');
-        const data = await response.json();
-        setSearchResults(data || []);
-      } catch (err) {
-        console.error('Error fetching sorted data:', err);
-      }
-    }
 
     if (filterType === 'apartment') {
       const filteredResults = housingData.filter((result) =>
@@ -181,15 +198,38 @@ function App() {
     }
   };
 
-  const handleFilterChange = (type) => {
+
+  const handleFilterChange = async (type) => {
     setFilterType(type);
     setSearchTerm('');
-    setSearchResults(housingData);
-    setIsInputFocused(true); // Refocus input after filter change
-    if (inputRef.current) {
-      inputRef.current.focus();
+    setIsInputFocused(true);
+    if (inputRef.current) inputRef.current.focus();
+  
+    if (type === 'rating') {
+      try {
+        const response = await fetch(`http://localhost:8080/api/filter/ratings`);
+        if (!response.ok) throw new Error('Failed to fetch sorted data');
+        const data = await response.json();
+        setSearchResults(data || []);
+      } catch (err) {
+        console.error('Error fetching sorted data:', err);
+      }
+    } else {
+      
+      setSearchResults(housingData);
     }
   };
+
+  const handleSearchButtonClick = () => {
+    if (filterType === 'location') {
+      const filtered = housingData.filter((result) =>
+        result.university &&
+        result.university.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setSearchResults(filtered);
+    }
+  };
+  
 
   return (
     <Container fluid className="App">

@@ -45,10 +45,10 @@ const Matches = ({ loggedInUser }) => {
               >
                 <Card.Img
                   variant="top"
-                  src={`https://res.cloudinary.com/dbldemxes/image/upload/v1744844160/${match.username}.png`}
+                  src={`https://res.cloudinary.com/dbldemxes/image/upload/v1744844160/${match.username?.includes('@') ? match.username.split('@')[0] : match.username}.png`}
                   onError={(e) => {
                     e.target.onerror = null;
-                    e.target.src = '/user-placeholder.jpg';
+                    e.target.src = 'https://res.cloudinary.com/dbldemxes/image/upload/v1744872550/empty.png';
                   }}
                 />
                 <Card.Body>
@@ -83,12 +83,12 @@ const Matches = ({ loggedInUser }) => {
         <Modal.Body>
           <div className="modal-image-container">
             <img
-              src={`https://res.cloudinary.com/dbldemxes/image/upload/v1744844160/${selectedMatch?.username}.png`}
+              src={`https://res.cloudinary.com/dbldemxes/image/upload/v1744844160/${selectedMatch?.username?.includes('@') ? selectedMatch.username.split('@')[0] : selectedMatch?.username}.png`}
               alt={selectedMatch?.firstName}
               className="modal-image"
               onError={(e) => {
                 e.target.onerror = null;
-                e.target.src = '/user-placeholder.jpg';
+                e.target.src = 'https://res.cloudinary.com/dbldemxes/image/upload/v1744872550/empty.png';
               }}
             />
           </div>

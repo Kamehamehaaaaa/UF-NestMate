@@ -163,85 +163,82 @@ func userExists(username string) bool {
 	return err == nil
 }
 
-
-
 func AddFavoriteHandler(c *gin.Context) {
-    var req struct {
-        Username string `json:"username"`
-        AptID    int    `json:"aptId"`
-    }
-    
-    if err := c.ShouldBindJSON(&req); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
-        return
-    }
+	var req struct {
+		Username string `json:"username"`
+		AptID    int    `json:"aptId"`
+	}
 
-    // Verify user exists
-    if !userExists(req.Username) {
-        c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
-        return
-    }
-		 fmt.Printf(req.Username)
-    err := database.MongoDB.AddFavorite(req.Username, req.AptID)
-    if err != nil {
-        log.Printf("Add favorite error: %v", err)
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to add favorite"})
-        return
-    }
-    
-    c.JSON(http.StatusOK, gin.H{
-        "message": "Added to favorites",
-        "success": true,
-    })
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+
+	// Verify user exists
+	if !userExists(req.Username) {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+	fmt.Printf(req.Username)
+	err := database.MongoDB.AddFavorite(req.Username, req.AptID)
+	if err != nil {
+		log.Printf("Add favorite error: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to add favorite"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Added to favorites",
+		"success": true,
+	})
 }
 
 // RemoveFavoriteHandler removes an apartment from favorites
 func RemoveFavoriteHandler(c *gin.Context) {
-    var req struct {
-        Username string `json:"username"`
-        AptID    int    `json:"aptId"`
-    }
-    
-    if err := c.ShouldBindJSON(&req); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
-        return
-    }
+	var req struct {
+		Username string `json:"username"`
+		AptID    int    `json:"aptId"`
+	}
 
-    err := database.MongoDB.RemoveFavorite(req.Username, req.AptID)
-    if err != nil {
-        log.Printf("Remove favorite error: %v", err)
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to remove favorite"})
-        return
-    }
-    
-    c.JSON(http.StatusOK, gin.H{
-        "message": "Removed from favorites",
-        "success": true,
-    })
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+
+	err := database.MongoDB.RemoveFavorite(req.Username, req.AptID)
+	if err != nil {
+		log.Printf("Remove favorite error: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to remove favorite"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Removed from favorites",
+		"success": true,
+	})
 }
 
 // GetFavoritesHandler retrieves user's favorite apartments
 func GetFavoritesHandler(c *gin.Context) {
-    username := c.Query("username")
-    
-    if username == "" {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Username is required"})
-        return
-    }
+	username := c.Query("username")
 
-    favorites, err := database.MongoDB.GetFavorites(username)
-    if err != nil {
-        log.Printf("Get favorites error: %v", err)
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve favorites"})
-        return
-    }
+	if username == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Username is required"})
+		return
+	}
 
-    c.JSON(http.StatusOK, gin.H{
-        "count": len(favorites),
-        "favorites": favorites,
-    })
+	favorites, err := database.MongoDB.GetFavorites(username)
+	if err != nil {
+		log.Printf("Get favorites error: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve favorites"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"count":     len(favorites),
+		"favorites": favorites,
+	})
 }
-
 
 func GetPreferencesHandler(c *gin.Context) {
 	username := c.Query("username")
@@ -259,11 +256,10 @@ func GetPreferencesHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"preferences": preferences})
 }
 
-
 func SavePreferencesHandler(c *gin.Context) {
 	var req struct {
-		Username    string       `json:"username"`
-		Preferences user.Preferences  `json:"preferences"`
+		Username    string           `json:"username"`
+		Preferences user.Preferences `json:"preferences"`
 	}
 
 	// Print all preferences to console
@@ -291,8 +287,6 @@ func SavePreferencesHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Preferences saved successfully"})
 }
-
-
 
 // GetMatchesHandler retrieves users whose preferences match the current user's preferences
 func GetMatchesHandler(c *gin.Context) {
@@ -346,8 +340,36 @@ func isPreferencesMatch(pref1, pref2 *user.Preferences) bool {
 		return false
 	}
 
-	return pref1.Budget.Min <= pref2.Budget.Max &&
-		pref1.Budget.Max >= pref2.Budget.Min &&
-		pref1.SmokingDrinking == pref2.SmokingDrinking &&
-		pref1.Cleanliness == pref2.Cleanliness
+	matchCount := 0
+
+	if pref1.Budget.Min <= pref2.Budget.Max && pref1.Budget.Max >= pref2.Budget.Min {
+		matchCount++
+	}
+
+	if pref1.Major != "" && pref1.Major == pref2.Major {
+		matchCount++
+	}
+
+	if pref1.SmokingDrinking == pref2.SmokingDrinking {
+		matchCount++
+	}
+
+	if pref1.SleepingHabit == pref2.SleepingHabit {
+		matchCount++
+	}
+
+	if pref1.Cleanliness == pref2.Cleanliness {
+		matchCount++
+	}
+
+	if pref1.GenderPreference == pref2.GenderPreference {
+		matchCount++
+	}
+
+	if pref1.PetPreference == pref2.PetPreference {
+		matchCount++
+	}
+
+	// Return true only if 4 or more preferences match
+	return matchCount >= 4
 }
