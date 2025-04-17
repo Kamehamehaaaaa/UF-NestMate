@@ -44,4 +44,39 @@ describe('Apartment Finder App', () => {
       cy.get('header').contains('Contact').click();
       cy.get('.contact-section').should('be.visible');
     });
-  });   
+
+    it('Should be able to click on profile avatar for login pop', () => {
+      cy.get('.profile-avatar').should('exist');
+      cy.get('.profile-avatar').click();
+    });
+
+    it('Should navigate to /matches page when Matches button is clicked', () => {
+      cy.get('header').contains('Match').click();
+      cy.url().should('include', '/matches');
+    });
+
+    it('Should stay on the home page when Home button is clicked', () => {
+      cy.get('header').contains('Home').click();
+      cy.url().should('eq', 'http://localhost:3000/');
+    });
+  
+
+    it('Eye movement animation should update eye position on mouse move', () => {
+      cy.get('.eye').should('have.length', 2);
+      cy.get('.logo-container').trigger('mousemove', { clientX: 200, clientY: 300, force: true });
+
+      cy.wait(200);
+
+      cy.get('.eye').each(($eye) => {
+        cy.wrap($eye)
+          .invoke('attr', 'style')
+          .should('match', /--pupil-x: .*px;/)
+          .and('match', /--pupil-y: .*px;/);
+      });
+    });
+  
+    it('Eye movement animation should render the eyeballs inside the logo', () => {
+      cy.get('.logo-container .eye').should('have.length', 2);
+    });
+
+  });  

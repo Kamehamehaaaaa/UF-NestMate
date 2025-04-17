@@ -30,6 +30,7 @@ function Login({ onClose, onLoginSuccess }) {
             lastname: lastName,
             username: username,
             password: password,
+            email: username
           }),
         });
 
@@ -66,13 +67,13 @@ function Login({ onClose, onLoginSuccess }) {
           const userData = await userResponse.json();
           
           if (userResponse.ok) {
-            // Pass user data to parent component
+         
             onLoginSuccess({
               email: userData.username || '',
               firstName: userData.firstName || '',
               lastName: userData.lastName || '',
             });
-            onClose(); // Close login modal
+            onClose(); 
           } else {
             setError('Failed to fetch user details');
           }

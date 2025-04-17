@@ -28,7 +28,8 @@ type MongoDBService struct {
 
 func NewMongoDBService() *MongoDBService {
 	//clientOptions := options.Client().ApplyURI("mongodb://192.168.0.74:27017")
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+
+	clientOptions := options.Client().ApplyURI("mongodb+srv://root:root@cluster0.xsdbgk5.mongodb.net/UF_NestMate?retryWrites=true&w=majority")
 	client, err := mongo.Connect(context.Background(), clientOptions)
 	if err != nil {
 		log.Fatalf("Failed to connect to MongoDB: %v", err)
@@ -45,7 +46,7 @@ func NewMongoDBService() *MongoDBService {
 
 func NewMongoDBTestService() *MongoDBService {
 	//clientOptions := options.Client().ApplyURI("mongodb://192.168.0.74:27017")
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+	clientOptions := options.Client().ApplyURI("mongodb+srv://root:root@cluster0.xsdbgk5.mongodb.net/UF_NestMate_unittests?retryWrites=true&w=majority")
 	client, err := mongo.Connect(context.Background(), clientOptions)
 	if err != nil {
 		log.Fatalf("Failed to connect to MongoDB: %v", err)
@@ -88,7 +89,7 @@ func (m *MongoDBService) getNextID() (int, error) {
 	err := m.db.Collection("apartment_card").FindOne(context.Background(), bson.D{}, opts).Decode(&lastProperty)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return 1, nil // Start from 1 if no documents exist
+			return 1, nil 
 		}
 		return 0, err
 	}
@@ -272,7 +273,7 @@ func (m *MongoDBService) UpdateUser(username string, updatedUser user.User) erro
 		"$set": bson.M{
 			"firstName": updatedUser.FirstName,
 			"lastName":  updatedUser.LastName,
-			"email":     updatedUser.UserName,
+			"email":     updatedUser.Username,
 		},
 	}
 
@@ -332,7 +333,7 @@ func (m *MongoDBService) GetAllCommentsForApartment(query string) ([]string, err
 func (m *MongoDBService) DeleteUser(username string) error {
 	var user user.User
 
-	filter := bson.M{"username": username} // Filter by username
+	filter := bson.M{"username": username} 
 
 	err := m.db.Collection("users").FindOne(context.Background(), filter).Decode(&user)
 	if err != nil {
@@ -345,4 +346,100 @@ func (m *MongoDBService) DeleteUser(username string) error {
 	}
 
 	return nil
+}
+
+func (m *MongoDBService) AddFavorite(username string, aptID int) error {
+    ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+    defer cancel()
+
+    _, err := m.db.Collection("users").UpdateOne(
+        ctx,
+        bson.M{"username": username},
+        bson.M{"$addToSet": bson.M{"favorites": aptID}},
+    )
+    return err
+}
+
+// RemoveFavorite removes an apartment ID from user's favorites
+func (m *MongoDBService) RemoveFavorite(username string, aptID int) error {
+    ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+    defer cancel()
+
+    _, err := m.db.Collection("users").UpdateOne(
+        ctx,
+        bson.M{"username": username},
+        bson.M{"$pull": bson.M{"favorites": aptID}},
+    )
+    return err
+}
+
+// GetFavorites retrieves user's favorite apartments
+func (m *MongoDBService) GetFavorites(username string) ([]housing.Housing, error) {
+    ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+    defer cancel()
+
+    var user user.User
+    err := m.db.Collection("users").FindOne(ctx, bson.M{"username": username}).Decode(&user)
+    if err != nil {
+        return nil, err
+    }
+
+    var favorites []housing.Housing
+    for _, aptID := range user.Favorites {
+        apt, err := m.GetProperty(strconv.Itoa(aptID))
+        if err == nil {
+            favorites = append(favorites, *apt)
+        }
+    }
+    
+    return favorites, nil
+}
+
+
+func (m *MongoDBService) SavePreferences(username string, preferences user.Preferences) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	filter := bson.M{"username": username}
+	update := bson.M{"$set": bson.M{"preferences": preferences}}
+
+	result, err := m.db.Collection("users").UpdateOne(ctx, filter, update)
+	if err != nil || result.MatchedCount == 0 {
+		return errors.New("failed to update preferences or user not found")
+	}
+
+	return nil
+}
+
+func (m *MongoDBService) GetPreferences(username string) (*user.Preferences, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	var user user.User
+	err := m.db.Collection("users").FindOne(ctx, bson.M{"username": username}).Decode(&user)
+	if err != nil {
+		return nil, err
+	}
+
+	return user.Preferences, nil
+}
+
+func (m *MongoDBService) GetAllUsers() ([]user.User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	cursor, err := m.db.Collection("users").Find(ctx, bson.D{})
+	if err != nil {
+		log.Printf("MongoDB find error: %v", err)
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	var users []user.User
+	if err = cursor.All(ctx, &users); err != nil {
+		log.Printf("Cursor decode error: %v", err)
+		return nil, err
+	}
+
+	return users, nil
 }
