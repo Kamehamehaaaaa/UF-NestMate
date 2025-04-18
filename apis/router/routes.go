@@ -17,7 +17,7 @@ func SetupHandlers(r *gin.Engine) {
 
 	// Add CORS configuration
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{backendURL, "http://localhost:3000"},
+		AllowOrigins:     []string{backendURL, "https://uf-nest-mate.vercel.app/"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
