@@ -4,6 +4,7 @@ import (
 	"apis/cloudinary"
 	"apis/database"
 	"apis/router"
+	"log"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -24,10 +25,11 @@ func main() {
 
 	router.SetupHandlers(r)
 
-	// r.Run(":8080")
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080" // default for local dev
+		port = "8080" // default if running locally
 	}
+
+	log.Println("Running on port:", port)
 	r.Run(":" + port)
 }
