@@ -17,7 +17,7 @@ func SetupHandlers(r *gin.Engine) {
 
 	// Add CORS configuration
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{backendURL},
+		AllowOrigins:     []string{backendURL, "http://localhost:3000"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
