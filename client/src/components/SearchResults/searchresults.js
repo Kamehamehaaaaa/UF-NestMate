@@ -28,7 +28,7 @@ const SearchResults = ({housingData,loggedInUser}) => {
   const handleFavoriteToggle = async (aptId) => {
     try {
       if (isFavorite(aptId)) {
-        await fetch('http://localhost:8080/api/user/favorites/remove', {
+        await fetch(`${process.env.BACKEND_URL}/api/user/favorites/remove`, {
           method: 'DELETE',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({
@@ -38,7 +38,7 @@ const SearchResults = ({housingData,loggedInUser}) => {
         });
         setFavorites(favorites.filter(id => id !== aptId));
       } else {
-        await fetch('http://localhost:8080/api/user/favorites/add', {
+        await fetch(`${process.env.BACKEND_URL}/api/user/favorites/add`, {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({
@@ -57,7 +57,7 @@ const SearchResults = ({housingData,loggedInUser}) => {
   useEffect(() => {
     const fetchFavorites = async () => {
       if (loggedInUser) {
-        const response = await fetch(`http://localhost:8080/api/user/favorites?username=${loggedInUser.email}`);
+        const response = await fetch(`${process.env.BACKEND_URL}/api/user/favorites?username=${loggedInUser.email}`);
         const data = await response.json();
         setFavorites(data.favorites?.map(apt => apt.id) || []);
       }
@@ -83,7 +83,7 @@ const SearchResults = ({housingData,loggedInUser}) => {
       const newComment = `${loggedInUser?.firstName || 'Anonymous'} ${loggedInUser?.lastName || 'User'}: ${comment}`;
       
       
-      fetch('http://localhost:8080/api/comments/add', {
+      fetch(`${process.env.BACKEND_URL}/api/comments/add`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

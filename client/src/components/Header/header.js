@@ -18,7 +18,7 @@ function Header({ scrollToContact, onLoginSuccess , onLogout}) {
 
   const handleShowProfile = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/user/favorites?username=${userProfile.email}`);
+      const response = await fetch(`${process.env.BACKEND_URL}/api/user/favorites?username=${userProfile.email}`);
       const data = await response.json();
       setUserProfile((prev) => ({
         ...prev,
@@ -31,7 +31,7 @@ function Header({ scrollToContact, onLoginSuccess , onLogout}) {
   };
 
   const handleProfileSave = (updatedProfile) => {
-    fetch('http://localhost:8080/api/user/update', {
+    fetch(`${process.env.BACKEND_URL}/api/user/update`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
