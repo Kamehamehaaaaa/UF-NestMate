@@ -13,12 +13,30 @@ func SetupHandlers(r *gin.Engine) {
 
 	allowedOrigins := strings.Split(os.Getenv("ALLOWED_ORIGINS"), ",")
 	if len(allowedOrigins) == 0 {
-		allowedOrigins = []string{"http://localhost:3000"} // Fallback
+		allowedOrigins = []string{"http://localhost:3000"}
 	}
 
-	// Add CORS configuration
+	// Add this loop to trim whitespace and normalize origins
+	for i, origin := range allowedOrigins {
+		allowedOrigins[i] = strings.TrimSpace(origin)
+	}
+
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     allowedOrigins,
+		AllowOriginFunc: func(origin string) bool {
+			// Allow requests with no origin (e.g., curl, Postman)
+			if origin == "" {
+				return true
+			}
+			// Check if the origin is in the allowed list
+			for _, allowedOrigin := range allowedOrigins {
+				if origin == allowedOrigin ||
+					strings.HasPrefix(origin, allowedOrigin+"/") ||
+					strings.HasPrefix(origin, strings.Replace(allowedOrigin, "http://", "https://", 1)) {
+					return true
+				}
+			}
+			return false
+		},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},

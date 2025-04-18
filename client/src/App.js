@@ -87,7 +87,9 @@ function App() {
   useEffect(() => {
     const fetchHousingData = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/housing/getAll`);
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/housing/getAll`, {
+          credentials: "include"
+        });
         if (!response.ok) throw new Error('Failed to fetch housing data');
         const data = await response.json();
         setHousingData(data.properties || []);
@@ -187,7 +189,9 @@ function App() {
     } else if (filterType === 'location') {
       try {
         const response = await fetch(
-          `${process.env.REACT_APP_BACKEND_URL}/apt/housing/sortByDistance?university=${encodeURIComponent(searchTerm)}`
+          `${process.env.REACT_APP_BACKEND_URL}/apt/housing/sortByDistance?university=${encodeURIComponent(searchTerm)}`, {
+            credentials: "include"
+          }
         );
         if (!response.ok) throw new Error('Failed to fetch sorted data');
         const data = await response.json();
