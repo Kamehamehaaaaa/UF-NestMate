@@ -187,7 +187,7 @@ function App() {
     } else if (filterType === 'location') {
       try {
         const response = await fetch(
-          `${process.env.BACKEND_URL}/apt/housing/sortByDistance?university=${encodeURIComponent(searchTerm)}`
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/apt/housing/sortByDistance?university=${encodeURIComponent(searchTerm)}`
         );
         if (!response.ok) throw new Error('Failed to fetch sorted data');
         const data = await response.json();
@@ -207,7 +207,7 @@ function App() {
   
     if (type === 'rating') {
       try {
-        const response = await fetch(`${process.env.BACKEND_URL}/api/filter/ratings`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/filter/ratings`);
         if (!response.ok) throw new Error('Failed to fetch sorted data');
         const data = await response.json();
         setSearchResults(data || []);
