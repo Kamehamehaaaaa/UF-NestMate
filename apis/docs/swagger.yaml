@@ -192,6 +192,31 @@ paths:
                 properties:
                   error:
                     type: string
+  /api/user/delete:
+    get:
+      summary: Delete user by username
+      parameters:
+        - name: username
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: User Deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
   /api/user/update:
     put:
       summary: Update user information
@@ -413,6 +438,54 @@ paths:
                 properties:
                   error:
                     type: string
+
+  /api/housing/summary:
+    get:
+      summary: Summary for apartment using its reviews
+      parameters:
+        - name: query
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Summary generated
+          content:
+            application/json:
+              schema:
+                type: string
+        '404':
+          description: Property not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+
+  /api/filter/ratings:
+    get:
+      summary: Returns properties sorted by rating
+      responses:
+        '200':
+          description: Properties sorted by rating
+          content:
+            application/json:
+              schema:
+                type: string
+        '404':
+          description: No properties exist
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
   /apt/housing/sortByDistance:
     get:
       summary: Get housing properties sorted by distance from a university

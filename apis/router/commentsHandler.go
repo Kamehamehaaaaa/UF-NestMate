@@ -69,7 +69,7 @@ func GetCommentHandler(c *gin.Context) {
 func GetAllCommentsHandler(c *gin.Context) {
 	query := c.Param("query")
 
-	comment, err := database.MongoDB.GetAllCommentsForApartment(query)
+	comment, err := GetAllCommentsForApartmentHelper(query)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "apartment doesnt exist"})
@@ -77,4 +77,15 @@ func GetAllCommentsHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"count": len(comment), "comment": comment})
+}
+
+func GetAllCommentsForApartmentHelper(apartment string) ([]string, error) {
+	fmt.Println(apartment)
+	comment, err := database.MongoDB.GetAllCommentsForApartment(apartment)
+
+	if err != nil {
+		return nil, err
+	}
+	return comment, nil
+
 }
