@@ -35,9 +35,7 @@ func main() {
 
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080" // default if running locally
+		port = "8080" // default fallback
 	}
-
-	log.Println("Running on port:", port)
-	r.Run(":" + port)
+	r.Run("0.0.0.0:" + port)
 }
