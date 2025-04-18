@@ -2,6 +2,7 @@ package router
 
 import (
 	"os"
+	"strings"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -10,15 +11,15 @@ import (
 
 func SetupHandlers(r *gin.Engine) {
 
-	backendURL := os.Getenv("BACKEND_URL")
-	if backendURL == "" {
-		backendURL = "http://localhost:3000" // default for local development
+	allowedOrigins := strings.Split(os.Getenv("ALLOWED_ORIGINS"), ",")
+	if len(allowedOrigins) == 0 {
+		allowedOrigins = []string{"http://localhost:3000"} // Fallback
 	}
 
 	// Add CORS configuration
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{backendURL, "https://uf-nest-mate.vercel.app/"},
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+		AllowOrigins:     allowedOrigins,
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
