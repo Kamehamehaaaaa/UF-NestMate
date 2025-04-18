@@ -4,20 +4,18 @@ import (
 	"apis/cloudinary"
 	"apis/database"
 	"apis/router"
-	"log"
 	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
-func init() {
-	err := godotenv.Load("apis/.env") // path to your .env
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-}
+// func init() {
+// 	err := godotenv.Load("apis/.env") // path to your .env
+// 	if err != nil {
+// 		log.Fatal("Error loading .env file")
+// 	}
+// }
 
 func main() {
 	database.MongoDB = database.NewMongoDBService()
