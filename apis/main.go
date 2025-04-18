@@ -4,9 +4,10 @@ import (
 	"apis/cloudinary"
 	"apis/database"
 	"apis/router"
+	"os"
 
 	"github.com/gin-gonic/gin"
-  "github.com/swaggo/http-swagger"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 func main() {
@@ -23,5 +24,10 @@ func main() {
 
 	router.SetupHandlers(r)
 
-	r.Run(":8080")
+	// r.Run(":8080")
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080" // default for local dev
+	}
+	r.Run(":" + port)
 }
