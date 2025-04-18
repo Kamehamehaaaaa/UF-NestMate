@@ -1,0 +1,66 @@
+.housing-modal .modal-content {
+  border-radius: 15px;
+  border: 2px solid #c79a63;
+}
+
+.matches-container {
+  background-image: url('https://res.cloudinary.com/dbldemxes/image/upload/v1742855289/WoodHomepageBackground.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  min-width:max-content;
+  padding: 20px;
+}
+
+.container,
+.container-fluid {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.modal-image {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.amenities-section {
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.amenities-section h5 {
+  color: #2c3e50;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #c79a63;
+  padding-bottom: 5px;
+}
+
+.amenity-category {
+  background-color: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 15px;
+}
+
+.amenity-category h6 {
+  color: #c79a63;
+  font-size: 1rem;
+}
+
+.amenity-list {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 0;
+}
+
+.amenity-list li {
+  padding: 5px 0;
+  font-size: 0.9rem;
+}

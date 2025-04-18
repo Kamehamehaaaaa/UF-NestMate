@@ -25,10 +25,14 @@ func RegisterHandler(c *gin.Context) {
 	}
 
 	// Check if the user already exists
-	if userExists(user.UserName) {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "User with username " + user.UserName + " already exists"})
+	if userExists(user.Username) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "User with username " + user.Username + " already exists"})
 		return
 	} else {
+
+		if user.Favorites == nil {
+			user.Favorites = []int{}
+		}
 		err := database.MongoDB.RegisterUser(&user)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while adding the user"})
@@ -36,7 +40,7 @@ func RegisterHandler(c *gin.Context) {
 		}
 		c.JSON(http.StatusCreated, gin.H{
 			"message":  "User registered successfully",
-			"username": user.UserName,
+			"username": user.Username,
 		})
 		return
 	}
@@ -118,12 +122,12 @@ func UpdateUserHandler(c *gin.Context) {
 	fmt.Println("herer")
 	fmt.Println(user)
 
-	if user.UserName == "" {
+	if user.Username == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Username is required"})
 		return
 	}
 
-	err := database.MongoDB.UpdateUser(user.UserName, user)
+	err := database.MongoDB.UpdateUser(user.Username, user)
 	if err != nil {
 		if err.Error() == "user not found" {
 			c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
@@ -157,4 +161,215 @@ func DeleteUserHandler(c *gin.Context) {
 func userExists(username string) bool {
 	_, err := database.MongoDB.GetUserByUsername(username)
 	return err == nil
+}
+
+func AddFavoriteHandler(c *gin.Context) {
+	var req struct {
+		Username string `json:"username"`
+		AptID    int    `json:"aptId"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+
+	// Verify user exists
+	if !userExists(req.Username) {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+	fmt.Printf(req.Username)
+	err := database.MongoDB.AddFavorite(req.Username, req.AptID)
+	if err != nil {
+		log.Printf("Add favorite error: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to add favorite"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Added to favorites",
+		"success": true,
+	})
+}
+
+// RemoveFavoriteHandler removes an apartment from favorites
+func RemoveFavoriteHandler(c *gin.Context) {
+	var req struct {
+		Username string `json:"username"`
+		AptID    int    `json:"aptId"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+
+	err := database.MongoDB.RemoveFavorite(req.Username, req.AptID)
+	if err != nil {
+		log.Printf("Remove favorite error: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to remove favorite"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Removed from favorites",
+		"success": true,
+	})
+}
+
+// GetFavoritesHandler retrieves user's favorite apartments
+func GetFavoritesHandler(c *gin.Context) {
+	username := c.Query("username")
+
+	if username == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Username is required"})
+		return
+	}
+
+	favorites, err := database.MongoDB.GetFavorites(username)
+	if err != nil {
+		log.Printf("Get favorites error: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve favorites"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"count":     len(favorites),
+		"favorites": favorites,
+	})
+}
+
+func GetPreferencesHandler(c *gin.Context) {
+	username := c.Query("username")
+	if username == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Username is required"})
+		return
+	}
+
+	preferences, err := database.MongoDB.GetPreferences(username)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve preferences"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"preferences": preferences})
+}
+
+func SavePreferencesHandler(c *gin.Context) {
+	var req struct {
+		Username    string           `json:"username"`
+		Preferences user.Preferences `json:"preferences"`
+	}
+
+	// Print all preferences to console
+	fmt.Printf("Received preferences for user %s:\n", req.Username)
+	fmt.Printf("Budget: Min=%d, Max=%d\n", req.Preferences.Budget.Min, req.Preferences.Budget.Max)
+	fmt.Printf("Major: %s\n", req.Preferences.Major)
+	fmt.Printf("Hobbies: %s\n", req.Preferences.Hobbies)
+	fmt.Printf("Food: %s\n", req.Preferences.Food)
+	fmt.Printf("Sleeping Habit: %s\n", req.Preferences.SleepingHabit)
+	fmt.Printf("Smoking/Drinking: %s\n", req.Preferences.SmokingDrinking)
+	fmt.Printf("Cleanliness: %d\n", req.Preferences.Cleanliness)
+	fmt.Printf("Gender Preference: %s\n", req.Preferences.GenderPreference)
+	fmt.Printf("Pet Preference: %s\n", req.Preferences.PetPreference)
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+
+	err := database.MongoDB.SavePreferences(req.Username, req.Preferences)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save preferences"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Preferences saved successfully"})
+}
+
+// GetMatchesHandler retrieves users whose preferences match the current user's preferences
+func GetMatchesHandler(c *gin.Context) {
+	username := c.Query("username")
+	if username == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Username is required"})
+		return
+	}
+
+	// Fetch current user's preferences
+	currentUser, err := database.MongoDB.GetUserByUsername(username)
+	if err != nil {
+		log.Printf("Error fetching user: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user"})
+		return
+	}
+
+	if currentUser.Preferences == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "User has no preferences set"})
+		return
+	}
+
+	// Fetch all users from the database
+	allUsers, err := database.MongoDB.GetAllUsers()
+	if err != nil {
+		log.Printf("Error fetching all users: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve users"})
+		return
+	}
+
+	var matches []user.User
+
+	for _, potentialMatch := range allUsers {
+		if potentialMatch.Username == currentUser.Username {
+			continue // Skip comparing with self
+		}
+
+		if isPreferencesMatch(currentUser.Preferences, potentialMatch.Preferences) {
+			matches = append(matches, potentialMatch)
+		}
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"matches": matches,
+	})
+}
+
+// Helper function to compare preferences
+func isPreferencesMatch(pref1, pref2 *user.Preferences) bool {
+	if pref1 == nil || pref2 == nil {
+		return false
+	}
+
+	matchCount := 0
+
+	if pref1.Budget.Min <= pref2.Budget.Max && pref1.Budget.Max >= pref2.Budget.Min {
+		matchCount++
+	}
+
+	if pref1.Major != "" && pref1.Major == pref2.Major {
+		matchCount++
+	}
+
+	if pref1.SmokingDrinking == pref2.SmokingDrinking {
+		matchCount++
+	}
+
+	if pref1.SleepingHabit == pref2.SleepingHabit {
+		matchCount++
+	}
+
+	if pref1.Cleanliness == pref2.Cleanliness {
+		matchCount++
+	}
+
+	if pref1.GenderPreference == pref2.GenderPreference {
+		matchCount++
+	}
+
+	if pref1.PetPreference == pref2.PetPreference {
+		matchCount++
+	}
+
+	// Return true only if 4 or more preferences match
+	return matchCount >= 4
 }

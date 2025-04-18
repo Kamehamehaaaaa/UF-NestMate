@@ -27,7 +27,7 @@ func TestRegisterHandler(t *testing.T) {
 		user := user.User{
 			FirstName: "jackie",
 			LastName:  "chan",
-			UserName:  "jchan",
+			Username:  "jchan",
 			Password:  "qwe",
 		}
 		jsonValue, _ := json.Marshal(user)
@@ -47,7 +47,7 @@ func TestRegisterHandler(t *testing.T) {
 		user := user.User{
 			FirstName: "jackie",
 			LastName:  "chan",
-			UserName:  "jchan",
+			Username:  "jchan",
 			Password:  "qwe",
 		}
 		jsonValue, _ := json.Marshal(user)
@@ -76,7 +76,7 @@ func TestUpdateUserHandler(t *testing.T) {
 		updatedUser := user.User{
 			FirstName: "jackie 2",
 			LastName:  "chan",
-			UserName:  "jchan",
+			Username:  "jchan",
 			Password:  "qwe",
 		}
 
@@ -105,7 +105,7 @@ func TestDeleteHandler(t *testing.T) {
 		user := user.User{
 			FirstName: "jackie",
 			LastName:  "chan",
-			UserName:  "jchan",
+			Username:  "jchan",
 			Password:  "qwe",
 		}
 		database.MongoDB.RegisterUser(&user)
@@ -151,7 +151,7 @@ func TestGetUserHandler(t *testing.T) {
 		user := user.User{
 			FirstName: "jackie",
 			LastName:  "chan",
-			UserName:  "jchan",
+			Username:  "jchan",
 			Password:  "qwe",
 		}
 		database.MongoDB.RegisterUser(&user)
@@ -198,7 +198,7 @@ func TestLoginHandler(t *testing.T) {
 	user1 := user.User{
 		FirstName: "dummy login",
 		LastName:  "user",
-		UserName:  "login",
+		Username:  "login",
 		Password:  "password",
 	}
 	database.MongoDB.RegisterUser(&user1)

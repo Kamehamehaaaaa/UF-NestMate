@@ -36,5 +36,18 @@ func SetupHandlers(r *gin.Engine) {
 	r.GET("/api/comments/get/:query", GetCommentHandler)
 	r.GET("/api/comments/getAll/:query", GetAllCommentsHandler)
 	r.GET("/api/filter/ratings", filterRatingsHandler)
+
 	r.GET("/api/housing/summary/:query", ReviewSummarizerHandler)
+  
+	//new apis 
+	// Favorites endpoints
+  r.POST("/api/user/favorites/add", AddFavoriteHandler)
+  r.DELETE("/api/user/favorites/remove", RemoveFavoriteHandler)
+  r.GET("/api/user/favorites", GetFavoritesHandler)
+
+  r.GET("/api/housing/amenities/:query", GetNearbyAmenitiesHandler)
+  r.PUT("/api/user/preferences", SavePreferencesHandler)
+  r.GET("/api/user/preferences", GetPreferencesHandler)
+
+  r.GET("/api/user/matches", GetMatchesHandler)
 }

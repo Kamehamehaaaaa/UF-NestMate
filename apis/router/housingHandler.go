@@ -350,3 +350,74 @@ func ReviewSummarizerHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": summary})
 }
+
+
+func fetchNearbyPlaces(location string, placeType string) ([]map[string]string, error) {
+	apiKey := "AIzaSyCJbMwl9Jpmbhx863HaRaQDu7iSMPjiK9Y"
+	apiURL := fmt.Sprintf(
+		"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=%s&radius=1500&type=%s&key=%s",
+		url.QueryEscape(location), url.QueryEscape(placeType), apiKey,
+	)
+
+	resp, err := http.Get(apiURL)
+	if err != nil || resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("failed API call")
+	}
+	defer resp.Body.Close()
+
+	var result map[string]interface{}
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return nil, fmt.Errorf("failed to decode response")
+	}
+
+	results, ok := result["results"].([]interface{})
+	if !ok {
+		return nil, fmt.Errorf("invalid response format")
+	}
+
+	var places []map[string]string
+	for _, r := range results {
+		rMap, ok := r.(map[string]interface{})
+		if !ok {
+			continue
+		}
+
+		name := rMap["name"]
+		vicinity := rMap["vicinity"]
+		place := map[string]string{
+			"name":     fmt.Sprintf("%v", name),
+			"vicinity": fmt.Sprintf("%v", vicinity),
+		}
+		places = append(places, place)
+	}
+
+	return places, nil
+}
+
+
+func GetNearbyAmenitiesHandler(c *gin.Context) {
+	query := c.Param("query")
+
+	// Fetch property to get address or lat/lng
+	property, err := database.MongoDB.GetProperty(query)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Property not found"})
+		return
+	}
+
+	location := fmt.Sprintf("%f,%f", property.Lat, property.Lng)
+	types := []string{"restaurant", "gym", "supermarket", "cafe"}
+
+	amenities := make(map[string][]map[string]string)
+
+	for _, placeType := range types {
+		places, err := fetchNearbyPlaces(location, placeType)
+		if err != nil {
+			log.Printf("Failed to fetch %s: %v", placeType, err)
+			continue
+		}
+		amenities[placeType] = places
+	}
+
+	c.JSON(http.StatusOK, gin.H{"amenities": amenities})
+}
