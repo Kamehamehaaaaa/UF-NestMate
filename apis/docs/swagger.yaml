@@ -588,3 +588,455 @@ paths:
                 properties:
                   message:
                     type: string
+  /api/favorites/add:
+    post:
+      summary: Add apartment to user's favorites
+      description: Adds a specific apartment to a user's list of favorite properties.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: johndoe
+                aptId:
+                  type: integer
+                  example: 101
+              required:
+                - username
+                - aptId
+      responses:
+        '200':
+          description: Added to favorites successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Added to favorites
+                  success:
+                    type: boolean
+                    example: true
+        '400':
+          description: Invalid request format
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Server error when adding favorite
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /api/favorites/remove:
+    post:
+      summary: Remove apartment from user's favorites
+      description: Removes a specific apartment from a user's list of favorite properties.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: johndoe
+                aptId:
+                  type: integer
+                  example: 101
+              required:
+                - username
+                - aptId
+      responses:
+        '200':
+          description: Removed from favorites successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Removed from favorites
+                  success:
+                    type: boolean
+                    example: true
+        '400':
+          description: Invalid request format
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Server error when removing favorite
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /api/favorites/get:
+    get:
+      summary: Get user's favorite apartments
+      description: Retrieves the list of apartments a user has marked as favorites.
+      parameters:
+        - name: username
+          in: query
+          required: true
+          description: The username of the user
+          schema:
+            type: string
+            example: johndoe
+      responses:
+        '200':
+          description: List of favorite apartments
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 2
+                  favorites:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+                        address:
+                          type: string
+                        rating:
+                          type: number
+                          format: float
+        '400':
+          description: Username query parameter is missing
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Server error while retrieving favorites
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /api/housing/amenities/{query}:
+    get:
+      summary: Get nearby amenities for a property
+      description: Retrieves nearby amenities such as restaurants, gyms, supermarkets, and cafes for a given property.
+      parameters:
+        - name: query
+          in: path
+          required: true
+          description: ID or name of the property
+          schema:
+            type: string
+            example: sunset-apartments
+      responses:
+        '200':
+          description: Nearby amenities found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  amenities:
+                    type: object
+                    properties:
+                      restaurant:
+                        type: array
+                        items:
+                          type: object
+                          additionalProperties:
+                            type: string
+                      gym:
+                        type: array
+                        items:
+                          type: object
+                          additionalProperties:
+                            type: string
+                      supermarket:
+                        type: array
+                        items:
+                          type: object
+                          additionalProperties:
+                            type: string
+                      cafe:
+                        type: array
+                        items:
+                          type: object
+                          additionalProperties:
+                            type: string
+        '404':
+          description: Property not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Failed to retrieve amenities
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /api/preferences/save:
+    post:
+      summary: Save user preferences
+      description: Saves a user's preferences to help with roommate or study buddy matching.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: johndoe
+                preferences:
+                  type: object
+                  properties:
+                    budget:
+                      type: object
+                      properties:
+                        min:
+                          type: integer
+                          example: 500
+                        max:
+                          type: integer
+                          example: 1200
+                    major:
+                      type: string
+                      example: Computer Science
+                    hobbies:
+                      type: string
+                      example: Reading, Gaming
+                    food:
+                      type: string
+                      example: Vegetarian
+                    sleepingHabit:
+                      type: string
+                      example: Night Owl
+                    smokingDrinking:
+                      type: string
+                      example: No
+                    cleanliness:
+                      type: integer
+                      example: 4
+                    genderPreference:
+                      type: string
+                      example: Any
+                    petPreference:
+                      type: string
+                      example: No Pets
+              required:
+                - username
+                - preferences
+      responses:
+        '200':
+          description: Preferences saved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Preferences saved successfully
+        '400':
+          description: Invalid request format
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Failed to save preferences
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /api/preferences/get:
+    get:
+      summary: Get user preferences
+      description: Retrieves saved preferences for a specific user.
+      parameters:
+        - name: username
+          in: query
+          required: true
+          schema:
+            type: string
+            example: johndoe
+      responses:
+        '200':
+          description: Preferences found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  preferences:
+                    type: object
+                    properties:
+                      budget:
+                        type: object
+                        properties:
+                          min:
+                            type: integer
+                          max:
+                            type: integer
+                      major:
+                        type: string
+                      hobbies:
+                        type: string
+                      food:
+                        type: string
+                      sleepingHabit:
+                        type: string
+                      smokingDrinking:
+                        type: string
+                      cleanliness:
+                        type: integer
+                      genderPreference:
+                        type: string
+                      petPreference:
+                        type: string
+        '400':
+          description: Username is required
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Failed to retrieve preferences
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /api/preferences/match:
+    get:
+      summary: Get matched users based on preferences
+      description: Returns a list of users that match the current user's preferences.
+      parameters:
+        - name: username
+          in: query
+          required: true
+          schema:
+            type: string
+            example: johndoe
+      responses:
+        '200':
+          description: List of matched users
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  matches:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        username:
+                          type: string
+                        firstName:
+                          type: string
+                        lastName:
+                          type: string
+                        preferences:
+                          type: object
+                          properties:
+                            budget:
+                              type: object
+                              properties:
+                                min:
+                                  type: integer
+                                max:
+                                  type: integer
+                            major:
+                              type: string
+                            hobbies:
+                              type: string
+                            food:
+                              type: string
+                            sleepingHabit:
+                              type: string
+                            smokingDrinking:
+                              type: string
+                            cleanliness:
+                              type: integer
+                            genderPreference:
+                              type: string
+                            petPreference:
+                              type: string
+        '400':
+          description: Username is required or user has no preferences set
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Failed to retrieve users
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
