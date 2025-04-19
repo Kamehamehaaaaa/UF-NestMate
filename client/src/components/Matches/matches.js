@@ -11,8 +11,9 @@ const Matches = ({ loggedInUser }) => {
     const fetchMatches = async () => {
       if (loggedInUser) {
         try {
+          const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3000';
           const response = await fetch(
-            `${process.env.REACT_APP_BACKEND_URL}/api/user/matches?username=${loggedInUser.email}`
+            `${backendUrl}/api/user/matches?username=${loggedInUser.email}`
           );
           const data = await response.json();
           setMatches(data.matches || []);

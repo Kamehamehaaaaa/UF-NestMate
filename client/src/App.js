@@ -189,8 +189,9 @@ function App() {
       setSearchResults(filteredResults);
     } else if (filterType === 'location') {
       try {
+        const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3000';
         const response = await fetch(
-          `${process.env.REACT_APP_BACKEND_URL}/apt/housing/sortByDistance?university=${encodeURIComponent(searchTerm)}`, {
+          `${backendUrl}/apt/housing/sortByDistance?university=${encodeURIComponent(searchTerm)}`, {
             credentials: "include"
           }
         );
@@ -212,7 +213,8 @@ function App() {
   
     if (type === 'rating') {
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/filter/ratings`);
+        const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3000';
+        const response = await fetch(`${backendUrl}/api/filter/ratings`);
         if (!response.ok) throw new Error('Failed to fetch sorted data');
         const data = await response.json();
         setSearchResults(data || []);

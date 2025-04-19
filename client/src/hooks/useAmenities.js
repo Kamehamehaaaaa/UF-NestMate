@@ -9,7 +9,8 @@ const useAmenities = (lat, lng, id) => {
       const fetchAmenities = async () => {
         setLoading(true);
         try {
-          const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/housing/amenities/${id}`);
+          const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3000';
+          const response = await fetch(`${backendUrl}/api/housing/amenities/${id}`);
           const data = await response.json();
           
           const transformed = {
