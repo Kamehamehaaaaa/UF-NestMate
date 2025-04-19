@@ -20,12 +20,12 @@ describe('Login and Signup Tests', () => {
       
   
     it('Should log in successfully with correct credentials', () => {
-        cy.intercept('POST', 'http://localhost:8080/api/user/login', {
+        cy.intercept('POST', 'https://uf-nestmate.onrender.com/api/user/login', {
             statusCode: 200,
             body: { message: 'Login successful' },
         });
     
-        cy.intercept('GET', 'http://localhost:8080/api/user/getUser?username=testuser', {
+        cy.intercept('GET', 'https://uf-nestmate.onrender.com/api/user/getUser?username=testuser', {
             statusCode: 200,
             body: {
                 username: 'johndoe',
@@ -71,7 +71,7 @@ describe('Login and Signup Tests', () => {
         cy.get('input[type="password"]').eq(0).type('securepassword');
         cy.get('input[type="password"]').eq(1).type('securepassword');
     
-        cy.intercept('POST', 'http://localhost:8080/api/user/register', {
+        cy.intercept('POST', 'https://uf-nestmate.onrender.com/api/user/register', {
             statusCode: 200,
             body: { message: 'Registration successful' },
         });

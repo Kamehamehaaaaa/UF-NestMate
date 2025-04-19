@@ -20,7 +20,8 @@ function Login({ onClose, onLoginSuccess }) {
       }
 
       try {
-        const response = await fetch('http://localhost:8080/api/user/register', {
+        const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3000';
+        const response = await fetch(`${backendUrl}/api/user/register`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -47,7 +48,8 @@ function Login({ onClose, onLoginSuccess }) {
       }
     } else {
       try {
-        const response = await fetch('http://localhost:8080/api/user/login', {
+        const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3000';
+        const response = await fetch(`${backendUrl}/api/user/login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -63,7 +65,8 @@ function Login({ onClose, onLoginSuccess }) {
           
           
           // Fetch user details from backend using username
-          const userResponse = await fetch(`http://localhost:8080/api/user/getUser?username=${username}`);
+          const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3000';
+          const userResponse = await fetch(`${backendUrl}/api/user/getUser?username=${username}`);
           const userData = await userResponse.json();
           
           if (userResponse.ok) {

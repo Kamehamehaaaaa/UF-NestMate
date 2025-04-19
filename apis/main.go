@@ -4,10 +4,18 @@ import (
 	"apis/cloudinary"
 	"apis/database"
 	"apis/router"
+	"os"
 
 	"github.com/gin-gonic/gin"
-  "github.com/swaggo/http-swagger"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
+
+// func init() {
+// 	err := godotenv.Load("apis/.env") // path to your .env
+// 	if err != nil {
+// 		log.Fatal("Error loading .env file")
+// 	}
+// }
 
 func main() {
 	database.MongoDB = database.NewMongoDBService()
@@ -23,5 +31,9 @@ func main() {
 
 	router.SetupHandlers(r)
 
-	r.Run(":8080")
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080" // default fallback
+	}
+	r.Run("0.0.0.0:" + port)
 }

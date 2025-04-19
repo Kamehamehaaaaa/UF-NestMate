@@ -1,6 +1,8 @@
 package router
 
 import (
+	"os"
+	"strings"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -9,11 +11,34 @@ import (
 
 func SetupHandlers(r *gin.Engine) {
 
-	// Add CORS configuration
+	allowedOrigins := strings.Split(os.Getenv("ALLOWED_ORIGINS"), ",")
+	if len(allowedOrigins) == 0 {
+		allowedOrigins = []string{"http://localhost:3000"}
+	}
+
+	// Add this loop to trim whitespace and normalize origins
+	for i, origin := range allowedOrigins {
+		allowedOrigins[i] = strings.TrimSpace(origin)
+	}
+
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000"},
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
-		AllowHeaders:     []string{"Origin", "Content-Type"},
+		AllowOriginFunc: func(origin string) bool {
+			// Allow requests with no origin (e.g., curl, Postman)
+			if origin == "" {
+				return true
+			}
+			// Check if the origin is in the allowed list
+			for _, allowedOrigin := range allowedOrigins {
+				if origin == allowedOrigin ||
+					strings.HasPrefix(origin, allowedOrigin+"/") ||
+					strings.HasPrefix(origin, strings.Replace(allowedOrigin, "http://", "https://", 1)) {
+					return true
+				}
+			}
+			return false
+		},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
@@ -37,17 +62,17 @@ func SetupHandlers(r *gin.Engine) {
 	r.GET("/api/comments/getAll/:query", GetAllCommentsHandler)
 	r.GET("/api/filter/ratings", filterRatingsHandler)
 
-	r.GET("/api/housing/summary/:query", ReviewSummarizerHandler)
-  
-	//new apis 
+	// r.GET("/api/housing/summary/:query", ReviewSummarizerHandler)
+
+	//new apis
 	// Favorites endpoints
-  r.POST("/api/user/favorites/add", AddFavoriteHandler)
-  r.DELETE("/api/user/favorites/remove", RemoveFavoriteHandler)
-  r.GET("/api/user/favorites", GetFavoritesHandler)
+	r.POST("/api/user/favorites/add", AddFavoriteHandler)
+	r.DELETE("/api/user/favorites/remove", RemoveFavoriteHandler)
+	r.GET("/api/user/favorites", GetFavoritesHandler)
 
-  r.GET("/api/housing/amenities/:query", GetNearbyAmenitiesHandler)
-  r.PUT("/api/user/preferences", SavePreferencesHandler)
-  r.GET("/api/user/preferences", GetPreferencesHandler)
+	r.GET("/api/housing/amenities/:query", GetNearbyAmenitiesHandler)
+	r.PUT("/api/user/preferences", SavePreferencesHandler)
+	r.GET("/api/user/preferences", GetPreferencesHandler)
 
-  r.GET("/api/user/matches", GetMatchesHandler)
+	r.GET("/api/user/matches", GetMatchesHandler)
 }

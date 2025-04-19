@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 describe('Apartment Finder App', () => {
     beforeEach(() => {
-      cy.intercept('GET', 'http://localhost:8080/api/housing/getAll').as('getHousingData');
+      cy.intercept('GET', 'https://uf-nestmate.onrender.com/api/housing/getAll').as('getHousingData');
       cy.visit('/');
     });
   
@@ -24,15 +24,14 @@ describe('Apartment Finder App', () => {
       
   
     it('should fetch and filter by rating when selected', () => {
-      cy.intercept('GET', 'http://localhost:8080/api/filter/ratings').as('getByRating');
+      cy.intercept('GET', 'https://uf-nestmate.onrender.com/api/filter/ratings').as('getByRating');
       cy.get('.filter-button').click();
       cy.get('.dropdown-menu').contains('Rating').click();
-      cy.get('.search-button').click();
       cy.wait('@getByRating');
     });
   
     it('should fetch and sort apartments by location (university)', () => {
-      cy.intercept('GET', 'http://localhost:8080/apt/housing/sortByDistance?university=University%20of%20Florida').as('getByLocation');
+      cy.intercept('GET', 'https://uf-nestmate.onrender.com/apt/housing/sortByDistance?university=University%20of%20Florida').as('getByLocation');
       cy.get('.filter-button').click();
       cy.get('.dropdown-menu').contains('Location (University)').click();
       cy.get('.search-input').type('University of Florida');
@@ -57,7 +56,7 @@ describe('Apartment Finder App', () => {
 
     it('Should stay on the home page when Home button is clicked', () => {
       cy.get('header').contains('Home').click();
-      cy.url().should('eq', 'http://localhost:3000/');
+      cy.url().should('eq', 'https://uf-nest-mate.vercel.app/');
     });
   
 

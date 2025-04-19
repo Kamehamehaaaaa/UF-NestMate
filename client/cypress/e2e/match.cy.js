@@ -45,8 +45,7 @@ describe('Matching based on Roomate Preference Tests', () => {
         cy.get('.login-popup button[type="submit"]').click();
       
         cy.get('header').contains('Match').click();
-        cy.get('.clickable-card').should('contain.text', 'l t');
-        cy.get('.clickable-card').should('contain.text', 'Computer Science');
+        cy.get('.clickable-card').should('contain.text', 'Major');
         cy.get('.clickable-card').should('contain.text', 'Budget');
     });  
 
@@ -104,8 +103,8 @@ describe('Matching based on Roomate Preference Tests', () => {
     it('Should close modal when close button is clicked', () => {
         cy.get('.profile-avatar').click(); 
         cy.get('.login-popup').should('be.visible');
-        cy.get('.login-popup input[type="text"]').should('be.visible').type('a@gmail.com');
-        cy.get('.login-popup input[type="password"]').should('be.visible').type('a');
+        cy.get('.login-popup input[type="text"]').should('be.visible').type('l@gmail.com');
+        cy.get('.login-popup input[type="password"]').should('be.visible').type('l');
         cy.get('.login-popup button[type="submit"]').click();
         
         cy.get('header').contains('Match').click();

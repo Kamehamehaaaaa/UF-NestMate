@@ -27,8 +27,9 @@ const SearchResults = ({housingData,loggedInUser}) => {
   
   const handleFavoriteToggle = async (aptId) => {
     try {
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3000';
       if (isFavorite(aptId)) {
-        await fetch('http://localhost:8080/api/user/favorites/remove', {
+        await fetch(`${backendUrl}/api/user/favorites/remove`, {
           method: 'DELETE',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({
@@ -38,7 +39,7 @@ const SearchResults = ({housingData,loggedInUser}) => {
         });
         setFavorites(favorites.filter(id => id !== aptId));
       } else {
-        await fetch('http://localhost:8080/api/user/favorites/add', {
+        await fetch(`${backendUrl}/api/user/favorites/add`, {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({
@@ -57,7 +58,8 @@ const SearchResults = ({housingData,loggedInUser}) => {
   useEffect(() => {
     const fetchFavorites = async () => {
       if (loggedInUser) {
-        const response = await fetch(`http://localhost:8080/api/user/favorites?username=${loggedInUser.email}`);
+        const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3000';
+        const response = await fetch(`${backendUrl}/api/user/favorites?username=${loggedInUser.email}`);
         const data = await response.json();
         setFavorites(data.favorites?.map(apt => apt.id) || []);
       }
@@ -81,9 +83,9 @@ const SearchResults = ({housingData,loggedInUser}) => {
     e.preventDefault();
     if (comment.trim()) {
       const newComment = `${loggedInUser?.firstName || 'Anonymous'} ${loggedInUser?.lastName || 'User'}: ${comment}`;
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3000';
       
-      
-      fetch('http://localhost:8080/api/comments/add', {
+      fetch(`${backendUrl}/api/comments/add`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -314,43 +314,42 @@ func queryGPT(inputText string) {
 	fmt.Println(content)
 }
 
-func ReviewSummarizerHandler(c *gin.Context) {
-	query := c.Param("query")
+// func ReviewSummarizerHandler(c *gin.Context) {
+// 	query := c.Param("query")
 
-	fmt.Println(query)
+// 	fmt.Println(query)
 
-	commentsApartment, err := GetAllCommentsForApartmentHelper(query)
+// 	commentsApartment, err := GetAllCommentsForApartmentHelper(query)
 
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching property comments"})
-		return
-	}
+// 	if err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching property comments"})
+// 		return
+// 	}
 
-	commentsCombined := ""
+// 	commentsCombined := ""
 
-	for _, val := range commentsApartment {
-		commentsCombined += val
-		commentsCombined += ". "
-	}
-	// textB, _ := os.ReadFile("/Users/rohitbogulla/Desktop/Sem 2/SE/Gat-o-Buddy/apis/housing/file.txt")
-	// text := string(textB)
+// 	for _, val := range commentsApartment {
+// 		commentsCombined += val
+// 		commentsCombined += ". "
+// 	}
+// 	// textB, _ := os.ReadFile("/Users/rohitbogulla/Desktop/Sem 2/SE/Gat-o-Buddy/apis/housing/file.txt")
+// 	// text := string(textB)
 
-	// queryGPT(text)
+// 	// queryGPT(text)
 
-	// res := housing.CreateFromText(text)
+// 	// res := housing.CreateFromText(text)
 
-	summary, err := housing.BasicSummarizer(commentsCombined, 2)
+// 	// summary, err := housing.BasicSummarizer(commentsCombined, 2)
 
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching properties"})
-		return
-	}
+// 	if err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching properties"})
+// 		return
+// 	}
 
-	// summarized := rephraseSentences(strings.Split(summary, "\n"))
+// 	// summarized := rephraseSentences(strings.Split(summary, "\n"))
 
-	c.JSON(http.StatusOK, gin.H{"message": summary})
-}
-
+// 	c.JSON(http.StatusOK, gin.H{"message": summary})
+// }
 
 func fetchNearbyPlaces(location string, placeType string) ([]map[string]string, error) {
 	apiKey := "AIzaSyCJbMwl9Jpmbhx863HaRaQDu7iSMPjiK9Y"
@@ -393,7 +392,6 @@ func fetchNearbyPlaces(location string, placeType string) ([]map[string]string, 
 
 	return places, nil
 }
-
 
 func GetNearbyAmenitiesHandler(c *gin.Context) {
 	query := c.Param("query")

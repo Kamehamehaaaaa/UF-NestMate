@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"mime/multipart"
+	"os"
 	"strings"
 
 	//"os"
@@ -20,7 +21,8 @@ type CloudinaryService struct {
 
 func NewCloudinaryService() *CloudinaryService {
 	//cld, err := cloudinary.NewFromURL(os.Getenv("CLOUDINARY_URL"))
-	const cloudinaryURL = "cloudinary://666717275591569:9QtJBJGBjpofNYLkIJNHP_I-NEg@dbldemxes"
+	cloudinaryURL := os.Getenv("CLOUDINARY_URL")
+
 	cld, err := cloudinary.NewFromURL(cloudinaryURL)
 	if err != nil {
 		log.Fatalf("Failed to initialize Cloudinary: %v", err)

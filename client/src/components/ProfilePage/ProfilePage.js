@@ -24,8 +24,9 @@ const ProfilePage = ({ profile, onClose, onSave , onLogout }) => {
   useEffect(() => {
     const fetchPreferences = async () => {
       try {
+        const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3000';
         const response = await fetch(
-          `http://localhost:8080/api/user/preferences?username=${profile.email}`
+          `${backendUrl}/api/user/preferences?username=${profile.email}`
         );
         if (!response.ok) throw new Error('Failed to fetch preferences');
 
@@ -75,7 +76,8 @@ const ProfilePage = ({ profile, onClose, onSave , onLogout }) => {
 
    const handleSavePreferences = async (updatedPreferences) => {
     try {
-      const response = await fetch('http://localhost:8080/api/user/preferences', {
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3000';
+      const response = await fetch(`${backendUrl}/api/user/preferences`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
