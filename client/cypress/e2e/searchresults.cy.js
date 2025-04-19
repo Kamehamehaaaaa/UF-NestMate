@@ -68,19 +68,22 @@ describe('SearchResults Component', () => {
       cy.get('button.custom-btn').contains('Cancel').click();
     });
     
-  
     it('Should open Google Maps with the correct address when clicking the map icon', () => {
       cy.visit('/');
-      cy.get('.clickable-card').first().click();
-      cy.get('.housing-modal').should('be.visible');
-    
-      cy.window().then((window) => {
-        cy.stub(window, 'open').as('windowOpen');
+      
+      cy.window().then((win) => {
+        cy.stub(win, 'open').as('windowOpen');
       });
     
+      cy.get('.clickable-card').first().click();
+      cy.get('.housing-modal').should('be.visible');
       cy.get('.cursor-pointer').click();
-      cy.get('@windowOpen').should('have.been.calledWithMatch', /google\.com\/maps\/search\/\?api=1&query=.*Ocean.*Miami.*FL/);
+
+      cy.get('@windowOpen').should('have.been.calledWithMatch', 
+        /google\.com\/maps\/search\/\?api=1&query=.*3800.*SW.*Gainesville.*FL/
+      );
     });
+    
   
     it('Should show alert when clicking favorite without logging in', () => {
       cy.visit('/');
@@ -94,12 +97,12 @@ describe('SearchResults Component', () => {
 
     it('Should toggle favorite when user is logged in', () => {
       cy.visit('/');
-      cy.intercept('POST', 'http://localhost:8080/api/user/login', {
+      cy.intercept('POST', 'https://uf-nestmate.onrender.com/api/user/login', {
         statusCode: 200,
         body: { message: 'Login successful' },
       });
 
-      cy.intercept('GET', 'http://localhost:8080/api/user/getUser?username=testuser', {
+      cy.intercept('GET', 'https://uf-nestmate.onrender.com/api/user/getUser?username=testuser', {
           statusCode: 200,
           body: {
               username: 'johndoe',

@@ -87,7 +87,8 @@ function App() {
   useEffect(() => {
     const fetchHousingData = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/housing/getAll`, {
+        const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3000';
+        const response = await fetch(`${backendUrl}/api/housing/getAll`, {
           credentials: "include"
         });
         if (!response.ok) throw new Error('Failed to fetch housing data');
