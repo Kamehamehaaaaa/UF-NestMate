@@ -20,7 +20,7 @@ function Login({ onClose, onLoginSuccess }) {
       }
 
       try {
-        const response = await fetch(`${process.env.BACKEND_URL}/api/user/register`, {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/register`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -47,7 +47,7 @@ function Login({ onClose, onLoginSuccess }) {
       }
     } else {
       try {
-        const response = await fetch(`${process.env.BACKEND_URL}/api/user/login`, {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -63,7 +63,7 @@ function Login({ onClose, onLoginSuccess }) {
           
           
           // Fetch user details from backend using username
-          const userResponse = await fetch(`${process.env.BACKEND_URL}/api/user/getUser?username=${username}`);
+          const userResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/getUser?username=${username}`);
           const userData = await userResponse.json();
           
           if (userResponse.ok) {

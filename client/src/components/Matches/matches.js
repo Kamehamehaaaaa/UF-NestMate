@@ -12,7 +12,7 @@ const Matches = ({ loggedInUser }) => {
       if (loggedInUser) {
         try {
           const response = await fetch(
-            `${process.env.BACKEND_URL}/api/user/matches?username=${loggedInUser.email}`
+            `${process.env.REACT_APP_BACKEND_URL}/api/user/matches?username=${loggedInUser.email}`
           );
           const data = await response.json();
           setMatches(data.matches || []);

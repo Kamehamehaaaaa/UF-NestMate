@@ -25,7 +25,7 @@ const ProfilePage = ({ profile, onClose, onSave , onLogout }) => {
     const fetchPreferences = async () => {
       try {
         const response = await fetch(
-          `${process.env.BACKEND_URL}/api/user/preferences?username=${profile.email}`
+          `${process.env.REACT_APP_BACKEND_URL}/api/user/preferences?username=${profile.email}`
         );
         if (!response.ok) throw new Error('Failed to fetch preferences');
 
@@ -75,7 +75,7 @@ const ProfilePage = ({ profile, onClose, onSave , onLogout }) => {
 
    const handleSavePreferences = async (updatedPreferences) => {
     try {
-      const response = await fetch(`${process.env.BACKEND_URL}/api/user/preferences`, {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/preferences`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
