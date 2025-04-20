@@ -2,17 +2,6 @@
 
 Production Build (Deployed Version): https://uf-nest-mate.vercel.app/
 
-**Warning:** Make sure you open this either on Google Chrome or Brave browser, we will be working on making the production build work on Safari as a future enhancement. Also, It might take 10-60 seconds to load the apartment cards from the backend which is deployed on Render, since it's the free version.
-
-To run the app locally, follow the steps below:
-
--   Clone this github repository
--   Do npm install to install all the dependencies present in package.json
--   Make sure that you are in the project folder in your terminal
--   cd apis to move to the apis folder, then type the command go run . to run the backend server
--   then go back to the project folder (cd ..) and move into the client foolder using cd client
--   now type the command npm start to run the react app which will open up localhost:3000 on your browser.
-
 ## Important Notice
 
 **Please open the application using Google Chrome or Brave browser.**  
@@ -47,7 +36,10 @@ Follow the steps below to run the full-stack application on your local machine:
     cd client
     npm start
 
-Your browser should open and navigate to http://localhost:3000.
+Your browser should open and navigate to http://localhost:3000. To access exclusive features available only to registered users, please sign up or log in to your existing account. For demonstration purposes, I'll provide an account:
+
+**Username:** l@gmail.com
+**Passwords:** l
 
 # Description
 
