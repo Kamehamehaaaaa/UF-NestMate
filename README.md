@@ -39,7 +39,7 @@ Follow the steps below to run the full-stack application on your local machine:
 Your browser should open and navigate to http://localhost:3000. To access exclusive features available only to registered users, please sign up or log in to your existing account. For demonstration purposes, I'll provide an account:
 
 **Username:** l@gmail.com
-**Passwords:** l
+**Password:** l
 
 # Description
 
