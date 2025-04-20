@@ -6,6 +6,7 @@ import (
 	"apis/housing"
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -248,6 +249,47 @@ func TestUploadImgHandler(t *testing.T) {
 		w := httptest.NewRecorder()
 		r.ServeHTTP(w, req)
 
+		assert.Equal(t, http.StatusOK, w.Code)
+	})
+}
+
+func TestGetAmenitiesHandler(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	r := gin.Default()
+	SetupHandlers(r)
+
+	// _ := new(MockDatabase)
+	database.MongoDB = database.NewMongoDBTestService()
+	cloudinary.CloudinaryServiceInst = cloudinary.NewCloudinaryTestService()
+
+	t.Run("Upload image", func(t *testing.T) {
+		property := housing.Housing{
+			ID:          2,
+			Name:        "Test property",
+			Image:       "https://res.cloudinary.com/dbldemxes/image/upload/v1742855322/",
+			Description: "A beautiful seaside apartment.",
+			Address:     "123 Ocean Drive, Miami, FL",
+			Vacancy:     5,
+			Rating:      4.8,
+			Comments:    []string{},
+			Lat:         29.6217331,
+			Lng:         -82.3758228,
+		}
+
+		database.MongoDB.StoreProperty(&property)
+
+		req, _ := http.NewRequest("GET", "/api/housing/amenities/2", nil)
+		// req.Header.Set("Content-Type", writer.FormDataContentType())
+
+		// q := req.URL.Query()
+		// q.Add("query", "2")
+		// req.URL.RawQuery = q.Encode()
+
+		w := httptest.NewRecorder()
+		r.ServeHTTP(w, req)
+
+		responseData, _ := io.ReadAll(w.Body)
+		fmt.Println(string(responseData))
 		assert.Equal(t, http.StatusOK, w.Code)
 	})
 }
