@@ -233,7 +233,12 @@ The backend in Sprint 4 was significantly enhanced to support all the newly adde
 -   Should close the modal when close button is clicked
 -   Should show no results message when housingData is empty
 
-(Images here)
+<img width="1440" alt="Screenshot 2025-04-20 at 5 06 05 AM" src="https://github.com/user-attachments/assets/a7b711b0-aa89-49d4-8f20-b01fccda000f" />
+<img width="1440" alt="Screenshot 2025-04-20 at 5 06 14 AM" src="https://github.com/user-attachments/assets/618bf106-10fa-487a-9bdb-1bbc7eb03c97" />
+<img width="1440" alt="Screenshot 2025-04-20 at 5 06 24 AM" src="https://github.com/user-attachments/assets/42e20297-3713-40ce-b516-e3297b7e1374" />
+<img width="1440" alt="Screenshot 2025-04-20 at 5 06 39 AM" src="https://github.com/user-attachments/assets/ff551099-f772-437b-a9a6-f70db6a0c302" />
+<img width="1440" alt="Screenshot 2025-04-20 at 5 06 56 AM" src="https://github.com/user-attachments/assets/cc1a6599-2827-4dab-b108-303de5f14a31" />
+<img width="1440" alt="Screenshot 2025-04-20 at 5 07 06 AM" src="https://github.com/user-attachments/assets/02bbd0f1-3106-408f-b2d3-80ce61ef75e2" />
 
 ## Backend Unit Test
 
