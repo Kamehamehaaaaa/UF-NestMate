@@ -368,3 +368,68 @@ func TestFavoritesGetHandler(t *testing.T) {
 
 	database.MongoDB.DeleteUser("login")
 }
+
+func TestSavePreferencesHandlers(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	r := gin.Default()
+	SetupHandlers(r)
+
+	database.MongoDB = database.NewMongoDBTestService()
+
+	user1 := user.User{
+		FirstName: "dummy login",
+		LastName:  "user",
+		Username:  "login",
+		Password:  "password",
+	}
+	database.MongoDB.RegisterUser(&user1)
+
+	t.Run("Save preference Success", func(t *testing.T) {
+		preReq := user.PreferenceReq{
+			Username:    "login",
+			Preferences: &user.Preferences{Major: "computer science"},
+		}
+
+		jsonValue, _ := json.Marshal(preReq)
+		req, _ := http.NewRequest("PUT", "/api/user/preferences", bytes.NewBuffer(jsonValue))
+
+		w := httptest.NewRecorder()
+		r.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusOK, w.Code)
+	})
+}
+
+func TestGetPreferencesHandlers(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	r := gin.Default()
+	SetupHandlers(r)
+
+	database.MongoDB = database.NewMongoDBTestService()
+
+	user1 := user.User{
+		FirstName:   "dummy login",
+		LastName:    "user",
+		Username:    "login",
+		Password:    "password",
+		Preferences: &user.Preferences{Major: "computer science"},
+	}
+	database.MongoDB.RegisterUser(&user1)
+
+	t.Run("Get preference Success", func(t *testing.T) {
+
+		req, _ := http.NewRequest("GET", "/api/user/preferences", nil)
+
+		q := req.URL.Query()
+		q.Add("username", "login")
+		req.URL.RawQuery = q.Encode()
+
+		w := httptest.NewRecorder()
+		r.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusOK, w.Code)
+		responseData, _ := io.ReadAll(w.Body)
+		assert.Contains(t, string(responseData), "computer science")
+		// fmt.Println(string(responseData))
+	})
+}
