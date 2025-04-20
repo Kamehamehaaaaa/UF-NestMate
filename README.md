@@ -1,6 +1,45 @@
 # UF NestMate
 
-https://uf-nest-mate.vercel.app/
+Production Build (Deployed Version): https://uf-nest-mate.vercel.app/
+
+## Important Notice
+
+**Please open the application using Google Chrome or Brave browser.**  
+Safari support for the production build is currently limited and will be addressed in a future enhancement.
+
+**Note:** The apartment cards may take **10–60 seconds** to load from the backend, as it is hosted on **Render's free tier**, which may have cold start delays.
+
+## Running the App Locally
+
+Follow the steps below to run the full-stack application on your local machine:
+
+1. **Clone the GitHub repository:**
+
+    git clone https://github.com/Kamehamehaaaaa/UF-NestMate.git
+
+2. **Install frontend dependencies:**
+
+    npm install
+
+3. **Create a .env file in the apis and client directories as needed.**
+   The required environment variables such as the Cloudinary URL, allowed origins, and React app frontend URL will be provided as a comment in the Canvas submission. This is to ensure the Cloudinary credentials remain private and are not exposed.
+
+4. Ensure you're inside the root project directory. **Install backend dependencies and run the server:**
+
+    cd apis
+    go mod tidy
+    go run .
+
+5. **Start the frontend React app:**
+
+    cd ..
+    cd client
+    npm start
+
+Your browser should open and navigate to http://localhost:3000. To access exclusive features available only to registered users, please sign up or log in to your existing account. For demonstration purposes, I'll provide an account:
+
+**Username:** l@gmail.com
+**Password:** l
 
 # Description
 
@@ -8,38 +47,39 @@ The full-stack web application is designed to assist international students in l
 
 # Features
 
-- User Authentication and Profile Management: Secure user login and sign up system allowing students to create, edit, and manage their profiles.
-- Apartment cards: It lists all the available apartments as clickable cards. When clicked, a pop-up opens displaying essential apartment information such as the description, amenities, user reviews, and more.
-- Apartment Search Filters: Advanced filtering options for searching apartments by rating, name, area, or proximity to specific universities.
-- Roommate Matching System: Algorithm to match students with potential roommates based on shared interests and preferences.
-- Custom NLP Description Generator: Utilizes natural language processing to generate detailed and realistic descriptions of properties based on user reviews.
-- Favorites Feature: Allows users to save apartments to their personal profile for easy access later.
-- Contact Form Integration: Provides a platform for users to submit questions and concerns, ensuring prompt communication.
-- Review System: Collects and displays user-generated reviews to assist in making informed decisions about properties.
-- Personalized Profile Section: Houses all user interactions including favorite listings, preferences for getting matched with roommates, and personal details, and edit and logout functionality.
-- Amenities and Availability Display: Lists essential apartment details such as address, nearby amenities, and availability status.
+-   User Authentication and Profile Management: Secure user login and sign up system allowing students to create, edit, and manage their profiles.
+-   Apartment cards: It lists all the available apartments as clickable cards. When clicked, a pop-up opens displaying essential apartment information such as the description, amenities, user reviews, and more.
+-   Apartment Search Filters: Advanced filtering options for searching apartments by rating, name, area, or proximity to specific universities.
+-   Roommate Matching System: Algorithm to match students with potential roommates based on shared interests and preferences.
+-   Custom NLP Description Generator: Utilizes natural language processing to generate detailed and realistic descriptions of properties based on user reviews.
+-   Favorites Feature: Allows users to save apartments to their personal profile for easy access later.
+-   Contact Form Integration: Provides a platform for users to submit questions and concerns, ensuring prompt communication.
+-   Review System: Collects and displays user-generated reviews to assist in making informed decisions about properties.
+-   Personalized Profile Section: Houses all user interactions including favorite listings, preferences for getting matched with roommates, and personal details, and edit and logout functionality.
+-   Amenities and Availability Display: Lists essential apartment details such as address, nearby amenities, and availability status.
 
 # User Stories
 
-- International Student Looking for Housing: As an international student, I want to use the web application to find suitable off-campus housing from my home country because I want to ensure I have a place to stay before arriving in the new country. This will allow me to feel secure and prepared for my move.
+-   International Student Looking for Housing: As an international student, I want to use the web application to find suitable off-campus housing from my home country because I want to ensure I have a place to stay before arriving in the new country. This will allow me to feel secure and prepared for my move.
 
-- Filtering Housing Options: As an international student, I want to filter housing options based on proximity to my university, ratings, and other criteria so that I can find the most suitable apartment for my needs quickly and efficiently.
+-   Filtering Housing Options: As an international student, I want to filter housing options based on proximity to my university, ratings, and other criteria so that I can find the most suitable apartment for my needs quickly and efficiently.
 
-- Roommate Matching: As a student looking for a roommate, I want to specify my roommate preferences and be matched with compatible individuals so that I can live with someone who shares similar interests and lifestyles, enhancing my living experience.
+-   Roommate Matching: As a student looking for a roommate, I want to specify my roommate preferences and be matched with compatible individuals so that I can live with someone who shares similar interests and lifestyles, enhancing my living experience.
 
-- Viewing Apartment Details: As a user, I want to view detailed information about each apartment, including addresses, amenities, and availability, so that I can make an informed decision about where to live.
+-   Viewing Apartment Details: As a user, I want to view detailed information about each apartment, including addresses, amenities, and availability, so that I can make an informed decision about where to live.
 
-- Reading User Reviews: As a potential tenant, I want to read user reviews and NLP-generated descriptions of apartments to get an authentic understanding of the property, helping me decide if it meets my expectations.
+-   Reading User Reviews: As a potential tenant, I want to read user reviews and NLP-generated descriptions of apartments to get an authentic understanding of the property, helping me decide if it meets my expectations.
 
-- Personal Profile Management: As a user, I want to manage my profile, update my housing and roommate preferences, and view my housing matches so that the system can provide me with tailored recommendations and matches.
+-   Personal Profile Management: As a user, I want to manage my profile, update my housing and roommate preferences, and view my housing matches so that the system can provide me with tailored recommendations and matches.
 
-- Favoriting Apartments: As a student, I want to be able to favorite apartments and store them in a personalized section of my profile so that I can easily return to these options and compare them later.
+-   Favoriting Apartments: As a student, I want to be able to favorite apartments and store them in a personalized section of my profile so that I can easily return to these options and compare them later.
 
-- Secure and Seamless User Experience: As a user, I want a secure and seamless experience using the application so that I can trust my personal information is safe and navigate the platform without encountering any issues.
+-   Secure and Seamless User Experience: As a user, I want a secure and seamless experience using the application so that I can trust my personal information is safe and navigate the platform without encountering any issues.
 
 # Team
 
 Backend: Go | Frontend: React
+
 -   Anvisha Singh (front-end)
 -   Jatin Shivaprakash (back-end)
 -   Lakksh Tyagi (front-end)
