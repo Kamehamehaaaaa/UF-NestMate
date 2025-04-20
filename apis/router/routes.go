@@ -62,7 +62,7 @@ func SetupHandlers(r *gin.Engine) {
 	r.GET("/api/comments/getAll/:query", GetAllCommentsHandler)
 	r.GET("/api/filter/ratings", filterRatingsHandler)
 
-	// r.GET("/api/housing/summary/:query", ReviewSummarizerHandler)
+	r.GET("/api/housing/summary/:query", ReviewSummarizerHandler)
 
 	//new apis
 	// Favorites endpoints

@@ -41,3 +41,8 @@ type Budget struct {
 	Min int `json:"min" bson:"min"`
 	Max int `json:"max" bson:"max"`
 }
+
+type FavoriteReq struct {
+	Username string `json:"username"`
+	AptID    int    `json:"aptId"`
+}
