@@ -5,6 +5,7 @@ import (
 	"apis/user"
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -241,4 +242,129 @@ func TestLoginHandler(t *testing.T) {
 		assert.Equal(t, http.StatusUnauthorized, w.Code)
 
 	})
+}
+
+func TestFavoritesAddHandler(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	r := gin.Default()
+	SetupHandlers(r)
+
+	database.MongoDB = database.NewMongoDBTestService()
+
+	user1 := user.User{
+		FirstName: "dummy login",
+		LastName:  "user",
+		Username:  "login",
+		Password:  "password",
+		Favorites: []int{1, 2},
+	}
+	database.MongoDB.RegisterUser(&user1)
+
+	// req, _ := http.NewRequest("GET", "/api/user/getUser", nil)
+
+	// q := req.URL.Query()
+	// q.Add("username", "login")
+	// req.URL.RawQuery = q.Encode()
+
+	// w := httptest.NewRecorder()
+	// r.ServeHTTP(w, req)
+
+	// responseData, _ := io.ReadAll(w.Body)
+	// fmt.Println(string(responseData))
+
+	t.Run("Add favorite Success", func(t *testing.T) {
+		favReq := user.FavoriteReq{
+			Username: "login",
+			AptID:    4,
+		}
+
+		jsonValue, _ := json.Marshal(favReq)
+		req, _ := http.NewRequest("POST", "/api/user/favorites/add", bytes.NewBuffer(jsonValue))
+
+		w := httptest.NewRecorder()
+		r.ServeHTTP(w, req)
+
+		mockResponse := `{"message":"Added to favorites","success":true}`
+		responseData, _ := io.ReadAll(w.Body)
+		// fmt.Println(responseData)
+		assert.Equal(t, string(responseData), mockResponse)
+		assert.Equal(t, http.StatusOK, w.Code)
+	})
+
+	database.MongoDB.DeleteUser("login")
+}
+
+func TestFavoritesRemoveHandler(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	r := gin.Default()
+	SetupHandlers(r)
+
+	database.MongoDB = database.NewMongoDBTestService()
+
+	user1 := user.User{
+		FirstName: "dummy login",
+		LastName:  "user",
+		Username:  "login",
+		Password:  "password",
+		Favorites: []int{1, 2},
+	}
+	database.MongoDB.RegisterUser(&user1)
+
+	t.Run("Remove favorite Success", func(t *testing.T) {
+		favReq := user.FavoriteReq{
+			Username: "login",
+			AptID:    2,
+		}
+
+		jsonValue, _ := json.Marshal(favReq)
+		req, _ := http.NewRequest("DELETE", "/api/user/favorites/remove", bytes.NewBuffer(jsonValue))
+
+		w := httptest.NewRecorder()
+		r.ServeHTTP(w, req)
+
+		mockResponse := `{"message":"Removed from favorites","success":true}`
+		responseData, _ := io.ReadAll(w.Body)
+		// fmt.Println(responseData)
+		assert.Equal(t, string(responseData), mockResponse)
+		assert.Equal(t, http.StatusOK, w.Code)
+	})
+
+	database.MongoDB.DeleteUser("login")
+}
+
+func TestFavoritesGetHandler(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	r := gin.Default()
+	SetupHandlers(r)
+
+	database.MongoDB = database.NewMongoDBTestService()
+
+	user1 := user.User{
+		FirstName: "dummy login",
+		LastName:  "user",
+		Username:  "login",
+		Password:  "password",
+		Favorites: []int{1},
+	}
+	database.MongoDB.RegisterUser(&user1)
+
+	t.Run("Get favorite Success", func(t *testing.T) {
+
+		req, _ := http.NewRequest("GET", "/api/user/favorites", nil)
+
+		q := req.URL.Query()
+		q.Add("username", "login")
+		req.URL.RawQuery = q.Encode()
+
+		w := httptest.NewRecorder()
+		r.ServeHTTP(w, req)
+
+		mockResponse := `"count":1`
+		responseData, _ := io.ReadAll(w.Body)
+		fmt.Println(string(responseData))
+		assert.Contains(t, string(responseData), mockResponse)
+		assert.Equal(t, http.StatusOK, w.Code)
+	})
+
+	database.MongoDB.DeleteUser("login")
 }

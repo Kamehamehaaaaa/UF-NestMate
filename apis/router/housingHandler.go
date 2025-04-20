@@ -314,42 +314,51 @@ func queryGPT(inputText string) {
 	fmt.Println(content)
 }
 
-// func ReviewSummarizerHandler(c *gin.Context) {
-// 	query := c.Param("query")
+func ReviewSummarizerHandler(c *gin.Context) {
+	query := c.Param("query")
 
-// 	fmt.Println(query)
+	fmt.Println(query)
 
-// 	commentsApartment, err := GetAllCommentsForApartmentHelper(query)
+	commentsApartment, err := GetAllCommentsForApartmentHelper(query)
 
-// 	if err != nil {
-// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching property comments"})
-// 		return
-// 	}
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching property comments"})
+		return
+	}
 
-// 	commentsCombined := ""
+	commentsCombined := ""
 
-// 	for _, val := range commentsApartment {
-// 		commentsCombined += val
-// 		commentsCombined += ". "
-// 	}
-// 	// textB, _ := os.ReadFile("/Users/rohitbogulla/Desktop/Sem 2/SE/Gat-o-Buddy/apis/housing/file.txt")
-// 	// text := string(textB)
+	for _, val := range commentsApartment {
+		fmt.Println(val)
+		tmpString := strings.Split(val, ": ")
+		// fmt.Println(tmpString)
+		if len(tmpString) > 1 {
+			commentsCombined += tmpString[1]
+		} else {
+			commentsCombined += tmpString[0]
+		}
+		commentsCombined += ". "
+	}
 
-// 	// queryGPT(text)
+	// fmt.Println(commentsCombined)
+	// textB, _ := os.ReadFile("/Users/rohitbogulla/Desktop/Sem 2/SE/Gat-o-Buddy/apis/housing/file.txt")
+	// text := string(textB)
 
-// 	// res := housing.CreateFromText(text)
+	// queryGPT(text)
 
-// 	// summary, err := housing.BasicSummarizer(commentsCombined, 2)
+	// res := housing.CreateFromText(text)
 
-// 	if err != nil {
-// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching properties"})
-// 		return
-// 	}
+	summary, err := housing.BasicSummarizer(commentsCombined, 2)
 
-// 	// summarized := rephraseSentences(strings.Split(summary, "\n"))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error summarizing comments"})
+		return
+	}
 
-// 	c.JSON(http.StatusOK, gin.H{"message": summary})
-// }
+	// summarized := rephraseSentences(strings.Split(summary, "\n"))
+
+	c.JSON(http.StatusOK, gin.H{"message": summary})
+}
 
 func fetchNearbyPlaces(location string, placeType string) ([]map[string]string, error) {
 	apiKey := "AIzaSyCJbMwl9Jpmbhx863HaRaQDu7iSMPjiK9Y"
