@@ -46,3 +46,8 @@ type FavoriteReq struct {
 	Username string `json:"username"`
 	AptID    int    `json:"aptId"`
 }
+
+type PreferenceReq struct {
+	Username    string       `json:"username"`
+	Preferences *Preferences `json:"preferences"`
+}
