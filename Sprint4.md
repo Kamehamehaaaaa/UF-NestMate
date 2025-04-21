@@ -1,12 +1,16 @@
 ## Detail Work Completed in Sprint 4
 
+#### Deployment & Production 
+
+-   The backend was successfully deployed on **Render**, and the frontend on **Vercel**.
+-   CORS was configured dynamically to allow cross-origin requests from both localhost and deployed domains, ensuring secure and seamless frontend-backend communication.
+-   Environment-based configuration was set up to switch effortlessly between local development and production builds.
+-   Code was updated and tested to ensure that all features function correctly in both local and live production environments.
+
 ### Frontend Enhancements
 
 #### User Authentication & Profile Experience
 
--   Repositioned the **Login button** into the **profile avatar** on the left side of the header.
-
-    -   When a user is logged in, the avatar displays the **first letter** of their name.
 
 -   The **Profile section** now includes two distinct tabs:
     -   **User Profile Tab**:
@@ -23,6 +27,9 @@
             -   Smoking/drinking preferences
             -   Gender & pet preferences
         -   On clicking **"Save Preferences"**, data is saved directly to **MongoDB Atlas**.
+     
+   -  Repositioned the **Login button** into the **profile avatar** on the left side of the header so that the user is automatically prompted to login after clicking on the profile avatar if not logged in else it renders the puser profile tab of the user.
+
 
 #### Apartment Favorites & Interaction
 
@@ -45,18 +52,6 @@
     -   Lifestyle habits
 -   Users can browse and compare potential roommates easily.
 
-#### Improved Navigation & Interaction
-
--   The **"Contact" button** on the Match page now **automatically scrolls into view**, improving navigation.
-
-#### Enhanced Search Functionality
-
--   The **search bar** now updates apartment cards **dynamically with each keystroke**.
--   **Ratings filter** is now:
-    -   Instantly triggered on click.
-    -   No need to manually click the search button after applying filters.
--   Added a new **"Apartment Name" filter** to search directly by name.
-
 #### Comments and Attribution
 
 -   Every apartment comment now includes:
@@ -70,6 +65,16 @@
 -   Clicking the dropdown displays:
     -   Nearby bars, cafes, gyms, restaurants, food stores, etc.
 -   Uses the **Google Maps API** and apartment’s **latitude/longitude** to calculate nearby amenities.
+
+#### Enhanced Search Functionality
+
+-   The **search bar** now updates apartment cards **dynamically with each keystroke**.
+-   **Ratings filter** is now:
+    -   Instantly triggered on click.
+    -   No need to manually click the search button after applying filters.
+-   Added a new **"Apartment Name" filter** to search directly by name.
+
+
 
 ### Backend Enhancements
 
@@ -105,14 +110,37 @@ The backend in Sprint 4 was significantly enhanced to support all the newly adde
 -   Sorting apartments by distance from a given location was introduced, using geolocation data and supporting logic on the backend.
 -   The backend was integrated with Google Maps Places API to fetch nearby amenities for apartments, enriching listings with nearby cafes, gyms, grocery stores, and more.
 
-#### Deployment & Production Readiness
 
--   The backend was successfully deployed on **Render**, and the frontend on **Vercel**.
--   CORS was configured dynamically to allow cross-origin requests from both localhost and deployed domains, ensuring secure and seamless frontend-backend communication.
--   Environment-based configuration was set up to switch effortlessly between local development and production builds.
--   Code was updated and tested to ensure that all features function correctly in both local and live production environments.
 
 ## Frontend Unit Tests
+
+### Matches Component Tests (New)
+
+- Displays "no matches found" when empty  
+- Displays match cards when data is fetched  
+- Opens modal when card is clicked  
+- Displays basic info in modal  
+- Handles API errors gracefully  
+- Parses hobbies correctly  
+- Shows default values for missing preferences  
+- Handles image loading errors  
+- Closes modal when close button is clicked  
+- Renders different tabs in modal  
+
+### RoommatePreferencesForm Component Tests (New)
+
+- Renders form with initial preferences  
+- Updates budget range when inputs change  
+- Updates major field when changed  
+- Updates hobbies field when changed  
+- Changes food preference dropdown selection  
+- Toggles smoking preference radio buttons  
+- Adjusts cleanliness slider  
+- Changes gender preference radio buttons  
+- Submits form with updated data  
+- Validates numeric inputs for budget  
+- Maintains cleanliness value between 1–5  
+
 
 ### Profile Component Tests
 
@@ -123,6 +151,7 @@ The backend in Sprint 4 was significantly enhanced to support all the newly adde
 -   Closes the modal when close button is clicked
 -   Displays correct title based on edit mode
 -   Cancels editing and reverts changes when Cancel button is clicked
+-   Checks if the favorrites/wishlisted apartments are rendered in this section (New)
 
 ### Search Component Tests
 
@@ -149,6 +178,7 @@ The backend in Sprint 4 was significantly enhanced to support all the newly adde
 -   Toggles comment form when Add Comment is clicked
 -   Adds a new comment correctly
 -   Closes modal when Close button is clicked
+-   Checks if the nearby amenities section is rendered when selected (New)
 
 ### ContactForm Component Tests
 
@@ -163,6 +193,8 @@ The backend in Sprint 4 was significantly enhanced to support all the newly adde
 -   Switches to signup form when clicking sign up link
 -   Switches back to login form when clicking login link
 -   Calls onClose when close button is clicked
+
+
 
 ## Cypress tests
 
