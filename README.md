@@ -13,32 +13,30 @@ Safari support for the production build is currently limited and will be address
 
 Follow the steps below to run the full-stack application on your local machine:
 
-1. **Clone the GitHub repository:**
+1. **Clone the GitHub repository/Download the ZIP file:**
 
-    git clone https://github.com/Kamehamehaaaaa/UF-NestMate.git
+    - git clone https://github.com/Kamehamehaaaaa/UF-NestMate.git
 
-2. **Install frontend dependencies:**
+    Launch VS Code, open the project folder, and use the terminal within VS Code to navigate to the project folder to ensure you are in the correct directory.
 
-    npm install
+2. **Create a .env file in the apis and client directories as needed.**
+  
+    The required environment variables such as the Cloudinary URL, allowed origins, and React app frontend URL will be provided as a comment in the Canvas submission. This is to ensure the Cloudinary credentials remain private and are not exposed.
 
-3. **Create a .env file in the apis and client directories as needed.**
-   The required environment variables such as the Cloudinary URL, allowed origins, and React app frontend URL will be provided as a comment in the Canvas submission. This is to ensure the Cloudinary credentials remain private and are not exposed.
+3. **Install frontend dependencies:**
 
-4. Ensure you're inside the root project directory. **Install backend dependencies and run the server:**
+    Navigate to the client folder and install all the necessary frontend dependencies.
 
-    cd apis
-    go mod tidy
-    go run .
+    - cd client
+    - npm install
 
-5. **Start the frontend React app:**
+4. **Start the app:**
 
-    cd ..
-    cd client
-    npm start
+    - npm start
 
-Your browser should open and navigate to http://localhost:3000. To access exclusive features available only to registered users, please sign up or log in to your existing account. For demonstration purposes, I'll provide an account:
+Your browser should open and navigate to http://localhost:3000. The apartment cards may take **10–60 seconds** to load from the backend, as it is hosted on **Render's free tier**, which may have cold start delays. To access exclusive features available only to registered users, please sign up or log in to your existing account. For demonstration purposes, I'll provide an account:
 
-**Username:** l@gmail.com
+**Username:** l@gmail.com <br>
 **Password:** l
 
 # Description
