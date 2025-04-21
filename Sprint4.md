@@ -360,6 +360,45 @@ The backend in Sprint 4 was significantly enhanced to support all the newly adde
 -   This fetches all the comments related to specific apartments.
 -   This has two test cases: Get all comment sucessful, Get all comment failed.
 
+### For Favorites APIs
+
+**AddFavoriteHandler**
+
+-   /api/user/favorites/add
+-   This adds favorite apartments to the profile.
+
+**RemoveFavoriteHandler**
+
+-   api/user/favorites/remove
+-   This removes favorite apartments from profile.
+
+**GetFavoritesHandler**
+
+-   /api/user/favorites
+-   This fetches all the apartments which the user has added into their favourites.
+
+**GetPreferencesHandler**
+
+-   /api/user/preferences
+-   This fetches the preferences given by an user.
+
+**SavePreferencesHandler**
+
+-   /api/user/preferences
+-   This saves all the preferences the user chooses.
+
+**GetMatchesHandler**
+
+-   /api/user/matches
+-   This fetches all the users whose preferences are matching with the current user.
+
+**GetNearbyAmenitiesHandler**
+
+-   /api/housing/amenities/:query
+-   This has the query paramenter of apartments.
+-   When the user searches a specific apartment, this api fetches all the nearby amenities.
+
+
 ## API Documentation
 
 ### Table of Contents
@@ -667,3 +706,189 @@ GET /apt/housing/sortByDistance?university={university}
 -   `200`: List of properties sorted by distance
 -   `400`: University name required or failed to fetch apartments
 -   `500`: Failed to calculate distances or fetch apartments
+
+## Favoutrites and preferences
+
+###  Add Apartment to Favorites
+
+```
+POST /api/favorites/add
+```
+
+**Request Body:**
+
+```json
+{
+  "username": "string",
+  "aptId": 123
+}
+```
+
+**Responses:**
+
+- `200`: Added to favorites  
+- `400`: Invalid request  
+- `404`: User not found  
+- `500`: Failed to add favorite  
+
+
+### Remove Apartment from Favorites
+
+```
+POST /api/favorites/remove
+```
+
+**Request Body:**
+
+```json
+{
+  "username": "string",
+  "aptId": 123
+}
+```
+
+**Responses:**
+
+- `200`: Removed from favorites  
+- `400`: Invalid request  
+- `500`: Failed to remove favorite  
+
+
+### Get Favorite Apartments
+
+```
+GET /api/favorites/get?username=string
+```
+
+**Responses:**
+
+- `200`:  
+```json
+{
+  "count": 2,
+  "favorites": [ /* apartment list */ ]
+}
+```
+- `400`: Username is required  
+- `500`: Failed to retrieve favorites  
+
+
+### Save User Preferences
+
+```
+POST /api/preferences/save
+```
+
+**Request Body:**
+
+```json
+{
+  "username": "string",
+  "preferences": {
+    "budget": {
+      "min": 500,
+      "max": 1200
+    },
+    "major": "string",
+    "hobbies": "string",
+    "food": "string",
+    "sleepingHabit": "string",
+    "smokingDrinking": "string",
+    "cleanliness": 4,
+    "genderPreference": "string",
+    "petPreference": "string"
+  }
+}
+```
+
+**Responses:**
+
+- `200`: Preferences saved successfully  
+- `400`: Invalid request  
+- `500`: Failed to save preferences  
+
+
+### Get User Preferences
+
+```
+GET /api/preferences/get?username=string
+```
+
+**Responses:**
+
+- `200`:  
+```json
+{
+  "preferences": {
+    "budget": {
+      "min": 500,
+      "max": 1200
+    },
+    "major": "string",
+    "hobbies": "string",
+    "food": "string",
+    "sleepingHabit": "string",
+    "smokingDrinking": "string",
+    "cleanliness": 4,
+    "genderPreference": "string",
+    "petPreference": "string"
+  }
+}
+```
+- `400`: Username is required  
+- `500`: Failed to retrieve preferences  
+
+
+###  Get Matched Users by Preferences
+
+```
+GET /api/preferences/match?username=string
+```
+
+**Responses:**
+
+- `200`:  
+```json
+{
+  "matches": [ /* list of matching users */ ]
+}
+```
+- `400`: Username is required or preferences not set  
+- `500`: Failed to retrieve users
+
+### Get Nearby Amenities for a Property
+
+```
+GET /api/housing/amenities/{query}
+```
+
+**Path Parameter:**
+- `query` – The ID or name of the property
+
+**Description:**
+Fetches nearby amenities such as restaurants, gyms, supermarkets, and cafes using the property's coordinates.
+
+**Responses:**
+
+- `200 OK`: Returns nearby amenities  
+```json
+{
+  "amenities": {
+    "restaurant": [
+      { "name": "Pita Pit", "address": "123 Main St" }
+    ],
+    "gym": [
+      { "name": "Planet Fitness", "address": "456 Fit Ln" }
+    ],
+    "supermarket": [],
+    "cafe": []
+  }
+}
+```
+
+- `404 Not Found`:  
+```json
+{
+  "error": "Property not found"
+}
+```
